@@ -1,0 +1,10 @@
+[package]
+name = "ffmpeg"
+version = "0.1.0"
+authors = ["meh. <meh@schizofreni.co>"]
+license = "WTFPL"
+
+[dependencies]
+libc = "0.1"
+bitflags = "0.1"
+ffmpeg-sys = "2.6.2"

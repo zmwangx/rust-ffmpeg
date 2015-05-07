@@ -5,3 +5,4 @@ extern crate ffmpeg_sys as ffi;
 #[macro_use] extern crate bitflags;
 
 pub mod util;
+pub use util::error::Error;

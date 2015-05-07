@@ -1,3 +1,5 @@
+pub mod error;
+
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 

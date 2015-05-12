@@ -15,6 +15,8 @@ pub use util::media;
 pub use util::frame::{self, Frame};
 
 pub mod format;
+pub use format::format::Format;
+pub use format::stream::Stream;
 
 pub mod codec;
 pub use codec::packet::{self, Packet};

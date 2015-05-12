@@ -1,12 +1,39 @@
 pub use ::util::sample_format::SampleFormat as Sample;
 pub use ::util::pixel_format::PixelFormat as Pixel;
 
+pub mod stream;
+
+pub mod context;
+pub use self::context::{Context, open, open_with, open_as, open_as_with, dump};
+
+pub mod format;
+pub use self::format::{Input, Output, list};
+
 pub mod network;
 
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
 use ffi::*;
+use ::Format;
+
+pub fn register_all() {
+	unsafe {
+		av_register_all();
+	}
+}
+
+pub fn register(format: &Format) {
+	match format {
+		&Format::Input(ref format) => unsafe {
+			av_register_input_format(format.ptr);
+		},
+
+		&Format::Output(ref format) => unsafe {
+			av_register_output_format(format.ptr);
+		}
+	}
+}
 
 pub fn version() -> u32 {
 	unsafe {

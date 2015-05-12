@@ -10,6 +10,7 @@ use ffi::*;
 use ::{Dictionary, ColorSpace, ColorRange};
 use ::util::pixel_format::PixelFormat;
 use ::util::sample_format::SampleFormat;
+use ::picture;
 
 pub struct Packet {
 	pub duration: isize,
@@ -242,6 +243,12 @@ impl Video {
 			else {
 				PixelFormat::from(mem::transmute::<_, AVPixelFormat>(((*self.ptr).format)))
 			}
+		}
+	}
+
+	pub fn kind(&self) -> picture::Type {
+		unsafe {
+			picture::Type::from((*self.ptr).pict_type)
 		}
 	}
 

@@ -1,5 +1,6 @@
 pub mod dictionary;
 pub mod error;
+pub mod rational;
 
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;

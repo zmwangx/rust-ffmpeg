@@ -8,3 +8,4 @@ extern crate ffmpeg_sys as ffi;
 pub mod util;
 pub use util::error::Error;
 pub use util::dictionary::Dictionary;
+pub use util::rational::Rational;

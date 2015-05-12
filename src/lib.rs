@@ -12,6 +12,7 @@ pub use util::rational::Rational;
 pub use util::color_space::ColorSpace;
 pub use util::color_range::ColorRange;
 pub use util::media;
+pub use util::picture;
 pub use util::frame::{self, Frame};
 
 pub mod format;

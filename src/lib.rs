@@ -1,4 +1,5 @@
 #![feature(convert)]
+#![allow(raw_pointer_derive, non_camel_case_types)]
 
 extern crate libc;
 extern crate ffmpeg_sys as ffi;

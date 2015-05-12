@@ -83,13 +83,13 @@ impl<'a> SideData<'a> {
 		}
 	}
 
-	pub fn data(&'a self) -> &'a [u8] {
+	pub fn data(&self) -> &[u8] {
 		unsafe {
 			slice::from_raw_parts((*self.ptr).data, (*self.ptr).size as usize)
 		}
 	}
 
-	pub fn metadata(&'a self) -> Dictionary<'a> {
+	pub fn metadata(&self) -> Dictionary {
 		unsafe {
 			Dictionary::wrap((*self.ptr).metadata)
 		}

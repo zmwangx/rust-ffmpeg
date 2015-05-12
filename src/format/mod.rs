@@ -1,3 +1,6 @@
+pub use ::util::sample_format::SampleFormat as Sample;
+pub use ::util::pixel_format::PixelFormat as Pixel;
+
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 

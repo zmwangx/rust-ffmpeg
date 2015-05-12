@@ -14,6 +14,8 @@ pub use util::color_range::ColorRange;
 pub use util::media;
 pub use util::frame::{self, Frame};
 
+pub mod format;
+
 pub mod codec;
 pub use codec::packet::{self, Packet};
 pub use codec::subtitle::Subtitle;

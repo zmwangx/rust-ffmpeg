@@ -5,6 +5,8 @@ pub mod packet;
 
 pub mod subtitle;
 
+pub mod picture;
+
 pub mod discard;
 
 pub mod context;

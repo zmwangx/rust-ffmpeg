@@ -1,6 +1,7 @@
 pub mod dictionary;
 pub mod error;
 pub mod rational;
+pub mod color_space;
 
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;

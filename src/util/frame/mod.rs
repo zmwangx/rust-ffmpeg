@@ -7,7 +7,7 @@ use std::mem;
 use std::ops::Deref;
 
 use ffi::*;
-use ::{Dictionary, ColorSpace, ColorRange};
+use ::{Dictionary, ColorSpace, ColorRange, Rational};
 use ::util::pixel_format::PixelFormat;
 use ::util::sample_format::SampleFormat;
 use ::picture;
@@ -297,6 +297,12 @@ impl Video {
 	pub fn set_color_range(&mut self, value: ColorRange) {
 		unsafe {
 			av_frame_set_color_range(self.0.ptr, value.into());
+		}
+	}
+
+	pub fn aspect_ratio(&self) -> Rational {
+		unsafe {
+			Rational((*self.0.ptr).sample_aspect_ratio)
 		}
 	}
 }

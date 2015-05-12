@@ -13,3 +13,4 @@ pub use util::color_space::ColorSpace;
 pub use util::color_range::ColorRange;
 pub use util::media;
 pub use util::sample_format::SampleFormat;
+pub use util::pixel_format::PixelFormat;

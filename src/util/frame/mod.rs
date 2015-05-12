@@ -251,9 +251,21 @@ impl Video {
 		}
 	}
 
+	pub fn set_width(&mut self, value: usize) {
+		unsafe {
+			(*self.0.ptr).width = value as c_int;
+		}
+	}
+
 	pub fn height(&self) -> usize {
 		unsafe {
 			(*self.0.ptr).height as usize
+		}
+	}
+
+	pub fn set_height(&mut self, value: usize) {
+		unsafe {
+			(*self.0.ptr).height = value as c_int;
 		}
 	}
 

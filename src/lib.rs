@@ -20,7 +20,7 @@ pub use format::stream::Stream;
 
 pub mod codec;
 pub use codec::packet::{self, Packet};
-pub use codec::subtitle::Subtitle;
+pub use codec::subtitle::{self, Subtitle};
 pub use codec::picture::Picture;
 pub use codec::discard::Discard;
 pub use codec::codec::Codec;

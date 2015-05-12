@@ -185,6 +185,18 @@ impl Audio {
 			av_frame_set_sample_rate(self.0.ptr, value);
 		}
 	}
+
+	pub fn samples(&self) -> usize {
+		unsafe {
+			(*self.0.ptr).nb_samples as usize
+		}
+	}
+
+	pub fn set_samples(&mut self, value: usize) {
+		unsafe {
+			(*self.0.ptr).nb_samples = value as c_int;
+		}
+	}
 }
 
 impl Deref for Audio {

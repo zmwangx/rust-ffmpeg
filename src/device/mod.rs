@@ -18,13 +18,13 @@ impl<'a> Info<'a> {
 		Info { ptr: ptr, _marker: PhantomData }
 	}
 
-	pub fn name(&self) -> &'a str {
+	pub fn name(&self) -> &str {
 		unsafe {
 			from_utf8_unchecked(CStr::from_ptr((*self.ptr).device_name).to_bytes())
 		}
 	}
 
-	pub fn description(&self) -> &'a str {
+	pub fn description(&self) -> &str {
 		unsafe {
 			from_utf8_unchecked(CStr::from_ptr((*self.ptr).device_description).to_bytes())
 		}

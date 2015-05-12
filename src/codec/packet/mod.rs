@@ -84,7 +84,7 @@ impl Packet {
 		self.val.convergence_duration as isize
 	}
 
-	pub fn side_data<'a>(&'a self) -> SideDataIter<'a> {
+	pub fn side_data(&self) -> SideDataIter {
 		SideDataIter::new(&self.val)
 	}
 }

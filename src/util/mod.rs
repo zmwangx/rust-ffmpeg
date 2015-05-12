@@ -1,6 +1,7 @@
 pub mod dictionary;
 pub mod error;
 pub mod rational;
+pub mod media;
 pub mod color_space;
 pub mod color_range;
 

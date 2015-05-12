@@ -11,3 +11,4 @@ pub use util::dictionary::Dictionary;
 pub use util::rational::Rational;
 pub use util::color_space::ColorSpace;
 pub use util::color_range::ColorRange;
+pub use util::media;

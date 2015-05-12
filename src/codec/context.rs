@@ -12,19 +12,19 @@ use ::frame;
 pub struct Context<'a> {
 	pub ptr: *mut AVCodecContext,
 
-	own: bool,
-	_marker: PhantomData<&'a i32>,
+	_own:    bool,
+	_marker: PhantomData<&'a ()>,
 }
 
 impl<'a> Context<'a> {
 	pub fn new() -> Self {
 		unsafe {
-			Context { ptr: avcodec_alloc_context3(ptr::null()), own: true, _marker: PhantomData }
+			Context { ptr: avcodec_alloc_context3(ptr::null()), _own: true, _marker: PhantomData }
 		}
 	}
 
 	pub fn wrap(ptr: *mut AVCodecContext) -> Self {
-		Context { ptr: ptr, own: false, _marker: PhantomData }
+		Context { ptr: ptr, _own: false, _marker: PhantomData }
 	}
 
 	pub fn open(self, codec: &Codec) -> Result<Opened<'a>, Error> {
@@ -60,7 +60,7 @@ impl<'a> Context<'a> {
 
 impl<'a> Drop for Context<'a> {
 	fn drop(&mut self) {
-		if self.own {
+		if self._own {
 			unsafe {
 				avcodec_free_context(&mut self.ptr);
 			}

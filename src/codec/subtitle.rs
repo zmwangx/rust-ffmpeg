@@ -80,7 +80,7 @@ impl Subtitle {
 		self.val.end_display_time = value as uint32_t;
 	}
 
-	pub fn rects<'a>(&'a self) -> RectIter<'a> {
+	pub fn rects(&self) -> RectIter {
 		RectIter::new(&self.val)
 	}
 }

@@ -29,7 +29,7 @@ bitflags! {
 pub struct Stream<'a> {
 	ptr: *mut AVStream,
 
-	_marker: PhantomData<&'a format::Context<'a>>,
+	_marker: PhantomData<&'a format::Context>,
 }
 
 impl<'a> Stream<'a> {

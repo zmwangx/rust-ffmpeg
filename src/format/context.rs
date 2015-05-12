@@ -9,21 +9,19 @@ use ffi::*;
 use ::{Error, Dictionary, Codec, Stream, Format};
 use ::device;
 
-pub struct Context<'a> {
+pub struct Context {
 	pub ptr: *mut AVFormatContext,
 
-	_input:  bool,
-	_marker: PhantomData<&'a ()>,
+	_input: bool,
 }
 
-impl<'a> Context<'a> {
+impl Context {
 	pub fn new() -> Self {
 		unsafe {
 			Context {
 				ptr: avformat_alloc_context(),
 
-				_input:  false,
-				_marker: PhantomData,
+				_input: false,
 			}
 		}
 	}
@@ -32,16 +30,15 @@ impl<'a> Context<'a> {
 		Context {
 			ptr: ptr,
 
-			_input:  true,
-			_marker: PhantomData,
+			_input: true,
 		}
 	}
 
-	pub fn streams(&'a self) -> StreamIter<'a> {
+	pub fn streams(&self) -> StreamIter {
 		StreamIter::new(self.ptr)
 	}
 
-	pub fn devices(&'a self) -> Result<DeviceIter<'a>, Error> {
+	pub fn devices(&self) -> Result<DeviceIter, Error> {
 		DeviceIter::new(self.ptr)
 	}
 
@@ -51,7 +48,7 @@ impl<'a> Context<'a> {
 		}
 	}
 
-	pub fn video_codec(&'a self) -> Option<Codec<'a>> {
+	pub fn video_codec(&self) -> Option<Codec> {
 		unsafe {
 			let ptr = av_format_get_video_codec(self.ptr);
 
@@ -64,13 +61,13 @@ impl<'a> Context<'a> {
 		}
 	}
 
-	pub fn set_video_codec(&'a mut self, value: Codec<'a>) {
+	pub fn set_video_codec(&mut self, value: Codec) {
 		unsafe {
 			av_format_set_video_codec(self.ptr, value.ptr);
 		}
 	}
 
-	pub fn audio_codec(&'a self) -> Option<Codec<'a>> {
+	pub fn audio_codec(&self) -> Option<Codec> {
 		unsafe {
 			let ptr = av_format_get_audio_codec(self.ptr);
 
@@ -83,13 +80,13 @@ impl<'a> Context<'a> {
 		}
 	}
 
-	pub fn set_audio_codec(&'a mut self, value: Codec<'a>) {
+	pub fn set_audio_codec(&mut self, value: Codec) {
 		unsafe {
 			av_format_set_audio_codec(self.ptr, value.ptr);
 		}
 	}
 
-	pub fn subtitle_codec(&'a self) -> Option<Codec<'a>> {
+	pub fn subtitle_codec(&self) -> Option<Codec> {
 		unsafe {
 			let ptr = av_format_get_subtitle_codec(self.ptr);
 
@@ -102,13 +99,13 @@ impl<'a> Context<'a> {
 		}
 	}
 
-	pub fn set_subtitle_codec(&'a mut self, value: Codec<'a>) {
+	pub fn set_subtitle_codec(&mut self, value: Codec) {
 		unsafe {
 			av_format_set_subtitle_codec(self.ptr, value.ptr);
 		}
 	}
 
-	pub fn data_codec(&'a self) -> Option<Codec<'a>> {
+	pub fn data_codec(&self) -> Option<Codec> {
 		unsafe {
 			let ptr = av_format_get_data_codec(self.ptr);
 
@@ -121,18 +118,18 @@ impl<'a> Context<'a> {
 		}
 	}
 
-	pub fn set_data_codec(&'a mut self, value: Codec<'a>) {
+	pub fn set_data_codec(&mut self, value: Codec) {
 		unsafe {
 			av_format_set_data_codec(self.ptr, value.ptr);
 		}
 	}
 
-	pub fn packet(&'a self) -> Packet<'a> {
+	pub fn packet(&self) -> Packet {
 		Packet::new(self.ptr)
 	}
 }
 
-impl<'a> Drop for Context<'a> {
+impl Drop for Context {
 	fn drop(&mut self) {
 		unsafe {
 			if self._input {
@@ -149,7 +146,7 @@ pub struct Packet<'a> {
 	ptr: *mut AVFormatContext,
 	pkt: ::Packet,
 
-	_marker: PhantomData<&'a Context<'a>>,
+	_marker: PhantomData<&'a Context>,
 }
 
 impl<'a> Packet<'a> {
@@ -157,7 +154,7 @@ impl<'a> Packet<'a> {
 		Packet { ptr: ptr, pkt: ::Packet::new(), _marker: PhantomData }
 	}
 
-	pub fn stream(&'a self) -> Stream<'a> {
+	pub fn stream(&self) -> Stream {
 		unsafe {
 			Stream::wrap(*(*self.ptr).streams.offset(self.pkt.val.stream_index as isize))
 		}
@@ -195,7 +192,7 @@ pub struct StreamIter<'a> {
 	ptr: *const AVFormatContext,
 	cur: c_uint,
 
-	_marker: PhantomData<&'a Context<'a>>,
+	_marker: PhantomData<&'a Context>,
 }
 
 impl<'a> StreamIter<'a> {
@@ -273,7 +270,7 @@ impl<'a> Iterator for DeviceIter<'a> {
 	}
 }
 
-pub fn open<'a>(path: &Path) -> Result<Context<'a>, Error> {
+pub fn open(path: &Path) -> Result<Context, Error> {
 	unsafe {
 		let mut ps     = ptr::null_mut();
 		let     path   = path.as_os_str().to_cstring().unwrap().as_ptr();
@@ -294,7 +291,7 @@ pub fn open<'a>(path: &Path) -> Result<Context<'a>, Error> {
 	}
 }
 
-pub fn open_with<'a>(path: &Path, mut options: Dictionary) -> Result<Context<'a>, Error> {
+pub fn open_with(path: &Path, mut options: Dictionary) -> Result<Context, Error> {
 	unsafe {
 		let mut ps     = ptr::null_mut();
 		let     path   = path.as_os_str().to_cstring().unwrap().as_ptr();
@@ -318,7 +315,7 @@ pub fn open_with<'a>(path: &Path, mut options: Dictionary) -> Result<Context<'a>
 	}
 }
 
-pub fn open_as<'a>(path: &Path, format: &Format) -> Result<Context<'a>, Error> {
+pub fn open_as(path: &Path, format: &Format) -> Result<Context, Error> {
 	if let &Format::Input(ref format) = format {
 		unsafe {
 			let mut ps     = ptr::null_mut();
@@ -344,7 +341,7 @@ pub fn open_as<'a>(path: &Path, format: &Format) -> Result<Context<'a>, Error> {
 	}
 }
 
-pub fn open_as_with<'a>(path: &Path, format: &Format, mut options: Dictionary) -> Result<Context<'a>, Error> {
+pub fn open_as_with(path: &Path, format: &Format, mut options: Dictionary) -> Result<Context, Error> {
 	if let &Format::Input(ref format) = format {
 		unsafe {
 			let mut ps     = ptr::null_mut();

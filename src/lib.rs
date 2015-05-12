@@ -25,3 +25,5 @@ pub use codec::discard::Discard;
 pub use codec::codec::Codec;
 pub use codec::encoder::{self, Encode};
 pub use codec::decoder::{self, Decode};
+
+pub mod device;

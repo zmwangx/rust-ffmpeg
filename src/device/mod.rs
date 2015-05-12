@@ -10,7 +10,7 @@ use ffi::*;
 pub struct Info<'a> {
 	ptr: *mut AVDeviceInfo,
 
-	_marker: PhantomData<&'a i32>,
+	_marker: PhantomData<&'a ()>,
 }
 
 impl<'a> Info<'a> {

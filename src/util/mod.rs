@@ -1,3 +1,4 @@
+pub mod dictionary;
 pub mod error;
 
 use std::ffi::CStr;

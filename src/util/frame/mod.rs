@@ -65,7 +65,7 @@ impl Frame {
 		}
 	}
 
-	pub fn metadata<'a>(&'a self) -> Dictionary<'a> {
+	pub fn metadata(&self) -> Dictionary {
 		unsafe {
 			Dictionary::wrap(av_frame_get_metadata(self.ptr))
 		}
@@ -77,7 +77,7 @@ impl Frame {
 		}
 	}
 
-	pub fn side_data<'a>(&'a self, kind: side_data::Type) -> Option<SideData<'a>> {
+	pub fn side_data(&self, kind: side_data::Type) -> Option<SideData> {
 		unsafe {
 			let ptr = av_frame_get_side_data(self.ptr, kind.into());
 
@@ -90,7 +90,7 @@ impl Frame {
 		}
 	}
 
-	pub fn new_side_data<'a>(&'a mut self, kind: side_data::Type, size: usize) -> Option<SideData<'a>> {
+	pub fn new_side_data(&mut self, kind: side_data::Type, size: usize) -> Option<SideData> {
 		unsafe {
 			let ptr = av_frame_new_side_data(self.ptr, kind.into(), size as c_int);
 

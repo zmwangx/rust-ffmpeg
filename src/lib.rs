@@ -18,3 +18,6 @@ pub mod codec;
 pub use codec::packet::{self, Packet};
 pub use codec::subtitle::Subtitle;
 pub use codec::discard::Discard;
+pub use codec::codec::Codec;
+pub use codec::encoder::{self, Encode};
+pub use codec::decoder::{self, Decode};

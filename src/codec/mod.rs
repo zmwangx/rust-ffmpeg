@@ -7,6 +7,17 @@ pub mod subtitle;
 
 pub mod discard;
 
+pub mod context;
+pub use self::context::Context;
+
+pub mod codec;
+
+pub mod encoder;
+pub use self::encoder::Encode;
+
+pub mod decoder;
+pub use self::decoder::Decode;
+
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 

@@ -37,7 +37,7 @@ impl<'a> Stream<'a> {
 		Stream { ptr: ptr, _marker: PhantomData }
 	}
 
-	pub fn codec(&'a self) -> codec::Context<'a> {
+	pub fn codec(&self) -> codec::Context {
 		unsafe {
 			codec::Context::wrap((*self.ptr).codec)
 		}
@@ -85,7 +85,7 @@ impl<'a> Stream<'a> {
 		}
 	}
 
-	pub fn side_data(&'a self) -> SideDataIter<'a> {
+	pub fn side_data(&self) -> SideDataIter {
 		SideDataIter::new(self.ptr)
 	}
 

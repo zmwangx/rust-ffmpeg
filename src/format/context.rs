@@ -12,17 +12,17 @@ use ::device;
 pub struct Context<'a> {
 	pub ptr: *mut AVFormatContext,
 
-	input: bool,
-	_marker: PhantomData<&'a i32>,
+	_input:  bool,
+	_marker: PhantomData<&'a ()>,
 }
 
 impl<'a> Context<'a> {
 	pub fn new() -> Self {
 		unsafe {
 			Context {
-				ptr:   avformat_alloc_context(),
+				ptr: avformat_alloc_context(),
 
-				input:   false,
+				_input:  false,
 				_marker: PhantomData,
 			}
 		}
@@ -32,7 +32,7 @@ impl<'a> Context<'a> {
 		Context {
 			ptr: ptr,
 
-			input: true,
+			_input:  true,
 			_marker: PhantomData,
 		}
 	}
@@ -135,7 +135,7 @@ impl<'a> Context<'a> {
 impl<'a> Drop for Context<'a> {
 	fn drop(&mut self) {
 		unsafe {
-			if self.input {
+			if self._input {
 				avformat_close_input(&mut self.ptr);
 			}
 			else {
@@ -224,7 +224,7 @@ pub struct DeviceIter<'a> {
 	ptr: *mut AVDeviceInfoList,
 	cur: c_int,
 
-	_marker: PhantomData<&'a i32>,
+	_marker: PhantomData<&'a ()>,
 }
 
 impl<'a> DeviceIter<'a> {
@@ -382,7 +382,7 @@ pub fn dump(ctx: &Context, index: i32, url: Option<&str>) {
 	};
 
 	unsafe {
-		if ctx.input {
+		if ctx._input {
 			av_dump_format(ctx.ptr, index, url, 0);
 		}
 		else {

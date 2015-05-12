@@ -17,3 +17,4 @@ pub use util::frame::{self, Frame};
 pub mod codec;
 pub use codec::packet::{self, Packet};
 pub use codec::subtitle::Subtitle;
+pub use codec::discard::Discard;

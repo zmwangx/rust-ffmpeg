@@ -35,13 +35,13 @@ impl<'a> Codec<'a> {
 		}
 	}
 
-	pub fn name(&'a self) -> &'a str {
+	pub fn name(&self) -> &str {
 		unsafe {
 			from_utf8_unchecked(CStr::from_ptr((*self.ptr).name).to_bytes())
 		}
 	}
 
-	pub fn description(&'a self) -> &'a str {
+	pub fn description(&self) -> &str {
 		unsafe {
 			from_utf8_unchecked(CStr::from_ptr((*self.ptr).long_name).to_bytes())
 		}

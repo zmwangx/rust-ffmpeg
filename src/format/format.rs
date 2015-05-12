@@ -10,28 +10,28 @@ pub enum Format {
 }
 
 impl Format {
-	pub fn name<'a>(&'a self) -> &'a str {
+	pub fn name(&self) -> &str {
 		match self {
 			&Format::Input(ref f)  => f.name(),
 			&Format::Output(ref f) => f.name()
 		}
 	}
 
-	pub fn description<'a>(&'a self) -> &'a str {
+	pub fn description(&self) -> &str {
 		match self {
 			&Format::Input(ref f)  => f.description(),
 			&Format::Output(ref f) => f.description()
 		}
 	}
 
-	pub fn extensions<'a>(&'a self) -> Vec<&'a str> {
+	pub fn extensions(&self) -> Vec<&str> {
 		match self {
 			&Format::Input(ref f)  => f.extensions(),
 			&Format::Output(ref f) => f.extensions()
 		}
 	}
 
-	pub fn mime_types<'a>(&'a self) -> Vec<&'a str> {
+	pub fn mime_types(&self) -> Vec<&str> {
 		match self {
 			&Format::Input(ref f)  => f.mime_types(),
 			&Format::Output(ref f) => f.mime_types()
@@ -48,19 +48,19 @@ impl Input {
 		Input { ptr: ptr }
 	}
 
-	pub fn name<'a>(&'a self) -> &'a str {
+	pub fn name(&self) -> &str {
 		unsafe {
 			from_utf8_unchecked(CStr::from_ptr((*self.ptr).name).to_bytes())
 		}
 	}
 
-	pub fn description<'a>(&'a self) -> &'a str {
+	pub fn description(&self) -> &str {
 		unsafe {
 			from_utf8_unchecked(CStr::from_ptr((*self.ptr).name).to_bytes())
 		}
 	}
 
-	pub fn extensions<'a>(&'a self) -> Vec<&'a str> {
+	pub fn extensions(&self) -> Vec<&str> {
 		unsafe {
 			let ptr = (*self.ptr).extensions;
 
@@ -73,7 +73,7 @@ impl Input {
 		}
 	}
 
-	pub fn mime_types<'a>(&'a self) -> Vec<&'a str> {
+	pub fn mime_types(&self) -> Vec<&str> {
 		unsafe {
 			let ptr = (*self.ptr).mime_type;
 
@@ -96,19 +96,19 @@ impl Output {
 		Output { ptr: ptr }
 	}
 
-	pub fn name<'a>(&'a self) -> &'a str {
+	pub fn name(&self) -> &str {
 		unsafe {
 			from_utf8_unchecked(CStr::from_ptr((*self.ptr).name).to_bytes())
 		}
 	}
 
-	pub fn description<'a>(&'a self) -> &'a str {
+	pub fn description(&self) -> &str {
 		unsafe {
 			from_utf8_unchecked(CStr::from_ptr((*self.ptr).name).to_bytes())
 		}
 	}
 
-	pub fn extensions<'a>(&'a self) -> Vec<&'a str> {
+	pub fn extensions(&self) -> Vec<&str> {
 		unsafe {
 			let ptr = (*self.ptr).extensions;
 
@@ -121,7 +121,7 @@ impl Output {
 		}
 	}
 
-	pub fn mime_types<'a>(&'a self) -> Vec<&'a str> {
+	pub fn mime_types(&self) -> Vec<&str> {
 		unsafe {
 			let ptr = (*self.ptr).mime_type;
 

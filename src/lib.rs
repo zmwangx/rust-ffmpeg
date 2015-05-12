@@ -15,3 +15,4 @@ pub use util::media;
 pub use util::frame::{self, Frame};
 
 pub mod codec;
+pub use codec::packet::{self, Packet};

@@ -1,6 +1,8 @@
 pub mod id;
 pub use self::id::Id;
 
+pub mod packet;
+
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 

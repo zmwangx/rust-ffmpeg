@@ -149,7 +149,7 @@ impl Buffer {
 impl Index<usize> for Buffer {
 	type Output = [u8];
 
-	fn index<'a>(&'a self, index: usize) -> &'a [u8] {
+	fn index(&self, index: usize) -> &[u8] {
 		if index >= self.samples {
 			panic!("out of bounds");
 		}

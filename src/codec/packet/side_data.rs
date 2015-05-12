@@ -87,7 +87,7 @@ impl<'a> SideData<'a> {
 		}
 	}
 
-	pub fn data(&'a self) -> &'a [u8] {
+	pub fn data(&self) -> &[u8] {
 		unsafe {
 			slice::from_raw_parts((*self.ptr).data, (*self.ptr).size as usize)
 		}

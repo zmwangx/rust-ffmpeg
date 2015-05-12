@@ -4,6 +4,7 @@ pub mod rational;
 pub mod media;
 pub mod color_space;
 pub mod color_range;
+pub mod sample_format;
 
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;

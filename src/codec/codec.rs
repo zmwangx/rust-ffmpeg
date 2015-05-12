@@ -11,7 +11,7 @@ use ::codec::context::Opened;
 pub struct Codec<'a> {
 	pub ptr: *mut AVCodec,
 
-	_marker: PhantomData<&'a i32>,
+	_marker: PhantomData<&'a ()>,
 }
 
 impl<'a> Codec<'a> {

@@ -141,7 +141,12 @@ impl Audio {
 
 	pub fn format(&self) -> SampleFormat {
 		unsafe {
-			SampleFormat::from(mem::transmute::<_, AVSampleFormat>(((*self.ptr).format)))
+			if (*self.ptr).format == -1 {
+				SampleFormat::None
+			}
+			else {
+				SampleFormat::from(mem::transmute::<_, AVSampleFormat>(((*self.ptr).format)))
+			}
 		}
 	}
 
@@ -219,7 +224,12 @@ impl Video {
 
 	pub fn format(&self) -> PixelFormat {
 		unsafe {
-			PixelFormat::from(mem::transmute::<_, AVPixelFormat>(((*self.ptr).format)))
+			if (*self.ptr).format == -1 {
+				PixelFormat::None
+			}
+			else {
+				PixelFormat::from(mem::transmute::<_, AVPixelFormat>(((*self.ptr).format)))
+			}
 		}
 	}
 

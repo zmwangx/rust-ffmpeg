@@ -108,26 +108,27 @@ impl<'a> Iterator for RectIter<'a> {
 			}
 			else {
 				self.cur += 1;
-				Rect::wrap(*(*self.ptr).rects.offset((self.cur - 1) as isize))
+				Some(Rect::wrap(*(*self.ptr).rects.offset((self.cur - 1) as isize)))
 			}
 		}
 	}
 }
 
 pub enum Rect<'a> {
+	None,
 	Bitmap(Bitmap<'a>),
 	Text(Text<'a>),
 	Ass(Ass<'a>),
 }
 
 impl<'a> Rect<'a> {
-	pub fn wrap(ptr: *mut AVSubtitleRect) -> Option<Self> {
+	pub fn wrap(ptr: *mut AVSubtitleRect) -> Self {
 		unsafe {
 			match Type::from((*ptr).kind) {
-				Type::None   => None,
-				Type::Bitmap => Some(Rect::Bitmap(Bitmap::wrap(ptr))),
-				Type::Text   => Some(Rect::Text(Text::wrap(ptr))),
-				Type::Ass    => Some(Rect::Ass(Ass::wrap(ptr)))
+				Type::None   => Rect::None,
+				Type::Bitmap => Rect::Bitmap(Bitmap::wrap(ptr)),
+				Type::Text   => Rect::Text(Text::wrap(ptr)),
+				Type::Ass    => Rect::Ass(Ass::wrap(ptr))
 			}
 		}
 	}
@@ -135,6 +136,7 @@ impl<'a> Rect<'a> {
 	pub fn flags(&self) -> Flags {
 		unsafe {
 			Flags::from_bits_truncate(match self {
+				&Rect::None          => 0,
 				&Rect::Bitmap(ref b) => (*b.ptr).flags,
 				&Rect::Text(ref t)   => (*t.ptr).flags,
 				&Rect::Ass(ref a)    => (*a.ptr).flags

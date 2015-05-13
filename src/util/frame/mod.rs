@@ -8,8 +8,7 @@ use std::ops::Deref;
 
 use ffi::*;
 use ::{Dictionary, Rational};
-use ::util::pixel_format::PixelFormat;
-use ::util::sample_format::SampleFormat;
+use ::util::format;
 use ::picture;
 use ::color;
 
@@ -163,13 +162,13 @@ impl Audio {
 		Audio(Frame::new())
 	}
 
-	pub fn format(&self) -> SampleFormat {
+	pub fn format(&self) -> format::Sample {
 		unsafe {
 			if (*self.ptr).format == -1 {
-				SampleFormat::None
+				format::Sample::None
 			}
 			else {
-				SampleFormat::from(mem::transmute::<_, AVSampleFormat>(((*self.ptr).format)))
+				format::Sample::from(mem::transmute::<_, AVSampleFormat>(((*self.ptr).format)))
 			}
 		}
 	}
@@ -258,13 +257,13 @@ impl Video {
 		Video(Frame::new())
 	}
 
-	pub fn format(&self) -> PixelFormat {
+	pub fn format(&self) -> format::Pixel {
 		unsafe {
 			if (*self.ptr).format == -1 {
-				PixelFormat::None
+				format::Pixel::None
 			}
 			else {
-				PixelFormat::from(mem::transmute::<_, AVPixelFormat>(((*self.ptr).format)))
+				format::Pixel::from(mem::transmute::<_, AVPixelFormat>(((*self.ptr).format)))
 			}
 		}
 	}

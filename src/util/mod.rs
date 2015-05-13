@@ -4,8 +4,7 @@ pub mod rational;
 pub mod media;
 pub mod picture;
 pub mod color;
-pub mod sample_format;
-pub mod pixel_format;
+pub mod format;
 pub mod frame;
 
 use std::ffi::CStr;

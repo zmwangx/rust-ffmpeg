@@ -9,7 +9,7 @@ use libc::{c_int, uint8_t};
 use ffi::*;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
-pub enum SampleFormat {
+pub enum Sample {
 	None,
 	U8,
 	S16,
@@ -24,7 +24,7 @@ pub enum SampleFormat {
 	DBLP,
 }
 
-impl SampleFormat {
+impl Sample {
 	pub fn name(&self) -> &'static str {
 		unsafe {
 			from_utf8_unchecked(CStr::from_ptr(av_get_sample_fmt_name((*self).into())).to_bytes())
@@ -33,13 +33,13 @@ impl SampleFormat {
 
 	pub fn packed(&self) -> Self {
 		unsafe {
-			SampleFormat::from(av_get_packed_sample_fmt((*self).into()))
+			Sample::from(av_get_packed_sample_fmt((*self).into()))
 		}
 	}
 
 	pub fn planar(&self) -> Self {
 		unsafe {
-			SampleFormat::from(av_get_planar_sample_fmt((*self).into()))
+			Sample::from(av_get_planar_sample_fmt((*self).into()))
 		}
 	}
 
@@ -60,56 +60,56 @@ impl SampleFormat {
 	}
 }
 
-impl From<AVSampleFormat> for SampleFormat {
+impl From<AVSampleFormat> for Sample {
 	fn from(value: AVSampleFormat) -> Self {
 		match value {
-			AV_SAMPLE_FMT_NONE => SampleFormat::None,
-			AV_SAMPLE_FMT_U8   => SampleFormat::U8,
-			AV_SAMPLE_FMT_S16  => SampleFormat::S16,
-			AV_SAMPLE_FMT_S32  => SampleFormat::S32,
-			AV_SAMPLE_FMT_FLT  => SampleFormat::FLT,
-			AV_SAMPLE_FMT_DBL  => SampleFormat::DBL,
+			AV_SAMPLE_FMT_NONE => Sample::None,
+			AV_SAMPLE_FMT_U8   => Sample::U8,
+			AV_SAMPLE_FMT_S16  => Sample::S16,
+			AV_SAMPLE_FMT_S32  => Sample::S32,
+			AV_SAMPLE_FMT_FLT  => Sample::FLT,
+			AV_SAMPLE_FMT_DBL  => Sample::DBL,
 
-			AV_SAMPLE_FMT_U8P  => SampleFormat::U8P,
-			AV_SAMPLE_FMT_S16P => SampleFormat::S16P,
-			AV_SAMPLE_FMT_S32P => SampleFormat::S32P,
-			AV_SAMPLE_FMT_FLTP => SampleFormat::FLTP,
-			AV_SAMPLE_FMT_DBLP => SampleFormat::DBLP,
+			AV_SAMPLE_FMT_U8P  => Sample::U8P,
+			AV_SAMPLE_FMT_S16P => Sample::S16P,
+			AV_SAMPLE_FMT_S32P => Sample::S32P,
+			AV_SAMPLE_FMT_FLTP => Sample::FLTP,
+			AV_SAMPLE_FMT_DBLP => Sample::DBLP,
 
-			AV_SAMPLE_FMT_NB => SampleFormat::None
+			AV_SAMPLE_FMT_NB => Sample::None
 		}
 	}
 }
 
-impl From<&'static str> for SampleFormat {
+impl From<&'static str> for Sample {
 	fn from(value: &'static str) -> Self {
 		unsafe {
-			SampleFormat::from(av_get_sample_fmt(CString::new(value).unwrap().as_ptr()))
+			Sample::from(av_get_sample_fmt(CString::new(value).unwrap().as_ptr()))
 		}
 	}
 }
 
-impl Into<AVSampleFormat> for SampleFormat {
+impl Into<AVSampleFormat> for Sample {
 	fn into(self) -> AVSampleFormat {
 		match self {
-			SampleFormat::None => AV_SAMPLE_FMT_NONE,
-			SampleFormat::U8   => AV_SAMPLE_FMT_U8,
-			SampleFormat::S16  => AV_SAMPLE_FMT_S16,
-			SampleFormat::S32  => AV_SAMPLE_FMT_S32,
-			SampleFormat::FLT  => AV_SAMPLE_FMT_FLT,
-			SampleFormat::DBL  => AV_SAMPLE_FMT_DBL,
+			Sample::None => AV_SAMPLE_FMT_NONE,
+			Sample::U8   => AV_SAMPLE_FMT_U8,
+			Sample::S16  => AV_SAMPLE_FMT_S16,
+			Sample::S32  => AV_SAMPLE_FMT_S32,
+			Sample::FLT  => AV_SAMPLE_FMT_FLT,
+			Sample::DBL  => AV_SAMPLE_FMT_DBL,
 
-			SampleFormat::U8P  => AV_SAMPLE_FMT_U8P,
-			SampleFormat::S16P => AV_SAMPLE_FMT_S16P,
-			SampleFormat::S32P => AV_SAMPLE_FMT_S32P,
-			SampleFormat::FLTP => AV_SAMPLE_FMT_FLTP,
-			SampleFormat::DBLP => AV_SAMPLE_FMT_DBLP,
+			Sample::U8P  => AV_SAMPLE_FMT_U8P,
+			Sample::S16P => AV_SAMPLE_FMT_S16P,
+			Sample::S32P => AV_SAMPLE_FMT_S32P,
+			Sample::FLTP => AV_SAMPLE_FMT_FLTP,
+			Sample::DBLP => AV_SAMPLE_FMT_DBLP,
 		}
 	}
 }
 
 pub struct Buffer {
-	pub format: SampleFormat,
+	pub format: Sample,
 	pub channels: usize,
 	pub samples: usize,
 	pub align: bool,
@@ -119,13 +119,13 @@ pub struct Buffer {
 }
 
 impl Buffer {
-	pub fn size(format: SampleFormat, channels: usize, samples: usize, align: bool) -> usize {
+	pub fn size(format: Sample, channels: usize, samples: usize, align: bool) -> usize {
 		unsafe {
 			av_samples_get_buffer_size(ptr::null_mut(), channels as c_int, samples as c_int, format.into(), !align as c_int) as usize
 		}
 	}
 
-	pub fn new(format: SampleFormat, channels: usize, samples: usize, align: bool) -> Self {
+	pub fn new(format: Sample, channels: usize, samples: usize, align: bool) -> Self {
 		unsafe {
 			let mut buf = Buffer {
 				format:   format,

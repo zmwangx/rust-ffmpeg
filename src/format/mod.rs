@@ -1,5 +1,5 @@
-pub use ::util::sample_format::SampleFormat as Sample;
-pub use ::util::pixel_format::PixelFormat as Pixel;
+pub use ::util::format::Sample;
+pub use ::util::format::Pixel;
 
 pub mod stream;
 

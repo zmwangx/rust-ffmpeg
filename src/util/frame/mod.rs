@@ -7,10 +7,17 @@ use std::mem;
 use std::ops::Deref;
 
 use ffi::*;
-use ::{Dictionary, ColorSpace, ColorRange, Rational};
+use ::{Dictionary, Rational};
 use ::util::pixel_format::PixelFormat;
 use ::util::sample_format::SampleFormat;
 use ::picture;
+use ::color;
+
+bitflags! {
+	flags Flags: i32 {
+		const FLAG_CORRUPT = AV_FRAME_FLAG_CORRUPT,
+	}
+}
 
 pub struct Packet {
 	pub duration: isize,
@@ -49,6 +56,10 @@ impl Frame {
 		}
 	}
 
+	pub fn is_corrupt(&self) -> bool {
+		self.flags().contains(FLAG_CORRUPT)
+	}
+
 	pub fn packet(&self) -> Packet {
 		unsafe {
 			Packet {
@@ -62,6 +73,18 @@ impl Frame {
 	pub fn best_effort_timestamp(&self) -> isize {
 		unsafe {
 			av_frame_get_best_effort_timestamp(self.ptr) as isize
+		}
+	}
+
+	pub fn quality(&self) -> usize {
+		unsafe {
+			(*self.ptr).quality as usize
+		}
+	}
+
+	pub fn flags(&self) -> Flags {
+		unsafe {
+			Flags::from_bits_truncate((*self.ptr).flags)
 		}
 	}
 
@@ -276,33 +299,70 @@ impl Video {
 		}
 	}
 
-	pub fn color_space(&self) -> ColorSpace {
+	pub fn color_space(&self) -> color::Space {
 		unsafe {
-			ColorSpace::from(av_frame_get_colorspace(self.0.ptr))
+			color::Space::from(av_frame_get_colorspace(self.0.ptr))
 		}
 	}
 
-	pub fn set_color_space(&mut self, value: ColorSpace) {
+	pub fn set_color_space(&mut self, value: color::Space) {
 		unsafe {
 			av_frame_set_colorspace(self.0.ptr, value.into());
 		}
 	}
 
-	pub fn color_range(&self) -> ColorRange {
+	pub fn color_range(&self) -> color::Range {
 		unsafe {
-			ColorRange::from(av_frame_get_color_range(self.0.ptr))
+			color::Range::from(av_frame_get_color_range(self.0.ptr))
 		}
 	}
 
-	pub fn set_color_range(&mut self, value: ColorRange) {
+	pub fn set_color_range(&mut self, value: color::Range) {
 		unsafe {
 			av_frame_set_color_range(self.0.ptr, value.into());
 		}
 	}
 
+	pub fn color_primaries(&self) -> color::Primaries {
+		unsafe {
+			color::Primaries::from((*self.0.ptr).color_primaries)
+		}
+	}
+
+	pub fn set_color_primaries(&mut self, value: color::Primaries) {
+		unsafe {
+			(*self.0.ptr).color_primaries = value.into();
+		}
+	}
+
+	pub fn color_transfer_characteristic(&self) -> color::TransferCharacteristic {
+		unsafe {
+			color::TransferCharacteristic::from((*self.0.ptr).color_trc)
+		}
+	}
+
+	pub fn set_color_transfer_characteristic(&mut self, value: color::TransferCharacteristic) {
+		unsafe {
+			(*self.0.ptr).color_trc = value.into();
+		}
+	}
+
+
 	pub fn aspect_ratio(&self) -> Rational {
 		unsafe {
 			Rational((*self.0.ptr).sample_aspect_ratio)
+		}
+	}
+
+	pub fn coded_number(&self) -> usize {
+		unsafe {
+			(*self.0.ptr).coded_picture_number as usize
+		}
+	}
+
+	pub fn display_number(&self) -> usize {
+		unsafe {
+			(*self.0.ptr).display_picture_number as usize
 		}
 	}
 }

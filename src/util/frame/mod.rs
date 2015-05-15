@@ -175,49 +175,49 @@ impl Audio {
 
 	pub fn channel_layout(&self) -> i64 {
 		unsafe {
-			av_frame_get_channel_layout(self.0.ptr)
+			av_frame_get_channel_layout(self.ptr)
 		}
 	}
 
 	pub fn set_channel_layout(&mut self, value: i64) {
 		unsafe {
-			av_frame_set_channel_layout(self.0.ptr, value);
+			av_frame_set_channel_layout(self.ptr, value);
 		}
 	}
 
 	pub fn channels(&self) -> usize {
 		unsafe {
-			av_frame_get_channels(self.0.ptr) as usize
+			av_frame_get_channels(self.ptr) as usize
 		}
 	}
 
 	pub fn set_channels(&mut self, value: usize) {
 		unsafe {
-			av_frame_set_channels(self.0.ptr, value as c_int);
+			av_frame_set_channels(self.ptr, value as c_int);
 		}
 	}
 
-	pub fn sample_rate(&self) -> i32 {
+	pub fn rate(&self) -> i32 {
 		unsafe {
-			av_frame_get_sample_rate(self.0.ptr)
+			av_frame_get_sample_rate(self.ptr)
 		}
 	}
 
-	pub fn set_sample_rate(&mut self, value: i32) {
+	pub fn set_rate(&mut self, value: i32) {
 		unsafe {
-			av_frame_set_sample_rate(self.0.ptr, value);
+			av_frame_set_sample_rate(self.ptr, value);
 		}
 	}
 
 	pub fn samples(&self) -> usize {
 		unsafe {
-			(*self.0.ptr).nb_samples as usize
+			(*self.ptr).nb_samples as usize
 		}
 	}
 
 	pub fn set_samples(&mut self, value: usize) {
 		unsafe {
-			(*self.0.ptr).nb_samples = value as c_int;
+			(*self.ptr).nb_samples = value as c_int;
 		}
 	}
 }
@@ -276,92 +276,92 @@ impl Video {
 
 	pub fn width(&self) -> usize {
 		unsafe {
-			(*self.0.ptr).width as usize
+			(*self.ptr).width as usize
 		}
 	}
 
 	pub fn set_width(&mut self, value: usize) {
 		unsafe {
-			(*self.0.ptr).width = value as c_int;
+			(*self.ptr).width = value as c_int;
 		}
 	}
 
 	pub fn height(&self) -> usize {
 		unsafe {
-			(*self.0.ptr).height as usize
+			(*self.ptr).height as usize
 		}
 	}
 
 	pub fn set_height(&mut self, value: usize) {
 		unsafe {
-			(*self.0.ptr).height = value as c_int;
+			(*self.ptr).height = value as c_int;
 		}
 	}
 
 	pub fn color_space(&self) -> color::Space {
 		unsafe {
-			color::Space::from(av_frame_get_colorspace(self.0.ptr))
+			color::Space::from(av_frame_get_colorspace(self.ptr))
 		}
 	}
 
 	pub fn set_color_space(&mut self, value: color::Space) {
 		unsafe {
-			av_frame_set_colorspace(self.0.ptr, value.into());
+			av_frame_set_colorspace(self.ptr, value.into());
 		}
 	}
 
 	pub fn color_range(&self) -> color::Range {
 		unsafe {
-			color::Range::from(av_frame_get_color_range(self.0.ptr))
+			color::Range::from(av_frame_get_color_range(self.ptr))
 		}
 	}
 
 	pub fn set_color_range(&mut self, value: color::Range) {
 		unsafe {
-			av_frame_set_color_range(self.0.ptr, value.into());
+			av_frame_set_color_range(self.ptr, value.into());
 		}
 	}
 
 	pub fn color_primaries(&self) -> color::Primaries {
 		unsafe {
-			color::Primaries::from((*self.0.ptr).color_primaries)
+			color::Primaries::from((*self.ptr).color_primaries)
 		}
 	}
 
 	pub fn set_color_primaries(&mut self, value: color::Primaries) {
 		unsafe {
-			(*self.0.ptr).color_primaries = value.into();
+			(*self.ptr).color_primaries = value.into();
 		}
 	}
 
 	pub fn color_transfer_characteristic(&self) -> color::TransferCharacteristic {
 		unsafe {
-			color::TransferCharacteristic::from((*self.0.ptr).color_trc)
+			color::TransferCharacteristic::from((*self.ptr).color_trc)
 		}
 	}
 
 	pub fn set_color_transfer_characteristic(&mut self, value: color::TransferCharacteristic) {
 		unsafe {
-			(*self.0.ptr).color_trc = value.into();
+			(*self.ptr).color_trc = value.into();
 		}
 	}
 
 
 	pub fn aspect_ratio(&self) -> Rational {
 		unsafe {
-			Rational((*self.0.ptr).sample_aspect_ratio)
+			Rational((*self.ptr).sample_aspect_ratio)
 		}
 	}
 
 	pub fn coded_number(&self) -> usize {
 		unsafe {
-			(*self.0.ptr).coded_picture_number as usize
+			(*self.ptr).coded_picture_number as usize
 		}
 	}
 
 	pub fn display_number(&self) -> usize {
 		unsafe {
-			(*self.0.ptr).display_picture_number as usize
+			(*self.ptr).display_picture_number as usize
 		}
 	}
 }

@@ -7,8 +7,9 @@ use std::mem;
 use std::ops::Deref;
 
 use ffi::*;
-use ::{Dictionary, Rational};
+use ::{Dictionary, Rational, Picture};
 use ::util::format;
+use ::util::chroma;
 use ::picture;
 use ::color;
 
@@ -257,6 +258,10 @@ impl Video {
 		Video(Frame::new())
 	}
 
+	pub fn picture(&self) -> Picture {
+		Picture::wrap(self.ptr as *mut AVPicture, self.format(), self.width(), self.height())
+	}
+
 	pub fn format(&self) -> format::Pixel {
 		unsafe {
 			if (*self.ptr).format == -1 {
@@ -271,6 +276,24 @@ impl Video {
 	pub fn kind(&self) -> picture::Type {
 		unsafe {
 			picture::Type::from((*self.ptr).pict_type)
+		}
+	}
+
+	pub fn is_interlaced(&self) -> bool {
+		unsafe {
+			(*self.ptr).interlaced_frame != 0
+		}
+	}
+
+	pub fn is_top_first(&self) -> bool {
+		unsafe {
+			(*self.ptr).top_field_first != 0
+		}
+	}
+
+	pub fn has_palette_changed(&self) -> bool {
+		unsafe {
+			(*self.ptr).palette_has_changed != 0
 		}
 	}
 
@@ -346,6 +369,11 @@ impl Video {
 		}
 	}
 
+	pub fn chroma_location(&self) -> chroma::Location {
+		unsafe {
+			chroma::Location::from((*self.ptr).chroma_location)
+		}
+	}
 
 	pub fn aspect_ratio(&self) -> Rational {
 		unsafe {

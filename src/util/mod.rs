@@ -6,6 +6,7 @@ pub mod picture;
 pub mod color;
 pub mod format;
 pub mod frame;
+pub mod chroma;
 
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;

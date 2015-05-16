@@ -4,7 +4,7 @@ use std::ptr;
 use ffi::*;
 use ::media;
 use ::{Error, Codec, Dictionary};
-use super::Id;
+use super::{Id, Debug, Compliance};
 use super::decoder::Decoder;
 use super::encoder::Encoder;
 
@@ -81,6 +81,30 @@ impl Context {
 	pub fn id(&self) -> Id {
 		unsafe {
 			Id::from((*self.ptr).codec_id)
+		}
+	}
+
+	pub fn bit_rate(&self) -> usize {
+		unsafe {
+			(*self.ptr).bit_rate as usize
+		}
+	}
+
+	pub fn delay(&self) -> usize {
+		unsafe {
+			(*self.ptr).delay as usize
+		}
+	}
+
+	pub fn compliance(&mut self, value: Compliance) {
+		unsafe {
+			(*self.ptr).strict_std_compliance = value.into();
+		}
+	}
+
+	pub fn debug(&mut self, value: Debug) {
+		unsafe {
+			(*self.ptr).debug = value.bits();
 		}
 	}
 }

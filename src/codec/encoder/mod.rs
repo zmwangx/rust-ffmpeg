@@ -10,6 +10,9 @@ pub use self::subtitle::Subtitle;
 pub mod motion_estimation;
 pub use self::motion_estimation::MotionEstimation;
 
+pub mod prediction;
+pub use self::prediction::Prediction;
+
 use std::ffi::CString;
 use std::ptr;
 use std::ops::Deref;

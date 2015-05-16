@@ -8,7 +8,7 @@ use libc::c_int;
 use ffi::*;
 
 bitflags! {
-	flags Flags: i32 {
+	flags Flags: c_int {
 		const FLAG_KEY     = AV_PKT_FLAG_KEY,
 		const FLAG_CORRUPT = AV_PKT_FLAG_CORRUPT,
 	}

@@ -35,6 +35,8 @@ pub use codec::discard::Discard;
 #[cfg(feature = "codec")]
 pub use codec::codec::Codec;
 #[cfg(feature = "codec")]
+pub use codec::{decoder, encoder};
+#[cfg(feature = "codec")]
 pub use codec::field_order::FieldOrder;
 #[cfg(feature = "codec")]
 pub use codec::audio_service::AudioService;

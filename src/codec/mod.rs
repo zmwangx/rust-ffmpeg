@@ -17,6 +17,9 @@ pub mod codec;
 pub mod field_order;
 pub mod audio_service;
 
+pub mod compliance;
+pub use self::compliance::Compliance;
+
 pub mod encoder;
 pub mod decoder;
 

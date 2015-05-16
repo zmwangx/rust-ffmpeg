@@ -13,6 +13,9 @@ pub use self::motion_estimation::MotionEstimation;
 pub mod prediction;
 pub use self::prediction::Prediction;
 
+pub mod comparison;
+pub use self::comparison::Comparison;
+
 use std::ffi::CString;
 use std::ptr;
 use std::ops::Deref;

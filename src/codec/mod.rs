@@ -20,6 +20,9 @@ pub mod audio_service;
 pub mod compliance;
 pub use self::compliance::Compliance;
 
+pub mod debug;
+pub use self::debug::*;
+
 pub mod encoder;
 pub mod decoder;
 

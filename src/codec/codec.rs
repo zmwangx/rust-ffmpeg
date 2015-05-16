@@ -47,7 +47,7 @@ impl<'a> Codec<'a> {
 		}
 	}
 
-	pub fn kind(&self) -> media::Type {
+	pub fn medium(&self) -> media::Type {
 		unsafe {
 			media::Type::from((*self.ptr).kind)
 		}

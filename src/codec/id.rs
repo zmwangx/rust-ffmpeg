@@ -441,7 +441,7 @@ pub enum Id {
 }
 
 impl Id {
-	pub fn kind(&self) -> media::Type {
+	pub fn medium(&self) -> media::Type {
 		unsafe {
 			media::Type::from(avcodec_get_type((*self).into()))
 		}

@@ -14,6 +14,8 @@ pub use self::context::Context;
 
 pub mod codec;
 
+pub mod audio_service;
+
 pub mod encoder;
 pub mod decoder;
 

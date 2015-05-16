@@ -34,6 +34,8 @@ pub use codec::picture::Picture;
 pub use codec::discard::Discard;
 #[cfg(feature = "codec")]
 pub use codec::codec::Codec;
+#[cfg(feature = "codec")]
+pub use codec::audio_service::AudioService;
 
 #[cfg(feature = "device")]
 pub mod device;

@@ -7,7 +7,7 @@ use ::codec::{self, packet};
 use ::{Rational, Discard};
 
 bitflags! {
-	flags Disposition: i32 {
+	flags Disposition: c_int {
 		const DISPOSITION_DEFAULT          = AV_DISPOSITION_DEFAULT,
 		const DISPOSITION_DUB              = AV_DISPOSITION_DUB,
 		const DISPOSITION_ORIGINAL         = AV_DISPOSITION_ORIGINAL,

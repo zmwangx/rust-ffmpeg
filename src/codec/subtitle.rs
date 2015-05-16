@@ -4,13 +4,13 @@ use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 use std::ops::Deref;
 
-use libc::{c_uint, uint32_t, int64_t};
+use libc::{c_int, c_uint, uint32_t, int64_t};
 use ffi::*;
 use ::format;
 use ::Picture;
 
 bitflags! {
-	flags Flags: i32 {
+	flags Flags: c_int {
 		const FLAG_FORCED = AV_SUBTITLE_FLAG_FORCED,
 	}
 }

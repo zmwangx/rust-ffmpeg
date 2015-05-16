@@ -16,6 +16,9 @@ pub use self::prediction::Prediction;
 pub mod comparison;
 pub use self::comparison::Comparison;
 
+pub mod decision;
+pub use self::decision::Decision;
+
 use std::ffi::CString;
 use std::ptr;
 use std::ops::Deref;

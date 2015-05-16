@@ -17,12 +17,13 @@ pub use self::check::*;
 
 use std::ffi::CString;
 use std::ptr;
+use std::slice::from_raw_parts;
 use std::ops::Deref;
 
 use ffi::*;
-use super::Id;
+use super::{Id, Profile};
 use super::context::Opened;
-use ::{Codec, Error};
+use ::{Codec, Error, Discard};
 use ::media;
 
 pub struct Decoder(pub Opened);
@@ -64,6 +65,36 @@ impl Decoder {
 	pub fn check(&mut self, value: Check) {
 		unsafe {
 			(*self.ptr).err_recognition = value.bits();
+		}
+	}
+
+	pub fn profile(&self) -> Profile {
+		unsafe {
+			Profile::from((self.id(), (*self.ptr).profile))
+		}
+	}
+
+	pub fn skip_loop_filter(&mut self, value: Discard) {
+		unsafe {
+			(*self.ptr).skip_loop_filter = value.into();
+		}
+	}
+
+	pub fn skip_idct(&mut self, value: Discard) {
+		unsafe {
+			(*self.ptr).skip_idct = value.into();
+		}
+	}
+
+	pub fn skip_frame(&mut self, value: Discard) {
+		unsafe {
+			(*self.ptr).skip_frame = value.into();
+		}
+	}
+
+	pub fn subtitle_header(&self) -> &[u8] {
+		unsafe {
+			from_raw_parts((*self.ptr).subtitle_header, (*self.ptr).subtitle_header_size as usize)
 		}
 	}
 }

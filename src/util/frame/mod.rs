@@ -14,7 +14,7 @@ use ::picture;
 use ::color;
 
 bitflags! {
-	flags Flags: i32 {
+	flags Flags: c_int {
 		const FLAG_CORRUPT = AV_FRAME_FLAG_CORRUPT,
 	}
 }

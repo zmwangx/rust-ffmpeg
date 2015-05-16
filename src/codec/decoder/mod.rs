@@ -12,6 +12,9 @@ pub mod slice;
 pub mod conceal;
 pub use self::conceal::*;
 
+pub mod check;
+pub use self::check::*;
+
 use std::ffi::CString;
 use std::ptr;
 use std::ops::Deref;
@@ -55,6 +58,12 @@ impl Decoder {
 	pub fn conceal(&mut self, value: Conceal) {
 		unsafe {
 			(*self.ptr).error_concealment = value.bits();
+		}
+	}
+
+	pub fn check(&mut self, value: Check) {
+		unsafe {
+			(*self.ptr).err_recognition = value.bits();
 		}
 	}
 }

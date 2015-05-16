@@ -40,6 +40,8 @@ pub use codec::{decoder, encoder};
 pub use codec::field_order::FieldOrder;
 #[cfg(feature = "codec")]
 pub use codec::audio_service::AudioService;
+#[cfg(feature = "codec")]
+pub use codec::threading;
 
 #[cfg(feature = "device")]
 pub mod device;

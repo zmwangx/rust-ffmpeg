@@ -1,10 +1,11 @@
 use std::ops::Deref;
 use std::ptr;
 
+use libc::c_int;
 use ffi::*;
 use ::media;
 use ::{Error, Codec, Dictionary};
-use super::{Id, Debug, Compliance};
+use super::{Id, Debug, Compliance, threading};
 use super::decoder::Decoder;
 use super::encoder::Encoder;
 
@@ -105,6 +106,24 @@ impl Context {
 	pub fn debug(&mut self, value: Debug) {
 		unsafe {
 			(*self.ptr).debug = value.bits();
+		}
+	}
+
+	pub fn set_threading(&mut self, config: threading::Config) {
+		unsafe {
+			(*self.ptr).thread_type           = config.kind.into();
+			(*self.ptr).thread_count          = config.count as c_int;
+			(*self.ptr).thread_safe_callbacks = if config.safe { 1 } else { 0 };
+		}
+	}
+
+	pub fn threading(&self) -> threading::Config {
+		unsafe {
+			threading::Config {
+				kind:  threading::Type::from((*self.ptr).active_thread_type),
+				count: (*self.ptr).thread_count as usize,
+				safe:  (*self.ptr).thread_safe_callbacks != 0,
+			}
 		}
 	}
 }

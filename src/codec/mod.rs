@@ -26,6 +26,8 @@ pub use self::debug::*;
 pub mod profile;
 pub use self::profile::Profile;
 
+pub mod threading;
+
 pub mod encoder;
 pub mod decoder;
 

@@ -19,7 +19,7 @@ impl<'a> Codec<'a> {
 		Codec { ptr: ptr, _marker: PhantomData }
 	}
 
-	pub fn open(&self) -> Result<Opened<'a>, Error> {
+	pub fn open(&self) -> Result<Opened, Error> {
 		Context::new().open(self)
 	}
 

@@ -34,10 +34,6 @@ pub use codec::picture::Picture;
 pub use codec::discard::Discard;
 #[cfg(feature = "codec")]
 pub use codec::codec::Codec;
-#[cfg(feature = "codec")]
-pub use codec::encoder::{self, Encode};
-#[cfg(feature = "codec")]
-pub use codec::decoder::{self, Decode};
 
 #[cfg(feature = "device")]
 pub mod device;

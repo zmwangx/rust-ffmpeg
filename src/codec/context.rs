@@ -1,33 +1,31 @@
-use std::marker::PhantomData;
 use std::ops::Deref;
 use std::ptr;
-use libc::c_int;
 
 use ffi::*;
 use ::media;
-use ::{Error, Codec, Dictionary, Packet, Subtitle};
-use super::{Id, Encode, Decode};
-use ::frame;
+use ::{Error, Codec, Dictionary};
+use super::Id;
+use super::decoder::Decoder;
+use super::encoder::Encoder;
 
-pub struct Context<'a> {
+pub struct Context {
 	pub ptr: *mut AVCodecContext,
 
-	_own:    bool,
-	_marker: PhantomData<&'a ()>,
+	_own: bool,
 }
 
-impl<'a> Context<'a> {
+impl Context {
 	pub fn new() -> Self {
 		unsafe {
-			Context { ptr: avcodec_alloc_context3(ptr::null()), _own: true, _marker: PhantomData }
+			Context { ptr: avcodec_alloc_context3(ptr::null()), _own: true }
 		}
 	}
 
 	pub fn wrap(ptr: *mut AVCodecContext) -> Self {
-		Context { ptr: ptr, _own: false, _marker: PhantomData }
+		Context { ptr: ptr, _own: false }
 	}
 
-	pub fn open(self, codec: &Codec) -> Result<Opened<'a>, Error> {
+	pub fn open(self, codec: &Codec) -> Result<Opened, Error> {
 		unsafe {
 			match avcodec_open2(self.ptr, codec.ptr, ptr::null_mut()) {
 				0 => Ok(Opened(self)),
@@ -36,11 +34,40 @@ impl<'a> Context<'a> {
 		}
 	}
 
-	pub fn open_with(self, codec: &Codec, mut options: Dictionary) -> Result<Opened<'a>, Error> {
+	pub fn open_with(self, codec: &Codec, mut options: Dictionary) -> Result<Opened, Error> {
 		unsafe {
 			match avcodec_open2(self.ptr, codec.ptr, &mut options.ptr) {
 				0 => Ok(Opened(self)),
 				e => Err(Error::new(e))
+			}
+		}
+	}
+
+	pub fn decoder(&self) -> Result<Decoder, Error> {
+		if let Some(ref codec) = super::decoder::find(self.id()) {
+			self.clone().open(codec).and_then(|c| c.decoder())
+		}
+		else {
+			Err(Error::from(AVERROR_DECODER_NOT_FOUND))
+		}
+	}
+
+	pub fn encoder(&self) -> Result<Encoder, Error> {
+		if let Some(ref codec) = super::encoder::find(self.id()) {
+			self.clone().open(codec).and_then(|c| c.encoder())
+		}
+		else {
+			Err(Error::from(AVERROR_ENCODER_NOT_FOUND))
+		}
+	}
+
+	pub fn codec(&self) -> Option<Codec> {
+		unsafe {
+			if (*self.ptr).codec == ptr::null() {
+				None
+			}
+			else {
+				Some(Codec::wrap((*self.ptr).codec as *mut _))
 			}
 		}
 	}
@@ -58,7 +85,7 @@ impl<'a> Context<'a> {
 	}
 }
 
-impl<'a> Drop for Context<'a> {
+impl Drop for Context {
 	fn drop(&mut self) {
 		if self._own {
 			unsafe {
@@ -68,7 +95,7 @@ impl<'a> Drop for Context<'a> {
 	}
 }
 
-impl<'a> Clone for Context<'a> {
+impl Clone for Context {
 	fn clone(&self) -> Self {
 		let mut ctx = Context::new();
 		ctx.clone_from(self);
@@ -83,105 +110,41 @@ impl<'a> Clone for Context<'a> {
 	}
 }
 
-impl<'a> Decode for Context<'a> {
-	fn video(&self, packet: &Packet, out: &mut frame::Video) -> Result<bool, Error> {
-		unsafe {
-			let mut got: c_int = 0;
+pub struct Opened(pub Context);
 
-			match avcodec_decode_video2(self.ptr, out.ptr, &mut got, &packet.val) {
-				e if e < 0 => Err(Error::new(e)),
-				_          => Ok(got != 0)
-			}
+impl Opened {
+	pub fn decoder(self) -> Result<Decoder, Error> {
+		let mut valid = false;
+
+		if let Some(codec) = self.codec() {
+			valid = codec.is_decoder();
+		}
+
+		if valid {
+			Ok(Decoder(self))
+		}
+		else {
+			Err(Error::from(AVERROR_INVALIDDATA))
 		}
 	}
 
-	fn audio(&self, packet: &Packet, out: &mut frame::Audio) -> Result<bool, Error> {
-		unsafe {
-			let mut got: c_int = 0;
+	pub fn encoder(self) -> Result<Encoder, Error> {
+		let mut valid = false;
 
-			match avcodec_decode_audio4(self.ptr, out.ptr, &mut got, &packet.val) {
-				e if e < 0 => Err(Error::new(e)),
-				_          => Ok(got != 0)
-			}
+		if let Some(codec) = self.codec() {
+			valid = codec.is_encoder();
 		}
-	}
 
-	fn subtitle(&self, packet: &Packet, out: &mut Subtitle) -> Result<bool, Error> {
-		unsafe {
-			let mut got: c_int = 0;
-
-			match avcodec_decode_subtitle2(self.ptr, &mut out.val, &mut got, &packet.val) {
-				e if e < 0 => Err(Error::new(e)),
-				_          => Ok(got != 0)
-			}
+		if valid {
+			Ok(Encoder(self))
 		}
-	}
-}
-
-impl<'a> Encode for Context<'a> {
-	fn video(&self, frame: &frame::Video, out: &mut Packet) -> Result<bool, Error> {
-		unsafe {
-			let mut got: c_int = 0;
-
-			match avcodec_encode_video2(self.ptr, &mut out.val, frame.ptr, &mut got) {
-				e if e < 0 => Err(Error::new(e)),
-				_          => Ok(got != 0)
-			}
-		}
-	}
-
-	fn audio(&self, frame: &frame::Audio, out: &mut Packet) -> Result<bool, Error> {
-		unsafe {
-			let mut got: c_int = 0;
-
-			match avcodec_encode_audio2(self.ptr, &mut out.val, frame.ptr, &mut got) {
-				e if e < 0 => Err(Error::new(e)),
-				_          => Ok(got != 0)
-			}
-		}
-	}
-
-	fn subtitle(&self, subtitle: &Subtitle, out: &mut [u8]) -> Result<bool, Error> {
-		unsafe {
-			match avcodec_encode_subtitle(self.ptr, out.as_mut_ptr(), out.len() as c_int, &subtitle.val) {
-				e if e < 0 => Err(Error::new(e)),
-				_          => Ok(true)
-			}
+		else {
+			Err(Error::from(AVERROR_INVALIDDATA))
 		}
 	}
 }
 
-pub struct Opened<'a>(Context<'a>);
-
-impl<'a> Decode for Opened<'a> {
-	fn video(&self, packet: &Packet, out: &mut frame::Video) -> Result<bool, Error> {
-		Decode::video(&self.0, packet, out)
-	}
-
-	fn audio(&self, packet: &Packet, out: &mut frame::Audio) -> Result<bool, Error> {
-		Decode::audio(&self.0, packet, out)
-	}
-
-	fn subtitle(&self, packet: &Packet, out: &mut Subtitle) -> Result<bool, Error> {
-		Decode::subtitle(&self.0, packet, out)
-	}
-}
-
-impl<'a> Encode for Opened<'a> {
-	fn video(&self, frame: &frame::Video, out: &mut Packet) -> Result<bool, Error> {
-		Encode::video(&self.0, frame, out)
-	}
-
-	fn audio(&self, frame: &frame::Audio, out: &mut Packet) -> Result<bool, Error> {
-		Encode::audio(&self.0, frame, out)
-	}
-
-	fn subtitle(&self, subtitle: &Subtitle, out: &mut [u8]) -> Result<bool, Error> {
-		Encode::subtitle(&self.0, subtitle, out)
-	}
-}
-
-impl<'a> Drop for Opened<'a> {
+impl Drop for Opened {
 	fn drop(&mut self) {
 		unsafe {
 			avcodec_close(self.0.ptr);
@@ -189,10 +152,10 @@ impl<'a> Drop for Opened<'a> {
 	}
 }
 
-impl<'a> Deref for Opened<'a> {
-	type Target = Context<'a>;
+impl Deref for Opened {
+	type Target = Context;
 
-	fn deref(&self) -> &Context<'a> {
+	fn deref(&self) -> &<Self as Deref>::Target {
 		&self.0
 	}
 }

@@ -1,10 +1,11 @@
-use ffi::*;
 use std::error;
 use std::fmt;
 use std::cell::RefCell;
-use libc::c_int;
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
+
+use libc::c_int;
+use ffi::*;
 
 pub struct Error {
 	code: c_int,
@@ -14,6 +15,12 @@ pub struct Error {
 impl Error {
 	pub fn new(code: c_int) -> Self {
 		Error { code: code, desc: RefCell::new(None) }
+	}
+}
+
+impl From<c_int> for Error {
+	fn from(value: c_int) -> Error {
+		Error::new(value)
 	}
 }
 

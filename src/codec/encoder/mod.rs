@@ -23,10 +23,11 @@ use std::ffi::CString;
 use std::ptr;
 use std::ops::Deref;
 
+use libc::c_int;
 use ffi::*;
 use super::Id;
 use super::context::Opened;
-use ::{Codec, Error};
+use ::{Codec, Error, Rational};
 use ::media;
 
 pub struct Encoder(pub Opened);
@@ -56,6 +57,41 @@ impl Encoder {
 		}
 		else {
 			Err(Error::from(AVERROR_INVALIDDATA))
+		}
+	}
+
+	pub fn set_rate(&mut self, value: usize) {
+		unsafe {
+			(*self.ptr).bit_rate = value as c_int;
+		}
+	}
+
+	pub fn set_tolerance(&mut self, value: usize) {
+		unsafe {
+			(*self.ptr).bit_rate_tolerance = value as c_int;
+		}
+	}
+
+	pub fn set_quality(&mut self, value: usize) {
+		unsafe {
+			(*self.ptr).global_quality = value as c_int;
+		}
+	}
+
+	pub fn set_compression(&mut self, value: Option<usize>) {
+		unsafe {
+			if let Some(value) = value {
+				(*self.ptr).compression_level = value as c_int;
+			}
+			else {
+				(*self.ptr).compression_level = -1;
+			}
+		}
+	}
+
+	pub fn set_time_base(&mut self, value: Rational) {
+		unsafe {
+			(*self.ptr).time_base = value.0;
 		}
 	}
 }

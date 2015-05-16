@@ -7,6 +7,9 @@ pub use self::audio::Audio;
 pub mod subtitle;
 pub use self::subtitle::Subtitle;
 
+pub mod motion_estimation;
+pub use self::motion_estimation::MotionEstimation;
+
 use std::ffi::CString;
 use std::ptr;
 use std::ops::Deref;

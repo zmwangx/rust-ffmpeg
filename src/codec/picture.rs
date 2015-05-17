@@ -1,4 +1,5 @@
 use std::mem;
+use std::slice;
 use std::marker::PhantomData;
 
 use libc::{c_int, size_t};
@@ -79,7 +80,6 @@ impl<'a> Picture<'a> {
 		}
 	}
 
-
 	pub fn crop(&mut self, source: &Picture, top: usize, left: usize) -> Result<(), Error> {
 		if self.format != source.format {
 			return Err(Error::new(AVERROR_BUG));
@@ -91,6 +91,30 @@ impl<'a> Picture<'a> {
 				e => Err(Error::new(e))
 			}
 		}
+	}
+
+	pub fn data(&self) -> Vec<&[u8]> {
+		let mut result = Vec::new();
+
+		unsafe {
+			for (i, length) in (*self.ptr).linesize.iter().take_while(|l| **l > 0).enumerate() {
+				result.push(slice::from_raw_parts((*self.ptr).data[i], *length as usize))
+			}
+		}
+
+		result
+	}
+
+	pub fn data_mut(&mut self) -> Vec<&mut [u8]> {
+		let mut result = Vec::new();
+
+		unsafe {
+			for (i, length) in (*self.ptr).linesize.iter().take_while(|l| **l > 0).enumerate() {
+				result.push(slice::from_raw_parts_mut((*self.ptr).data[i], *length as usize))
+			}
+		}
+
+		result
 	}
 }
 

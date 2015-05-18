@@ -22,19 +22,19 @@ impl Video {
 		}
 	}
 
-	pub fn set_width(&mut self, value: usize) {
+	pub fn set_width(&mut self, value: u32) {
 		unsafe {
 			(*self.ptr).width = value as c_int;
 		}
 	}
 
-	pub fn set_height(&mut self, value: usize) {
+	pub fn set_height(&mut self, value: u32) {
 		unsafe {
 			(*self.ptr).height = value as c_int;
 		}
 	}
 
-	pub fn set_gop(&mut self, value: usize) {
+	pub fn set_gop(&mut self, value: u32) {
 		unsafe {
 			(*self.ptr).gop_size = value as c_int;
 		}

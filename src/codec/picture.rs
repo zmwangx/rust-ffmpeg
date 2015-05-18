@@ -10,16 +10,16 @@ use ::Error;
 pub struct Picture<'a> {
 	pub ptr: *mut AVPicture,
 
-	pub format: format::Pixel,
-	pub width:  usize,
-	pub height: usize,
+	format: format::Pixel,
+	width:  u32,
+	height: u32,
 
 	_own:    bool,
 	_marker: PhantomData<&'a ()>,
 }
 
 impl<'a> Picture<'a> {
-	pub fn size(format: format::Pixel, width: usize, height: usize) -> Result<usize, Error> {
+	pub fn size(format: format::Pixel, width: u32, height: u32) -> Result<usize, Error> {
 		unsafe {
 			match avpicture_get_size(format.into(), width as c_int, height as c_int) {
 				v if v >= 0 => Ok(v as usize),
@@ -28,7 +28,7 @@ impl<'a> Picture<'a> {
 		}
 	}
 
-	pub fn new(format: format::Pixel, width: usize, height: usize) -> Result<Self, Error> {
+	pub fn new(format: format::Pixel, width: u32, height: u32) -> Result<Self, Error> {
 		unsafe {
 			let ptr = av_malloc(mem::size_of::<AVPicture>() as size_t) as *mut AVPicture;
 
@@ -39,7 +39,7 @@ impl<'a> Picture<'a> {
 					format: format,
 					width:  width,
 					height: height,
-					
+
 					_own:    true,
 					_marker: PhantomData
 				}),
@@ -49,17 +49,29 @@ impl<'a> Picture<'a> {
 		}
 	}
 
-	pub fn wrap(ptr: *mut AVPicture, format: format::Pixel, width: usize, height: usize) -> Self {
+	pub fn wrap(ptr: *mut AVPicture, format: format::Pixel, width: u32, height: u32) -> Self {
 		Picture {
 			ptr: ptr,
 
 			format: format,
 			width:  width,
 			height: height,
-			
+
 			_own:    false,
 			_marker: PhantomData
 		}
+	}
+
+	pub fn format(&self) -> format::Pixel {
+		self.format
+	}
+
+	pub fn width(&self) -> u32 {
+		self.width
+	}
+
+	pub fn height(&self) -> u32 {
+		self.height
 	}
 
 	pub fn layout(&self, out: &mut [u8]) -> Result<usize, Error> {
@@ -71,7 +83,7 @@ impl<'a> Picture<'a> {
 		}
 	}
 
-	pub fn layout_as(&self, format: format::Pixel, width: usize, height: usize, out: &mut [u8]) -> Result<usize, Error> {
+	pub fn layout_as(&self, format: format::Pixel, width: u32, height: u32, out: &mut [u8]) -> Result<usize, Error> {
 		unsafe {
 			match avpicture_layout(self.ptr, format.into(), width as c_int, height as c_int, out.as_mut_ptr(), out.len() as c_int) {
 				s if s >= 0 => Ok(s as usize),
@@ -80,7 +92,7 @@ impl<'a> Picture<'a> {
 		}
 	}
 
-	pub fn crop(&mut self, source: &Picture, top: usize, left: usize) -> Result<(), Error> {
+	pub fn crop(&mut self, source: &Picture, top: u32, left: u32) -> Result<(), Error> {
 		if self.format != source.format {
 			return Err(Error::new(AVERROR_BUG));
 		}

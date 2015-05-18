@@ -24,15 +24,15 @@ impl Video {
 		}
 	}
 
-	pub fn width(&self) -> usize {
+	pub fn width(&self) -> u32 {
 		unsafe {
-			(*self.ptr).width as usize
+			(*self.ptr).width as u32
 		}
 	}
 
-	pub fn height(&self) -> usize {
+	pub fn height(&self) -> u32 {
 		unsafe {
-			(*self.ptr).height as usize
+			(*self.ptr).height as u32
 		}
 	}
 

@@ -297,25 +297,25 @@ impl Video {
 		}
 	}
 
-	pub fn width(&self) -> usize {
+	pub fn width(&self) -> u32 {
 		unsafe {
-			(*self.ptr).width as usize
+			(*self.ptr).width as u32
 		}
 	}
 
-	pub fn set_width(&mut self, value: usize) {
+	pub fn set_width(&mut self, value: u32) {
 		unsafe {
 			(*self.ptr).width = value as c_int;
 		}
 	}
 
-	pub fn height(&self) -> usize {
+	pub fn height(&self) -> u32 {
 		unsafe {
-			(*self.ptr).height as usize
+			(*self.ptr).height as u32
 		}
 	}
 
-	pub fn set_height(&mut self, value: usize) {
+	pub fn set_height(&mut self, value: u32) {
 		unsafe {
 			(*self.ptr).height = value as c_int;
 		}

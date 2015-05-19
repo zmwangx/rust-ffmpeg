@@ -168,15 +168,15 @@ impl<'a> Bitmap<'a> {
 		}
 	}
 
-	pub fn width(&self) -> usize {
+	pub fn width(&self) -> u32 {
 		unsafe {
-			(*self.ptr).w as usize
+			(*self.ptr).w as u32
 		}
 	}
 
-	pub fn height(&self) -> usize {
+	pub fn height(&self) -> u32 {
 		unsafe {
-			(*self.ptr).h as usize
+			(*self.ptr).h as u32
 		}
 	}
 
@@ -188,7 +188,7 @@ impl<'a> Bitmap<'a> {
 
 	pub fn picture(&self, format: format::Pixel) -> Picture<'a> {
 		unsafe {
-			Picture::wrap(&mut (*self.ptr).pict, format, (*self.ptr).w as usize, (*self.ptr).h as usize)
+			Picture::wrap(&mut (*self.ptr).pict, format, (*self.ptr).w as u32, (*self.ptr).h as u32)
 		}
 	}
 }

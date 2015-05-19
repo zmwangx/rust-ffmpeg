@@ -128,6 +128,42 @@ impl<'a> Picture<'a> {
 
 		result
 	}
+
+	pub fn rows(&self) -> Vec<Vec<&[u8]>> {
+		let mut result = Vec::new();
+
+		unsafe {
+			for (i, length) in (*self.ptr).linesize.iter().take_while(|l| **l > 0).enumerate() {
+				let mut rows = Vec::new();
+
+				for j in 0 .. self.height {
+					rows.push(slice::from_raw_parts((*self.ptr).data[i].offset((j * (*length as u32)) as isize), self.width as usize));
+				}
+
+				result.push(rows);
+			}
+		}
+
+		result
+	}
+
+	pub fn rows_mut(&self) -> Vec<Vec<&mut[u8]>> {
+		let mut result = Vec::new();
+
+		unsafe {
+			for (i, length) in (*self.ptr).linesize.iter().take_while(|l| **l > 0).enumerate() {
+				let mut rows = Vec::new();
+
+				for j in 0 .. self.height {
+					rows.push(slice::from_raw_parts_mut((*self.ptr).data[i].offset((j * (*length as u32)) as isize), self.width as usize));
+				}
+
+				result.push(rows);
+			}
+		}
+
+		result
+	}
 }
 
 impl<'a> Clone for Picture<'a> {

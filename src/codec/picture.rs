@@ -110,7 +110,7 @@ impl<'a> Picture<'a> {
 
 		unsafe {
 			for (i, length) in (*self.ptr).linesize.iter().take_while(|l| **l > 0).enumerate() {
-				result.push(slice::from_raw_parts((*self.ptr).data[i], *length as usize))
+				result.push(slice::from_raw_parts((*self.ptr).data[i], (*length as usize) * (self.height as usize)))
 			}
 		}
 
@@ -122,7 +122,7 @@ impl<'a> Picture<'a> {
 
 		unsafe {
 			for (i, length) in (*self.ptr).linesize.iter().take_while(|l| **l > 0).enumerate() {
-				result.push(slice::from_raw_parts_mut((*self.ptr).data[i], *length as usize))
+				result.push(slice::from_raw_parts_mut((*self.ptr).data[i], (*length as usize) * (self.height as usize)))
 			}
 		}
 

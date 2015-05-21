@@ -19,12 +19,17 @@ bitflags! {
 	}
 }
 
+#[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub struct Packet {
-	pub duration: isize,
-	pub position: isize,
+	pub duration: i64,
+	pub position: i64,
 	pub size:     usize,
+
+	pub pts: i64,
+	pub dts: i64,
 }
 
+#[derive(PartialEq, Eq)]
 pub struct Frame {
 	pub ptr: *mut AVFrame,
 }
@@ -63,16 +68,25 @@ impl Frame {
 	pub fn packet(&self) -> Packet {
 		unsafe {
 			Packet {
-				duration: av_frame_get_pkt_duration(self.ptr) as isize,
-				position: av_frame_get_pkt_pos(self.ptr) as isize,
+				duration: av_frame_get_pkt_duration(self.ptr) as i64,
+				position: av_frame_get_pkt_pos(self.ptr) as i64,
 				size:     av_frame_get_pkt_size(self.ptr) as usize,
+
+				pts: (*self.ptr).pkt_pts,
+				dts: (*self.ptr).pkt_dts,
 			}
 		}
 	}
 
-	pub fn best_effort_timestamp(&self) -> isize {
+	pub fn pts(&self) -> i64 {
 		unsafe {
-			av_frame_get_best_effort_timestamp(self.ptr) as isize
+			(*self.ptr).pts as i64
+		}
+	}
+
+	pub fn best_effort_timestamp(&self) -> i64 {
+		unsafe {
+			av_frame_get_best_effort_timestamp(self.ptr) as i64
 		}
 	}
 

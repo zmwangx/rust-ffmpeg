@@ -16,6 +16,29 @@ impl Error {
 	pub fn new(code: c_int) -> Self {
 		Error { code: code, desc: RefCell::new(None) }
 	}
+
+	pub fn bug() -> Self {
+		Self::new(AVERROR_BUG)
+	}
+}
+
+unsafe impl Send for Error { }
+
+impl Clone for Error {
+	fn clone(&self) -> Self {
+		if let Some(old) = *self.desc.borrow() {
+			Error {
+				code: self.code,
+				desc: RefCell::new(Some(old)),
+			}
+		}
+		else {
+			Error {
+				code: self.code,
+				desc: RefCell::new(None),
+			}
+		}
+	}
 }
 
 impl From<c_int> for Error {

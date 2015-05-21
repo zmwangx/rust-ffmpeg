@@ -56,27 +56,27 @@ impl Subtitle {
 		}
 	}
 
-	pub fn pts(&self) -> isize {
-		self.val.pts as isize
+	pub fn pts(&self) -> i64 {
+		self.val.pts as i64
 	}
 
-	pub fn set_pts(&mut self, value: isize) {
+	pub fn set_pts(&mut self, value: i64) {
 		self.val.pts = value as int64_t;
 	}
 
-	pub fn start(&self) -> usize {
-		self.val.start_display_time as usize
+	pub fn start(&self) -> u32 {
+		self.val.start_display_time as u32
 	}
 
-	pub fn set_start(&mut self, value: usize) {
+	pub fn set_start(&mut self, value: u32) {
 		self.val.start_display_time = value as uint32_t;
 	}
 
-	pub fn end(&self) -> usize {
-		self.val.end_display_time as usize
+	pub fn end(&self) -> u32 {
+		self.val.end_display_time as u32
 	}
 
-	pub fn set_end(&mut self, value: usize) {
+	pub fn set_end(&mut self, value: u32) {
 		self.val.end_display_time = value as uint32_t;
 	}
 

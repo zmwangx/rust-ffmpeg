@@ -60,12 +60,12 @@ impl Packet {
 		self.val.flags = value.bits();
 	}
 
-	pub fn pts(&self) -> isize {
-		self.val.pts as isize
+	pub fn pts(&self) -> i64 {
+		self.val.pts as i64
 	}
 
-	pub fn dts(&self) -> isize {
-		self.val.dts as isize
+	pub fn dts(&self) -> i64 {
+		self.val.dts as i64
 	}
 
 	pub fn size(&self) -> usize {

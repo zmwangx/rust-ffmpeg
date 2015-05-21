@@ -147,6 +147,8 @@ impl Frame {
 	}
 }
 
+unsafe impl Send for Frame { }
+
 impl Clone for Frame {
 	fn clone(&self) -> Self {
 		unsafe {
@@ -237,6 +239,8 @@ impl Audio {
 	}
 }
 
+unsafe impl Send for Audio { }
+
 impl Deref for Audio {
 	type Target = Frame;
 
@@ -258,14 +262,6 @@ impl Into<Audio> for Frame {
 }
 
 pub struct Video(Frame);
-
-impl Deref for Video {
-	type Target = Frame;
-
-	fn deref(&self) -> &Frame {
-		&self.0
-	}
-}
 
 impl Video {
 	pub fn new() -> Self {
@@ -405,6 +401,16 @@ impl Video {
 		unsafe {
 			(*self.ptr).display_picture_number as usize
 		}
+	}
+}
+
+unsafe impl Send for Video { }
+
+impl Deref for Video {
+	type Target = Frame;
+
+	fn deref(&self) -> &Frame {
+		&self.0
 	}
 }
 

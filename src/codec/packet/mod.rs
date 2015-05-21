@@ -89,6 +89,8 @@ impl Packet {
 	}
 }
 
+unsafe impl Send for Packet { }
+
 impl Clone for Packet {
 	fn clone(&self) -> Self {
 		let mut pkt = Packet::new();

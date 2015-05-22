@@ -128,6 +128,8 @@ impl Context {
 	}
 }
 
+unsafe impl Send for Context { }
+
 impl Drop for Context {
 	fn drop(&mut self) {
 		if self._own {

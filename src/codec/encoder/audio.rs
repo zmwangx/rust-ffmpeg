@@ -15,7 +15,7 @@ impl Audio {
 			let mut got: c_int = 0;
 
 			match avcodec_encode_audio2(self.ptr, &mut out.val, frame.ptr, &mut got) {
-				e if e < 0 => Err(Error::new(e)),
+				e if e < 0 => Err(Error::from(e)),
 				_          => Ok(got != 0)
 			}
 		}

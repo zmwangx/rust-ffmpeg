@@ -38,7 +38,7 @@ impl Encoder {
 			Ok(Video(self))
 		}
 		else {
-			Err(Error::from(AVERROR_INVALIDDATA))
+			Err(Error::InvalidData)
 		}
 	}
 
@@ -47,7 +47,7 @@ impl Encoder {
 			Ok(Audio(self))
 		}
 		else {
-			Err(Error::from(AVERROR_INVALIDDATA))
+			Err(Error::InvalidData)
 		}
 	}
 
@@ -56,7 +56,7 @@ impl Encoder {
 			Ok(Subtitle(self))
 		}
 		else {
-			Err(Error::from(AVERROR_INVALIDDATA))
+			Err(Error::InvalidData)
 		}
 	}
 

@@ -159,7 +159,7 @@ impl<'a> Packet<'a> {
 		unsafe {
 			match av_read_frame(self.ptr, &mut self.pkt.val) {
 				0 => Ok(()),
-				e => Err(Error::new(e))
+				e => Err(Error::from(e))
 			}
 		}
 	}
@@ -169,7 +169,7 @@ impl<'a> Packet<'a> {
 			match av_write_frame(self.ptr, &mut self.pkt.val) {
 				1 => Ok(true),
 				0 => Ok(false),
-				e => Err(Error::new(e))
+				e => Err(Error::from(e))
 			}
 		}
 	}
@@ -224,11 +224,11 @@ pub fn open(path: &Path) -> Result<Context, Error> {
 
 				match avformat_find_stream_info(ps, ptr::null_mut()) {
 					0 => Ok(ctx),
-					e => Err(Error::new(e))
+					e => Err(Error::from(e))
 				}
 			},
 
-			e => Err(Error::new(e))
+			e => Err(Error::from(e))
 		}
 	}
 }
@@ -248,11 +248,11 @@ pub fn open_with(path: &Path, mut options: Dictionary) -> Result<Context, Error>
 
 				match avformat_find_stream_info(ps, ptr::null_mut()) {
 					0 => Ok(ctx),
-					e => Err(Error::new(e))
+					e => Err(Error::from(e))
 				}
 			},
 
-			e => Err(Error::new(e))
+			e => Err(Error::from(e))
 		}
 	}
 }
@@ -270,16 +270,16 @@ pub fn open_as(path: &Path, format: &Format) -> Result<Context, Error> {
 
 					match avformat_find_stream_info(ps, ptr::null_mut()) {
 						0 => Ok(ctx),
-						e => Err(Error::new(e))
+						e => Err(Error::from(e))
 					}
 				},
 
-				e => Err(Error::new(e))
+				e => Err(Error::from(e))
 			}
 		}
 	}
 	else {
-		Err(Error::new(AVERROR_BUG))
+		Err(Error::Bug)
 	}
 }
 
@@ -299,16 +299,16 @@ pub fn open_as_with(path: &Path, format: &Format, mut options: Dictionary) -> Re
 
 					match avformat_find_stream_info(ps, ptr::null_mut()) {
 						0 => Ok(ctx),
-						e => Err(Error::new(e))
+						e => Err(Error::from(e))
 					}
 				},
 
-				e => Err(Error::new(e))
+				e => Err(Error::from(e))
 			}
 		}
 	}
 	else {
-		Err(Error::new(AVERROR_BUG))
+		Err(Error::Bug)
 	}
 }
 

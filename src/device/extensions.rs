@@ -27,7 +27,7 @@ impl<'a> DeviceIter<'a> {
 
 			match avdevice_list_devices(ctx, &mut ptr) {
 				n if n < 0 =>
-					Err(Error::new(n)),
+					Err(Error::from(n)),
 
 				_ =>
 					Ok(DeviceIter { ptr: ptr, cur: 0, _marker: PhantomData })

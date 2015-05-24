@@ -30,7 +30,7 @@ impl Context {
 		unsafe {
 			match avcodec_open2(self.ptr, codec.ptr, ptr::null_mut()) {
 				0 => Ok(Opened(self)),
-				e => Err(Error::new(e))
+				e => Err(Error::from(e))
 			}
 		}
 	}
@@ -39,7 +39,7 @@ impl Context {
 		unsafe {
 			match avcodec_open2(self.ptr, codec.ptr, &mut options.ptr) {
 				0 => Ok(Opened(self)),
-				e => Err(Error::new(e))
+				e => Err(Error::from(e))
 			}
 		}
 	}
@@ -49,7 +49,7 @@ impl Context {
 			self.clone().open(codec).and_then(|c| c.decoder())
 		}
 		else {
-			Err(Error::from(AVERROR_DECODER_NOT_FOUND))
+			Err(Error::DecoderNotFound)
 		}
 	}
 
@@ -58,7 +58,7 @@ impl Context {
 			self.clone().open(codec).and_then(|c| c.encoder())
 		}
 		else {
-			Err(Error::from(AVERROR_ENCODER_NOT_FOUND))
+			Err(Error::EncoderNotFound)
 		}
 	}
 
@@ -169,7 +169,7 @@ impl Opened {
 			Ok(Decoder(self))
 		}
 		else {
-			Err(Error::from(AVERROR_INVALIDDATA))
+			Err(Error::InvalidData)
 		}
 	}
 
@@ -184,7 +184,7 @@ impl Opened {
 			Ok(Encoder(self))
 		}
 		else {
-			Err(Error::from(AVERROR_INVALIDDATA))
+			Err(Error::InvalidData)
 		}
 	}
 }

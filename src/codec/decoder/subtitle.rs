@@ -14,7 +14,7 @@ impl Subtitle {
 			let mut got: c_int = 0;
 
 			match avcodec_decode_subtitle2(self.ptr, &mut out.val, &mut got, &packet.val) {
-				e if e < 0 => Err(Error::new(e)),
+				e if e < 0 => Err(Error::from(e)),
 				_          => Ok(got != 0)
 			}
 		}

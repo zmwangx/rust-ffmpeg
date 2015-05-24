@@ -12,7 +12,7 @@ impl Subtitle {
 	pub fn encode(&self, subtitle: &::Subtitle, out: &mut [u8]) -> Result<bool, Error> {
 		unsafe {
 			match avcodec_encode_subtitle(self.ptr, out.as_mut_ptr(), out.len() as c_int, &subtitle.val) {
-				e if e < 0 => Err(Error::new(e)),
+				e if e < 0 => Err(Error::from(e)),
 				_          => Ok(true)
 			}
 		}

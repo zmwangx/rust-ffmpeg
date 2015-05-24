@@ -34,7 +34,7 @@ impl Decoder {
 			Ok(Video(self))
 		}
 		else {
-			Err(Error::from(AVERROR_INVALIDDATA))
+			Err(Error::InvalidData)
 		}
 	}
 
@@ -43,7 +43,7 @@ impl Decoder {
 			Ok(Audio(self))
 		}
 		else {
-			Err(Error::from(AVERROR_INVALIDDATA))
+			Err(Error::InvalidData)
 		}
 	}
 
@@ -52,7 +52,7 @@ impl Decoder {
 			Ok(Subtitle(self))
 		}
 		else {
-			Err(Error::from(AVERROR_INVALIDDATA))
+			Err(Error::InvalidData)
 		}
 	}
 

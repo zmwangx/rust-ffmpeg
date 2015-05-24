@@ -23,7 +23,7 @@ impl<'a> Picture<'a> {
 		unsafe {
 			match avpicture_get_size(format.into(), width as c_int, height as c_int) {
 				v if v >= 0 => Ok(v as usize),
-				e           => Err(Error::new(e))
+				e           => Err(Error::from(e))
 			}
 		}
 	}
@@ -44,7 +44,7 @@ impl<'a> Picture<'a> {
 					_marker: PhantomData
 				}),
 
-				e => Err(Error::new(e))
+				e => Err(Error::from(e))
 			}
 		}
 	}
@@ -78,7 +78,7 @@ impl<'a> Picture<'a> {
 		unsafe {
 			match avpicture_layout(self.ptr, self.format.into(), self.width as c_int, self.height as c_int, out.as_mut_ptr(), out.len() as c_int) {
 				s if s >= 0 => Ok(s as usize),
-				e           => Err(Error::new(e))
+				e           => Err(Error::from(e))
 			}
 		}
 	}
@@ -87,20 +87,20 @@ impl<'a> Picture<'a> {
 		unsafe {
 			match avpicture_layout(self.ptr, format.into(), width as c_int, height as c_int, out.as_mut_ptr(), out.len() as c_int) {
 				s if s >= 0 => Ok(s as usize),
-				e           => Err(Error::new(e))
+				e           => Err(Error::from(e))
 			}
 		}
 	}
 
 	pub fn crop(&mut self, source: &Picture, top: u32, left: u32) -> Result<(), Error> {
 		if self.format != source.format {
-			return Err(Error::new(AVERROR_BUG));
+			return Err(Error::Bug);
 		}
 
 		unsafe {
 			match av_picture_crop(self.ptr, source.ptr, self.format.into(), top as c_int, left as c_int) {
 				0 => Ok(()),
-				e => Err(Error::new(e))
+				e => Err(Error::from(e))
 			}
 		}
 	}

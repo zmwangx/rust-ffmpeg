@@ -20,6 +20,30 @@ impl Error {
 	pub fn bug() -> Self {
 		Self::new(AVERROR_BUG)
 	}
+
+	pub fn eof() -> Self {
+		Self::new(AVERROR_EOF)
+	}
+
+	pub fn exit() -> Self {
+		Self::new(AVERROR_EXIT)
+	}
+
+	pub fn external() -> Self {
+		Self::new(AVERROR_EXTERNAL)
+	}
+
+	pub fn experimental() -> Self {
+		Self::new(AVERROR_EXPERIMENTAL)
+	}
+
+	pub fn unknown() -> Self {
+		Self::new(AVERROR_UNKNOWN)
+	}
+
+	pub fn invalid() -> Self {
+		Self::new(AVERROR_INVALIDDATA)
+	}
 }
 
 unsafe impl Send for Error { }

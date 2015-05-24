@@ -45,3 +45,31 @@ pub use codec::threading;
 
 #[cfg(feature = "device")]
 pub mod device;
+
+fn init_error() {
+	util::error::register_all();
+}
+
+#[cfg(feature = "format")]
+fn init_format() {
+	format::register_all();
+}
+
+#[cfg(not(feature = "format"))]
+fn init_format() { }
+
+#[cfg(feature = "device")]
+fn init_device() {
+	device::register_all();
+}
+
+#[cfg(not(feature = "device"))]
+fn init_device() { }
+
+pub fn init() -> Result<(), Error> {
+	init_error();
+	init_format();
+	init_device();
+
+	Ok(())
+}

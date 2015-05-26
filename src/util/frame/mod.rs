@@ -84,9 +84,12 @@ impl Frame {
 		}
 	}
 
-	pub fn best_effort_timestamp(&self) -> i64 {
+	pub fn timestamp(&self) -> Option<i64> {
 		unsafe {
-			av_frame_get_best_effort_timestamp(self.ptr) as i64
+			match av_frame_get_best_effort_timestamp(self.ptr) {
+				AV_NOPTS_VALUE => None,
+				t              => Some(t as i64)
+			}
 		}
 	}
 

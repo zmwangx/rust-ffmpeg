@@ -151,6 +151,12 @@ impl Video {
 			(*self.ptr).display_picture_number as usize
 		}
 	}
+
+	pub fn repeat(&self) -> f64 {
+		unsafe {
+			(*self.ptr).repeat_pict as f64
+		}
+	}
 }
 
 unsafe impl Send for Video { }

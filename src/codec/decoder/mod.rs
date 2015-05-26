@@ -23,7 +23,7 @@ use std::ops::Deref;
 use ffi::*;
 use super::{Id, Profile};
 use super::context::Opened;
-use ::{Codec, Error, Discard};
+use ::{Codec, Error, Discard, Rational};
 use ::media;
 
 pub struct Decoder(pub Opened);
@@ -95,6 +95,12 @@ impl Decoder {
 	pub fn subtitle_header(&self) -> &[u8] {
 		unsafe {
 			from_raw_parts((*self.ptr).subtitle_header, (*self.ptr).subtitle_header_size as usize)
+		}
+	}
+
+	pub fn time_base(&self) -> Rational {
+		unsafe {
+			Rational((*self.ptr).time_base)
 		}
 	}
 }

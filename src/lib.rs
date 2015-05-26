@@ -13,6 +13,7 @@ pub use util::media;
 pub use util::picture;
 pub use util::color;
 pub use util::chroma;
+pub use util::time;
 pub use util::frame::{self, Frame};
 
 #[cfg(feature = "format")]

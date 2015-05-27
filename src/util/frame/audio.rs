@@ -9,8 +9,22 @@ use super::Frame;
 pub struct Audio(Frame);
 
 impl Audio {
-	pub fn new() -> Self {
+	pub fn empty() -> Self {
 		Audio(Frame::new())
+	}
+
+	pub fn new(format: format::Sample, samples: usize, layout: i64) -> Self {
+		unsafe {
+			let mut frame = Audio(Frame::new());
+
+			frame.set_format(format);
+			frame.set_samples(samples);
+			frame.set_channel_layout(layout);
+
+			av_frame_get_buffer(frame.ptr, 1);
+
+			frame
+		}
 	}
 
 	pub fn format(&self) -> format::Sample {
@@ -21,6 +35,12 @@ impl Audio {
 			else {
 				format::Sample::from(mem::transmute::<_, AVSampleFormat>(((*self.ptr).format)))
 			}
+		}
+	}
+
+	pub fn set_format(&mut self, value: format::Sample) {
+		unsafe {
+			(*self.ptr).format = mem::transmute::<AVSampleFormat, c_int>(value.into());
 		}
 	}
 

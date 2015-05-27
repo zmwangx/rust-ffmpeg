@@ -13,8 +13,22 @@ use super::Frame;
 pub struct Video(Frame);
 
 impl Video {
-	pub fn new() -> Self {
+	pub fn empty() -> Self {
 		Video(Frame::new())
+	}
+
+	pub fn new(format: format::Pixel, width: u32, height: u32) -> Self {
+		unsafe {
+			let mut frame = Video(Frame::new());
+
+			frame.set_format(format);
+			frame.set_width(width);
+			frame.set_height(height);
+
+			av_frame_get_buffer(frame.ptr, 1);
+
+			frame
+		}
 	}
 
 	pub fn picture(&self) -> Picture {
@@ -29,6 +43,12 @@ impl Video {
 			else {
 				format::Pixel::from(mem::transmute::<_, AVPixelFormat>(((*self.ptr).format)))
 			}
+		}
+	}
+
+	pub fn set_format(&mut self, value: format::Pixel) {
+		unsafe {
+			(*self.ptr).format = mem::transmute::<AVPixelFormat, c_int>(value.into());
 		}
 	}
 

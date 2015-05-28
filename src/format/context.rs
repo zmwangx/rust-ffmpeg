@@ -2,7 +2,7 @@ use std::ffi::CString;
 use std::ptr;
 use std::path::Path;
 use std::marker::PhantomData;
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 
 use libc::c_uint;
 use ffi::*;
@@ -180,6 +180,12 @@ impl<'a> Deref for Packet<'a> {
 
 	fn deref<'b>(&'b self) -> &'b ::Packet {
 		&self.pkt
+	}
+}
+
+impl<'a> DerefMut for Packet<'a> {
+	fn deref_mut<'b>(&'b mut self) -> &'b mut ::Packet {
+		&mut self.pkt
 	}
 }
 

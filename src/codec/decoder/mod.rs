@@ -10,7 +10,7 @@ pub use self::subtitle::Subtitle;
 pub mod slice;
 
 pub mod conceal;
-pub use self::conceal::*;
+pub use self::conceal::Conceal;
 
 pub mod check;
 pub use self::check::Check;

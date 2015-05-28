@@ -1,18 +1,14 @@
-mod side_data;
+pub mod side_data;
 pub use self::side_data::SideData;
+
+pub mod flag;
+pub use self::flag::Flags;
 
 use std::marker::PhantomData;
 use std::mem;
 use libc::c_int;
 
 use ffi::*;
-
-bitflags! {
-	flags Flags: c_int {
-		const FLAG_KEY     = AV_PKT_FLAG_KEY,
-		const FLAG_CORRUPT = AV_PKT_FLAG_CORRUPT,
-	}
-}
 
 pub struct Packet {
 	pub val: AVPacket,

@@ -13,7 +13,7 @@ pub mod conceal;
 pub use self::conceal::*;
 
 pub mod check;
-pub use self::check::*;
+pub use self::check::Check;
 
 use std::ffi::CString;
 use std::ptr;

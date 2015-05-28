@@ -3,14 +3,14 @@ use ffi::*;
 
 bitflags! {
 	flags Check: c_int {
-		const CHECK_CRC      = AV_EF_CRCCHECK,
-		const CHECK_BISTREAM = AV_EF_BITSTREAM,
-		const CHECK_BUFFER   = AV_EF_BUFFER,
-		const CHECK_EXPLODE  = AV_EF_EXPLODE,
+		const CRC      = AV_EF_CRCCHECK,
+		const BISTREAM = AV_EF_BITSTREAM,
+		const BUFFER   = AV_EF_BUFFER,
+		const EXPLODE  = AV_EF_EXPLODE,
 
-		const CHECK_IGNORE_ERROR = AV_EF_IGNORE_ERR,
-		const CHECK_CAREFUL      = AV_EF_CAREFUL,
-		const CHECK_COMPLIANT    = AV_EF_COMPLIANT,
-		const CHECK_AGGRESSIVE   = AV_EF_AGGRESSIVE,
+		const IGNORE_ERROR = AV_EF_IGNORE_ERR,
+		const CAREFUL      = AV_EF_CAREFUL,
+		const COMPLIANT    = AV_EF_COMPLIANT,
+		const AGGRESSIVE   = AV_EF_AGGRESSIVE,
 	}
 }

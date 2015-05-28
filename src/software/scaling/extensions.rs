@@ -1,7 +1,3 @@
-use std::ops::Deref;
-
-use libc::c_int;
-use ffi::*;
 use util::format;
 use ::{Picture, decoder, Error};
 use super::{Context, Flags, flag};

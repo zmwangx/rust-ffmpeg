@@ -1,4 +1,4 @@
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 
 use libc::c_int;
 use ffi::*;
@@ -138,4 +138,8 @@ impl Deref for Video {
 	}
 }
 
-
+impl DerefMut for Video {
+	fn deref_mut(&mut self) -> &mut<Self as Deref>::Target {
+		&mut self.0
+	}
+}

@@ -7,17 +7,14 @@ pub use self::video::Video;
 pub mod audio;
 pub use self::audio::Audio;
 
-use libc::c_int;
+pub mod flag;
+pub use self::flag::Flags;
+
 use std::ptr;
 
+use libc::c_int;
 use ffi::*;
 use ::Dictionary;
-
-bitflags! {
-	flags Flags: c_int {
-		const FLAG_CORRUPT = AV_FRAME_FLAG_CORRUPT,
-	}
-}
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub struct Packet {
@@ -48,7 +45,7 @@ impl Frame {
 	}
 
 	pub fn is_corrupt(&self) -> bool {
-		self.flags().contains(FLAG_CORRUPT)
+		self.flags().contains(flag::CORRUPT)
 	}
 
 	pub fn packet(&self) -> Packet {

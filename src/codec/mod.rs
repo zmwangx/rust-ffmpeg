@@ -21,7 +21,7 @@ pub mod compliance;
 pub use self::compliance::Compliance;
 
 pub mod debug;
-pub use self::debug::*;
+pub use self::debug::Debug;
 
 pub mod profile;
 pub use self::profile::Profile;

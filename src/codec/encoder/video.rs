@@ -1,4 +1,4 @@
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 
 use libc::{c_int, c_float};
 use ffi::*;
@@ -224,5 +224,11 @@ impl Deref for Video {
 
 	fn deref(&self) -> &<Self as Deref>::Target {
 		&self.0
+	}
+}
+
+impl DerefMut for Video {
+	fn deref_mut(&mut self) -> &mut<Self as Deref>::Target {
+		&mut self.0
 	}
 }

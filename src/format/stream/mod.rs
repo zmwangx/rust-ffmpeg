@@ -1,3 +1,6 @@
+pub mod disposition;
+pub use self::disposition::Disposition;
+
 use std::marker::PhantomData;
 
 use libc::c_int;
@@ -5,25 +8,6 @@ use ffi::*;
 use ::format;
 use ::codec::{self, packet};
 use ::{Rational, Discard};
-
-bitflags! {
-	flags Disposition: c_int {
-		const DISPOSITION_DEFAULT          = AV_DISPOSITION_DEFAULT,
-		const DISPOSITION_DUB              = AV_DISPOSITION_DUB,
-		const DISPOSITION_ORIGINAL         = AV_DISPOSITION_ORIGINAL,
-		const DISPOSITION_COMMENT          = AV_DISPOSITION_COMMENT,
-		const DISPOSITION_LYRICS           = AV_DISPOSITION_LYRICS,
-		const DISPOSITION_KARAOKE          = AV_DISPOSITION_KARAOKE,
-		const DISPOSITION_FORCED           = AV_DISPOSITION_FORCED,
-		const DISPOSITION_HEARING_IMPAIRED = AV_DISPOSITION_HEARING_IMPAIRED,
-		const DISPOSITION_VISUAL_IMPAIRED  = AV_DISPOSITION_VISUAL_IMPAIRED,
-		const DISPOSITION_CLEAN_EFFECTS    = AV_DISPOSITION_CLEAN_EFFECTS,
-		const DISPOSITION_ATTACHED_PIC     = AV_DISPOSITION_ATTACHED_PIC,
-		const DISPOSITION_CAPTIONS         = AV_DISPOSITION_CAPTIONS,
-		const DISPOSITION_DESCRIPTIONS     = AV_DISPOSITION_DESCRIPTIONS,
-		const DISPOSITION_METADATA         = AV_DISPOSITION_METADATA,
-	}
-}
 
 #[derive(Eq, PartialEq)]
 pub struct Stream<'a> {

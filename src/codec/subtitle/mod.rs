@@ -1,19 +1,16 @@
+pub mod flag;
+pub use self::flag::Flags;
+
 use std::marker::PhantomData;
 use std::mem;
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 use std::ops::Deref;
 
-use libc::{c_int, c_uint, uint32_t, int64_t};
+use libc::{c_uint, uint32_t, int64_t};
 use ffi::*;
 use ::format;
 use ::Picture;
-
-bitflags! {
-	flags Flags: c_int {
-		const FLAG_FORCED = AV_SUBTITLE_FLAG_FORCED,
-	}
-}
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Type {

@@ -57,6 +57,18 @@ impl Context {
 	              src_format: format::Pixel, src_w: u32, src_h: u32,
 	              dst_format: format::Pixel, dst_w: u32, dst_h: u32,
 	              flags: Flags) {
+		self.input = Definition {
+			format: src_format,
+			width:  src_w,
+			height: src_h,
+		};
+
+		self.output = Definition {
+			format: dst_format,
+			width:  dst_w,
+			height: dst_h,
+		};
+
 		unsafe {
 			self.ptr = sws_getCachedContext(self.ptr,
 				src_w as c_int, src_h as c_int, src_format.into(),

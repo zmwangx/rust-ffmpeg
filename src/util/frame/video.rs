@@ -1,6 +1,6 @@
 use libc::c_int;
 use std::mem;
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 
 use ffi::*;
 use ::{Rational, Picture};
@@ -186,6 +186,12 @@ impl Deref for Video {
 
 	fn deref(&self) -> &Frame {
 		&self.0
+	}
+}
+
+impl DerefMut for Video {
+	fn deref_mut(&mut self) -> &mut Frame {
+		&mut self.0
 	}
 }
 

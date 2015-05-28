@@ -21,7 +21,7 @@ pub use self::decision::Decision;
 
 use std::ffi::CString;
 use std::ptr;
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 
 use libc::c_int;
 use ffi::*;
@@ -101,6 +101,12 @@ impl Deref for Encoder {
 
 	fn deref(&self) -> &<Self as Deref>::Target {
 		&self.0
+	}
+}
+
+impl DerefMut for Encoder {
+	fn deref_mut(&mut self) -> &mut<Self as Deref>::Target {
+		&mut self.0
 	}
 }
 

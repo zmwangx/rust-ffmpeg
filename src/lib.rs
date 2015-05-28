@@ -47,6 +47,8 @@ pub use codec::threading;
 #[cfg(feature = "device")]
 pub mod device;
 
+pub mod software;
+
 fn init_error() {
 	util::error::register_all();
 }

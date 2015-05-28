@@ -5,16 +5,16 @@ authors = ["meh. <meh@schizofreni.co>"]
 license = "WTFPL"
 
 [features]
-default = ["codec", "device", "filter", "format", "resample", "postprocessing", "software-resample", "software-scaling"]
+default = ["codec", "device", "filter", "format", "resampling", "postprocessing", "software-resampling", "software-scaling"]
 
-codec             = ["ffmpeg-sys/avcodec"]
-device            = ["ffmpeg-sys/avdevice", "format"]
-filter            = ["ffmpeg-sys/avfilter"]
-format            = ["ffmpeg-sys/avformat", "codec"]
-resample          = ["ffmpeg-sys/avresample"]
-postprocessing    = ["ffmpeg-sys/postproc"]
-software-resample = ["ffmpeg-sys/swresample"]
-software-scaling  = ["ffmpeg-sys/swscale"]
+codec               = ["ffmpeg-sys/avcodec"]
+device              = ["ffmpeg-sys/avdevice", "format"]
+filter              = ["ffmpeg-sys/avfilter"]
+format              = ["ffmpeg-sys/avformat", "codec"]
+resampling          = ["ffmpeg-sys/avresample"]
+postprocessing      = ["ffmpeg-sys/postproc"]
+software-resampling = ["ffmpeg-sys/swresample"]
+software-scaling    = ["ffmpeg-sys/swscale", "codec"]
 
 [dependencies]
 libc = "0.1"

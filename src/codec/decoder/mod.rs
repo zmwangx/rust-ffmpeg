@@ -18,7 +18,7 @@ pub use self::check::Check;
 use std::ffi::CString;
 use std::ptr;
 use std::slice::from_raw_parts;
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 
 use ffi::*;
 use super::{Id, Profile};
@@ -110,6 +110,12 @@ impl Deref for Decoder {
 
 	fn deref(&self) -> &<Self as Deref>::Target {
 		&self.0
+	}
+}
+
+impl DerefMut for Decoder {
+	fn deref_mut(&mut self) -> &mut<Self as Deref>::Target {
+		&mut self.0
 	}
 }
 

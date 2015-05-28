@@ -1,6 +1,6 @@
 use libc::c_int;
 use std::mem;
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 
 use ffi::*;
 use ::util::format;
@@ -98,8 +98,14 @@ unsafe impl Send for Audio { }
 impl Deref for Audio {
 	type Target = Frame;
 
-	fn deref(&self) -> &Frame {
+	fn deref(&self) -> &<Self as Deref>::Target {
 		&self.0
+	}
+}
+
+impl DerefMut for Audio {
+	fn deref_mut(&mut self) -> &mut<Self as Deref>::Target {
+		&mut self.0
 	}
 }
 

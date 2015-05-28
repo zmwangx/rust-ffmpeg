@@ -1,4 +1,4 @@
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 use std::ptr;
 
 use libc::c_int;
@@ -202,5 +202,11 @@ impl Deref for Opened {
 
 	fn deref(&self) -> &<Self as Deref>::Target {
 		&self.0
+	}
+}
+
+impl DerefMut for Opened {
+	fn deref_mut(&mut self) -> &mut<Self as Deref>::Target {
+		&mut self.0
 	}
 }

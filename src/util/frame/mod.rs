@@ -41,20 +41,6 @@ impl Frame {
 		}
 	}
 
-	pub fn make_unique(&mut self) -> &mut Self {
-		unsafe {
-			av_frame_make_writable(self.ptr);
-		}
-
-		self
-	}
-
-	pub fn is_unique(&self) -> bool {
-		unsafe {
-			av_frame_is_writable(self.ptr) == 0
-		}
-	}
-
 	pub fn is_key(&self) -> bool {
 		unsafe {
 			(*self.ptr).key_frame == 1
@@ -154,9 +140,10 @@ unsafe impl Send for Frame { }
 
 impl Clone for Frame {
 	fn clone(&self) -> Self {
-		unsafe {
-			Frame { ptr: av_frame_clone(self.ptr) }
-		}
+		let mut frame = Frame::new();
+		frame.clone_from(self);
+
+		frame
 	}
 
 	fn clone_from(&mut self, source: &Self) {

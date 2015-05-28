@@ -38,6 +38,12 @@ impl Frame {
 		}
 	}
 
+	pub fn copy(&mut self, source: &Frame) {
+		unsafe {
+			av_frame_copy_props(self.ptr, source.ptr);
+		}
+	}
+
 	pub fn is_key(&self) -> bool {
 		unsafe {
 			(*self.ptr).key_frame == 1

@@ -1,8 +1,13 @@
 [package]
-name = "ffmpeg"
+name    = "ffmpeg"
 version = "0.1.0"
+
 authors = ["meh. <meh@schizofreni.co>"]
 license = "WTFPL"
+
+description = "Safe FFmpeg wrapper"
+repository  = "https://github.com/meh/rust-ffmpeg"
+keywords    = ["audio", "video"]
 
 [features]
 default = ["codec", "device", "filter", "format", "resampling", "postprocessing", "software-resampling", "software-scaling"]
@@ -17,10 +22,9 @@ software-resampling = ["ffmpeg-sys/swresample"]
 software-scaling    = ["ffmpeg-sys/swscale", "codec"]
 
 [dependencies]
-libc = "0.1"
+libc     = "0.1"
 bitflags = "0.1"
 
 [dependencies.ffmpeg-sys]
 version = "2.6.2"
-
 default-features = false

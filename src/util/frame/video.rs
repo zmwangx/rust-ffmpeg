@@ -35,6 +35,10 @@ impl Video {
 		Picture::wrap(self.ptr as *mut AVPicture, self.format(), self.width(), self.height())
 	}
 
+	pub fn picture_mut(&mut self) -> Picture {
+		Picture::wrap(self.ptr as *mut AVPicture, self.format(), self.width(), self.height())
+	}
+
 	pub fn format(&self) -> format::Pixel {
 		unsafe {
 			if (*self.ptr).format == -1 {

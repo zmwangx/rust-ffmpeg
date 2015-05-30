@@ -1,10 +1,11 @@
 use std::cmp::Ordering;
 use std::ops::{Add, Sub, Mul, Div};
+use std::fmt;
 
 use libc::{c_int, int64_t};
 use ffi::*;
 
-#[derive(Eq, PartialEq, Copy, Clone, Debug)]
+#[derive(Eq, PartialEq, Copy, Clone)]
 pub struct Rational(pub AVRational);
 
 impl Rational {
@@ -37,6 +38,18 @@ impl Rational {
 		unsafe {
 			Rational(av_inv_q(self.0))
 		}
+	}
+}
+
+impl fmt::Display for Rational {
+	fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+		f.write_str(&format!("{}/{}", self.numerator(), self.denominator()))
+	}
+}
+
+impl fmt::Debug for Rational {
+	fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+		f.write_str(&format!("Rational({}/{})", self.numerator(), self.denominator()))
 	}
 }
 

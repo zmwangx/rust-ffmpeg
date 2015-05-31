@@ -98,6 +98,19 @@ impl Decoder {
 		}
 	}
 
+	pub fn frame_rate(&self) -> Option<Rational> {
+		unsafe {
+			let value = (*self.ptr).framerate;
+
+			if value == (AVRational { num: 0, den: 1 }) {
+				None
+			}
+			else {
+				Some(Rational(value))
+			}
+		}
+	}
+
 	pub fn time_base(&self) -> Rational {
 		unsafe {
 			Rational((*self.ptr).time_base)

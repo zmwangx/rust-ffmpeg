@@ -10,12 +10,14 @@ pub struct Audio(Frame);
 
 impl Audio {
 	pub fn empty() -> Self {
-		Audio(Frame::new())
+		unsafe {
+			Audio(Frame { ptr: av_frame_alloc() })
+		}
 	}
 
 	pub fn new(format: format::Sample, samples: usize, layout: i64) -> Self {
 		unsafe {
-			let mut frame = Audio(Frame::new());
+			let mut frame = Audio::empty();
 
 			frame.set_format(format);
 			frame.set_samples(samples);
@@ -111,22 +113,16 @@ impl DerefMut for Audio {
 
 impl Clone for Audio {
 	fn clone(&self) -> Self {
-		Audio(self.0.clone())
+		let mut cloned = Audio::new(self.format(), self.samples(), self.channel_layout());
+		cloned.clone_from(self);
+
+		cloned
 	}
 
 	fn clone_from(&mut self, source: &Self) {
-		self.0.clone_from(&source.0);
-	}
-}
-
-impl Into<Frame> for Audio {
-	fn into(self) -> Frame {
-		self.0
-	}
-}
-
-impl Into<Audio> for Frame {
-	fn into(self) -> Audio {
-		Audio(self)
+		unsafe {
+			av_frame_copy(self.ptr, source.ptr);
+			av_frame_copy_props(self.ptr, source.ptr);
+		}
 	}
 }

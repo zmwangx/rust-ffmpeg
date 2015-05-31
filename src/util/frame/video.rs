@@ -14,12 +14,14 @@ pub struct Video(Frame);
 
 impl Video {
 	pub fn empty() -> Self {
-		Video(Frame::new())
+		unsafe {
+			Video(Frame { ptr: av_frame_alloc() })
+		}
 	}
 
 	pub fn new(format: format::Pixel, width: u32, height: u32) -> Self {
 		unsafe {
-			let mut frame = Video(Frame::new());
+			let mut frame = Video::empty();
 
 			frame.set_format(format);
 			frame.set_width(width);
@@ -201,22 +203,16 @@ impl DerefMut for Video {
 
 impl Clone for Video {
 	fn clone(&self) -> Self {
-		Video(self.0.clone())
+		let mut cloned = Video::new(self.format(), self.width(), self.height());
+		cloned.clone_from(self);
+
+		cloned
 	}
 
 	fn clone_from(&mut self, source: &Self) {
-		self.0.clone_from(&source.0);
-	}
-}
-
-impl Into<Video> for Frame {
-	fn into(self) -> Video {
-		Video(self)
-	}
-}
-
-impl Into<Frame> for Video {
-	fn into(self) -> Frame {
-		self.0
+		unsafe {
+			av_frame_copy(self.ptr, source.ptr);
+			av_frame_copy_props(self.ptr, source.ptr);
+		}
 	}
 }

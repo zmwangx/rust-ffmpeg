@@ -32,18 +32,6 @@ pub struct Frame {
 }
 
 impl Frame {
-	pub fn new() -> Self {
-		unsafe {
-			Frame { ptr: av_frame_alloc() }
-		}
-	}
-
-	pub fn copy(&mut self, source: &Frame) {
-		unsafe {
-			av_frame_copy_props(self.ptr, source.ptr);
-		}
-	}
-
 	pub fn is_key(&self) -> bool {
 		unsafe {
 			(*self.ptr).key_frame == 1
@@ -140,22 +128,6 @@ impl Frame {
 }
 
 unsafe impl Send for Frame { }
-
-impl Clone for Frame {
-	fn clone(&self) -> Self {
-		let mut frame = Frame::new();
-		frame.clone_from(self);
-
-		frame
-	}
-
-	fn clone_from(&mut self, source: &Self) {
-		unsafe {
-			av_frame_copy(self.ptr, source.ptr);
-			av_frame_copy_props(self.ptr, source.ptr);
-		}
-	}
-}
 
 impl Drop for Frame {
 	fn drop(&mut self) {

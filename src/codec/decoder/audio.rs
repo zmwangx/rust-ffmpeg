@@ -28,9 +28,9 @@ impl Audio {
 		}
 	}
 
-	pub fn channels(&self) -> usize {
+	pub fn channels(&self) -> u16 {
 		unsafe {
-			(*self.ptr).channels as usize
+			(*self.ptr).channels as u16
 		}
 	}
 

@@ -58,13 +58,13 @@ impl Audio {
 		}
 	}
 
-	pub fn channels(&self) -> usize {
+	pub fn channels(&self) -> u16 {
 		unsafe {
-			av_frame_get_channels(self.ptr) as usize
+			av_frame_get_channels(self.ptr) as u16
 		}
 	}
 
-	pub fn set_channels(&mut self, value: usize) {
+	pub fn set_channels(&mut self, value: u16) {
 		unsafe {
 			av_frame_set_channels(self.ptr, value as c_int);
 		}

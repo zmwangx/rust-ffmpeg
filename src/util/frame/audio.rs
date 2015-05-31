@@ -6,6 +6,7 @@ use ffi::*;
 use ::util::format;
 use super::Frame;
 
+#[derive(PartialEq, Eq)]
 pub struct Audio(Frame);
 
 impl Audio {

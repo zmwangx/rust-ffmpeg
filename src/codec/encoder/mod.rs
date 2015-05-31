@@ -89,6 +89,18 @@ impl Encoder {
 		}
 	}
 
+	pub fn set_frame_rate(&mut self, value: Option<Rational>) {
+		unsafe {
+			if let Some(value) = value {
+				(*self.ptr).framerate = value.0;
+			}
+			else {
+				(*self.ptr).framerate.num = 0;
+				(*self.ptr).framerate.den = 1;
+			}
+		}
+	}
+
 	pub fn set_time_base(&mut self, value: Rational) {
 		unsafe {
 			(*self.ptr).time_base = value.0;

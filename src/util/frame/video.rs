@@ -10,6 +10,7 @@ use ::picture;
 use ::color;
 use super::Frame;
 
+#[derive(PartialEq, Eq)]
 pub struct Video(Frame);
 
 impl Video {

@@ -55,7 +55,7 @@ impl Sample {
 		}
 	}
 
-	pub fn buffer(&self, channels: usize, samples: usize, align: bool) -> Buffer {
+	pub fn buffer(&self, channels: u16, samples: usize, align: bool) -> Buffer {
 		Buffer::new(*self, channels, samples, align)
 	}
 }
@@ -110,7 +110,7 @@ impl Into<AVSampleFormat> for Sample {
 
 pub struct Buffer {
 	pub format: Sample,
-	pub channels: usize,
+	pub channels: u16,
 	pub samples: usize,
 	pub align: bool,
 
@@ -119,13 +119,13 @@ pub struct Buffer {
 }
 
 impl Buffer {
-	pub fn size(format: Sample, channels: usize, samples: usize, align: bool) -> usize {
+	pub fn size(format: Sample, channels: u16, samples: usize, align: bool) -> usize {
 		unsafe {
 			av_samples_get_buffer_size(ptr::null_mut(), channels as c_int, samples as c_int, format.into(), !align as c_int) as usize
 		}
 	}
 
-	pub fn new(format: Sample, channels: usize, samples: usize, align: bool) -> Self {
+	pub fn new(format: Sample, channels: u16, samples: usize, align: bool) -> Self {
 		unsafe {
 			let mut buf = Buffer {
 				format:   format,

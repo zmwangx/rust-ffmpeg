@@ -4,7 +4,7 @@ use libc::c_int;
 use ffi::*;
 
 use super::Decoder;
-use ::{Packet, Error, AudioService};
+use ::{Packet, Error, AudioService, ChannelLayout};
 use ::frame;
 use ::util::format;
 
@@ -58,21 +58,21 @@ impl Audio {
 		}
 	}
 
-	pub fn channel_layout(&self) -> u64 {
+	pub fn channel_layout(&self) -> ChannelLayout {
 		unsafe {
-			(*self.ptr).channel_layout
+			ChannelLayout::from_bits_truncate((*self.ptr).channel_layout)
 		}
 	}
 
-	pub fn set_channel_layout(&mut self, value: u64) {
+	pub fn set_channel_layout(&mut self, value: ChannelLayout) {
 		unsafe {
-			(*self.ptr).channel_layout = value;
+			(*self.ptr).channel_layout = value.bits();
 		}
 	}
 
-	pub fn request_channel_layout(&mut self, value: u64) {
+	pub fn request_channel_layout(&mut self, value: ChannelLayout) {
 		unsafe {
-			(*self.ptr).request_channel_layout = value;
+			(*self.ptr).request_channel_layout = value.bits();
 		}
 	}
 

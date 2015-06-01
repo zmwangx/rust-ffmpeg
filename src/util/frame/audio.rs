@@ -2,8 +2,9 @@ use libc::c_int;
 use std::mem;
 use std::ops::{Deref, DerefMut};
 
+use libc::{int64_t, c_ulonglong};
 use ffi::*;
-use ::Samples;
+use ::{ChannelLayout, Samples};
 use ::util::format;
 use super::Frame;
 
@@ -17,7 +18,7 @@ impl Audio {
 		}
 	}
 
-	pub fn new(format: format::Sample, samples: usize, layout: i64) -> Self {
+	pub fn new(format: format::Sample, samples: usize, layout: ChannelLayout) -> Self {
 		unsafe {
 			let mut frame = Audio::empty();
 
@@ -48,15 +49,15 @@ impl Audio {
 		}
 	}
 
-	pub fn channel_layout(&self) -> i64 {
+	pub fn channel_layout(&self) -> ChannelLayout {
 		unsafe {
-			av_frame_get_channel_layout(self.ptr)
+			ChannelLayout::from_bits_truncate(av_frame_get_channel_layout(self.ptr) as c_ulonglong)
 		}
 	}
 
-	pub fn set_channel_layout(&mut self, value: i64) {
+	pub fn set_channel_layout(&mut self, value: ChannelLayout) {
 		unsafe {
-			av_frame_set_channel_layout(self.ptr, value);
+			av_frame_set_channel_layout(self.ptr, value.bits() as int64_t);
 		}
 	}
 

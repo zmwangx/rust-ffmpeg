@@ -98,11 +98,11 @@ impl Audio {
 	}
 
 	pub fn samples(&self) -> Samples {
-		Samples::wrap(self.ptr as *mut AVPicture, self.format(), self.rate(), self.sample_number(), self.channels())
+		Samples::wrap(self.ptr as *mut AVPicture, self.format(), self.rate(), self.sample_number(), self.channels(), self.channel_layout())
 	}
 
 	pub fn samples_mut(&mut self) -> Samples {
-		Samples::wrap(self.ptr as *mut AVPicture, self.format(), self.rate(), self.sample_number(), self.channels())
+		Samples::wrap(self.ptr as *mut AVPicture, self.format(), self.rate(), self.sample_number(), self.channels(), self.channel_layout())
 	}
 }
 

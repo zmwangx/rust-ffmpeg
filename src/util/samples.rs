@@ -5,7 +5,7 @@ use std::marker::{Reflect, PhantomData};
 
 use ffi::*;
 use ::util::format::Sample;
-use ::Error;
+use ::{Error, ChannelLayout};
 
 pub struct Samples<'a> {
 	pub ptr: *mut AVPicture,
@@ -14,12 +14,13 @@ pub struct Samples<'a> {
 	rate:     u32,
 	number:   usize,
 	channels: u16,
+	layout:   ChannelLayout,
 
 	_marker: PhantomData<&'a ()>,
 }
 
 impl<'a> Samples<'a> {
-	pub fn wrap(ptr: *mut AVPicture, format: Sample, rate: u32, number: usize, channels: u16) -> Self {
+	pub fn wrap(ptr: *mut AVPicture, format: Sample, rate: u32, number: usize, channels: u16, layout: ChannelLayout) -> Self {
 		Samples {
 			ptr: ptr,
 
@@ -27,6 +28,7 @@ impl<'a> Samples<'a> {
 			rate:     rate,
 			number:   number,
 			channels: channels,
+			layout:   layout,
 
 			_marker: PhantomData,
 		}
@@ -46,6 +48,10 @@ impl<'a> Samples<'a> {
 
 	pub fn channels(&self) -> u16 {
 		self.channels
+	}
+
+	pub fn channel_layout(&self) -> ChannelLayout {
+		self.layout
 	}
 
 	pub fn is_planar(&self) -> bool {

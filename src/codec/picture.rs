@@ -1,16 +1,16 @@
 use std::mem;
 use std::slice;
-use std::marker::PhantomData;
+use std::marker::{Reflect, PhantomData};
 
 use libc::{c_int, size_t};
 use ffi::*;
-use ::format;
+use ::util::format::Pixel;
 use ::Error;
 
 pub struct Picture<'a> {
 	pub ptr: *mut AVPicture,
 
-	format: format::Pixel,
+	format: Pixel,
 	width:  u32,
 	height: u32,
 
@@ -19,7 +19,7 @@ pub struct Picture<'a> {
 }
 
 impl<'a> Picture<'a> {
-	pub fn size(format: format::Pixel, width: u32, height: u32) -> Result<usize, Error> {
+	pub fn size(format: Pixel, width: u32, height: u32) -> Result<usize, Error> {
 		unsafe {
 			match avpicture_get_size(format.into(), width as c_int, height as c_int) {
 				v if v >= 0 => Ok(v as usize),
@@ -28,7 +28,7 @@ impl<'a> Picture<'a> {
 		}
 	}
 
-	pub fn new(format: format::Pixel, width: u32, height: u32) -> Result<Self, Error> {
+	pub fn new(format: Pixel, width: u32, height: u32) -> Result<Self, Error> {
 		unsafe {
 			let ptr = av_malloc(mem::size_of::<AVPicture>() as size_t) as *mut AVPicture;
 
@@ -49,7 +49,7 @@ impl<'a> Picture<'a> {
 		}
 	}
 
-	pub fn wrap(ptr: *mut AVPicture, format: format::Pixel, width: u32, height: u32) -> Self {
+	pub fn wrap(ptr: *mut AVPicture, format: Pixel, width: u32, height: u32) -> Self {
 		Picture {
 			ptr: ptr,
 
@@ -62,7 +62,7 @@ impl<'a> Picture<'a> {
 		}
 	}
 
-	pub fn format(&self) -> format::Pixel {
+	pub fn format(&self) -> Pixel {
 		self.format
 	}
 
@@ -83,7 +83,7 @@ impl<'a> Picture<'a> {
 		}
 	}
 
-	pub fn layout_as(&self, format: format::Pixel, width: u32, height: u32, out: &mut [u8]) -> Result<usize, Error> {
+	pub fn layout_as(&self, format: Pixel, width: u32, height: u32, out: &mut [u8]) -> Result<usize, Error> {
 		unsafe {
 			match avpicture_layout(self.ptr, format.into(), width as c_int, height as c_int, out.as_mut_ptr(), out.len() as c_int) {
 				s if s >= 0 => Ok(s as usize),
@@ -105,64 +105,40 @@ impl<'a> Picture<'a> {
 		}
 	}
 
-	pub fn data(&self) -> Vec<&[u8]> {
+	pub fn data<T: Reflect + 'static>(&self) -> Result<Vec<&[T]>, Error> {
+		if !valid::<T>(self.format) {
+			return Err(Error::InvalidData);
+		}
+
 		let mut result = Vec::new();
 
 		unsafe {
 			for (i, length) in (*self.ptr).linesize.iter().take_while(|l| **l > 0).enumerate() {
-				result.push(slice::from_raw_parts((*self.ptr).data[i], (*length as usize) * (self.height as usize)))
+				result.push(slice::from_raw_parts(
+					mem::transmute((*self.ptr).data[i]),
+					((*length as usize) * (self.height as usize)) / mem::size_of::<T>()));
 			}
 		}
 
-		result
+		Ok(result)
 	}
 
-	pub fn data_mut(&mut self) -> Vec<&mut [u8]> {
+	pub fn data_mut<T: Reflect + 'static>(&mut self) -> Result<Vec<&mut [u8]>, Error> {
+		if !valid::<T>(self.format) {
+			return Err(Error::InvalidData);
+		}
+
 		let mut result = Vec::new();
 
 		unsafe {
 			for (i, length) in (*self.ptr).linesize.iter().take_while(|l| **l > 0).enumerate() {
-				result.push(slice::from_raw_parts_mut((*self.ptr).data[i], (*length as usize) * (self.height as usize)))
+				result.push(slice::from_raw_parts_mut(
+					mem::transmute((*self.ptr).data[i]),
+					((*length as usize) * (self.height as usize)) / mem::size_of::<T>()));
 			}
 		}
 
-		result
-	}
-
-	pub fn rows(&self) -> Vec<Vec<&[u8]>> {
-		let mut result = Vec::new();
-
-		unsafe {
-			for (i, length) in (*self.ptr).linesize.iter().take_while(|l| **l > 0).enumerate() {
-				let mut rows = Vec::new();
-
-				for j in 0 .. self.height {
-					rows.push(slice::from_raw_parts((*self.ptr).data[i].offset((j * (*length as u32)) as isize), self.width as usize));
-				}
-
-				result.push(rows);
-			}
-		}
-
-		result
-	}
-
-	pub fn rows_mut(&self) -> Vec<Vec<&mut[u8]>> {
-		let mut result = Vec::new();
-
-		unsafe {
-			for (i, length) in (*self.ptr).linesize.iter().take_while(|l| **l > 0).enumerate() {
-				let mut rows = Vec::new();
-
-				for j in 0 .. self.height {
-					rows.push(slice::from_raw_parts_mut((*self.ptr).data[i].offset((j * (*length as u32)) as isize), self.width as usize));
-				}
-
-				result.push(rows);
-			}
-		}
-
-		result
+		Ok(result)
 	}
 }
 
@@ -188,5 +164,28 @@ impl<'a> Drop for Picture<'a> {
 				av_free(mem::transmute(self.ptr));
 			}
 		}
+	}
+}
+
+pub fn valid<T: Reflect + 'static>(format: Pixel) -> bool {
+	if mem::size_of::<T>() == 1 {
+		return true;
+	}
+
+	match format {
+		Pixel::None =>
+			false,
+
+		Pixel::RGB24 | Pixel::BGR24 =>
+			mem::size_of::<T>() == 3,
+
+		Pixel::ARGB | Pixel::RGBA | Pixel::ABGR | Pixel::BGRA =>
+			mem::size_of::<T>() == 4 * 4,
+
+		Pixel::ZRGB | Pixel::RGBZ | Pixel::ZBGR | Pixel::BGRZ =>
+			mem::size_of::<T>() == 4 * 4,
+
+		_ =>
+			false
 	}
 }

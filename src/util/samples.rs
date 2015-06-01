@@ -11,6 +11,7 @@ pub struct Samples<'a> {
 	pub ptr: *mut AVPicture,
 
 	format:   Sample,
+	rate:     u32,
 	number:   usize,
 	channels: u16,
 
@@ -18,11 +19,12 @@ pub struct Samples<'a> {
 }
 
 impl<'a> Samples<'a> {
-	pub fn wrap(ptr: *mut AVPicture, format: Sample, number: usize, channels: u16) -> Self {
+	pub fn wrap(ptr: *mut AVPicture, format: Sample, rate: u32, number: usize, channels: u16) -> Self {
 		Samples {
 			ptr: ptr,
 
 			format:   format,
+			rate:     rate,
 			number:   number,
 			channels: channels,
 
@@ -32,6 +34,10 @@ impl<'a> Samples<'a> {
 
 	pub fn format(&self) -> Sample {
 		self.format
+	}
+
+	pub fn rate(&self) -> u32 {
+		self.rate
 	}
 
 	pub fn number(&self) -> usize {

@@ -72,15 +72,15 @@ impl Audio {
 		}
 	}
 
-	pub fn rate(&self) -> i32 {
+	pub fn rate(&self) -> u32 {
 		unsafe {
-			av_frame_get_sample_rate(self.ptr)
+			av_frame_get_sample_rate(self.ptr) as u32
 		}
 	}
 
-	pub fn set_rate(&mut self, value: i32) {
+	pub fn set_rate(&mut self, value: u32) {
 		unsafe {
-			av_frame_set_sample_rate(self.ptr, value);
+			av_frame_set_sample_rate(self.ptr, value as c_int);
 		}
 	}
 
@@ -97,11 +97,11 @@ impl Audio {
 	}
 
 	pub fn samples(&self) -> Samples {
-		Samples::wrap(self.ptr as *mut AVPicture, self.format(), self.sample_number(), self.channels())
+		Samples::wrap(self.ptr as *mut AVPicture, self.format(), self.rate(), self.sample_number(), self.channels())
 	}
 
 	pub fn samples_mut(&mut self) -> Samples {
-		Samples::wrap(self.ptr as *mut AVPicture, self.format(), self.sample_number(), self.channels())
+		Samples::wrap(self.ptr as *mut AVPicture, self.format(), self.rate(), self.sample_number(), self.channels())
 	}
 }
 

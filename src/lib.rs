@@ -1,4 +1,4 @@
-#![feature(convert)]
+#![feature(convert, core)]
 #![allow(raw_pointer_derive, non_camel_case_types)]
 
 extern crate libc;
@@ -15,6 +15,7 @@ pub use util::color;
 pub use util::chroma;
 pub use util::time;
 pub use util::frame::{self, Frame};
+pub use util::samples::Samples;
 
 #[cfg(feature = "format")]
 pub mod format;

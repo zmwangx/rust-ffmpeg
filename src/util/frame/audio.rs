@@ -3,6 +3,7 @@ use std::mem;
 use std::ops::{Deref, DerefMut};
 
 use ffi::*;
+use ::Samples;
 use ::util::format;
 use super::Frame;
 
@@ -21,7 +22,7 @@ impl Audio {
 			let mut frame = Audio::empty();
 
 			frame.set_format(format);
-			frame.set_samples(samples);
+			frame.set_sample_number(samples);
 			frame.set_channel_layout(layout);
 
 			av_frame_get_buffer(frame.ptr, 1);
@@ -83,16 +84,24 @@ impl Audio {
 		}
 	}
 
-	pub fn samples(&self) -> usize {
+	pub fn sample_number(&self) -> usize {
 		unsafe {
 			(*self.ptr).nb_samples as usize
 		}
 	}
 
-	pub fn set_samples(&mut self, value: usize) {
+	pub fn set_sample_number(&mut self, value: usize) {
 		unsafe {
 			(*self.ptr).nb_samples = value as c_int;
 		}
+	}
+
+	pub fn samples(&self) -> Samples {
+		Samples::wrap(self.ptr as *mut AVPicture, self.format(), self.sample_number(), self.channels())
+	}
+
+	pub fn samples_mut(&mut self) -> Samples {
+		Samples::wrap(self.ptr as *mut AVPicture, self.format(), self.sample_number(), self.channels())
 	}
 }
 
@@ -114,7 +123,7 @@ impl DerefMut for Audio {
 
 impl Clone for Audio {
 	fn clone(&self) -> Self {
-		let mut cloned = Audio::new(self.format(), self.samples(), self.channel_layout());
+		let mut cloned = Audio::new(self.format(), self.sample_number(), self.channel_layout());
 		cloned.clone_from(self);
 
 		cloned

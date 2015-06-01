@@ -49,6 +49,10 @@ impl Sample {
 		}
 	}
 
+	pub fn is_packed(&self) -> bool {
+		!self.is_planar()
+	}
+
 	pub fn bytes(&self) -> usize {
 		unsafe {
 			av_get_bytes_per_sample((*self).into()) as usize

@@ -122,21 +122,22 @@ pub fn valid<T: Reflect + 'static>(format: Sample) -> bool {
 		Sample::None =>
 			false,
 
-		Sample::U8 | Sample::U8P if TypeId::of::<T>() != TypeId::of::<u8>() =>
+		Sample::U8(..) if TypeId::of::<T>() != TypeId::of::<u8>() =>
 			false,
 
-		Sample::S16 | Sample::S16P if TypeId::of::<T>() != TypeId::of::<i16>() =>
+		Sample::I16(..) if TypeId::of::<T>() != TypeId::of::<i16>() =>
 			false,
 
-		Sample::S32 | Sample::S32P if TypeId::of::<T>() != TypeId::of::<i32>() =>
+		Sample::I32(..) if TypeId::of::<T>() != TypeId::of::<i32>() =>
 			false,
 
-		Sample::FLT | Sample::FLTP if TypeId::of::<T>() != TypeId::of::<f32>() =>
+		Sample::F32(..) if TypeId::of::<T>() != TypeId::of::<f32>() =>
 			false,
 
-		Sample::DBL | Sample::DBLP if TypeId::of::<T>() != TypeId::of::<f64>() =>
+		Sample::F64(..) if TypeId::of::<T>() != TypeId::of::<f64>() =>
 			false,
 
-		_ => true
+		_ =>
+			true
 	}
 }

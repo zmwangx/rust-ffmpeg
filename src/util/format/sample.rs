@@ -11,17 +11,18 @@ use ffi::*;
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Sample {
 	None,
-	U8,
-	S16,
-	S32,
-	FLT,
-	DBL,
 
-	U8P,
-	S16P,
-	S32P,
-	FLTP,
-	DBLP,
+	U8(Type),
+	I16(Type),
+	I32(Type),
+	F32(Type),
+	F64(Type),
+}
+
+#[derive(Eq, PartialEq, Copy, Clone, Debug)]
+pub enum Type {
+	Packed,
+	Planar,
 }
 
 impl Sample {
@@ -68,17 +69,18 @@ impl From<AVSampleFormat> for Sample {
 	fn from(value: AVSampleFormat) -> Self {
 		match value {
 			AV_SAMPLE_FMT_NONE => Sample::None,
-			AV_SAMPLE_FMT_U8   => Sample::U8,
-			AV_SAMPLE_FMT_S16  => Sample::S16,
-			AV_SAMPLE_FMT_S32  => Sample::S32,
-			AV_SAMPLE_FMT_FLT  => Sample::FLT,
-			AV_SAMPLE_FMT_DBL  => Sample::DBL,
 
-			AV_SAMPLE_FMT_U8P  => Sample::U8P,
-			AV_SAMPLE_FMT_S16P => Sample::S16P,
-			AV_SAMPLE_FMT_S32P => Sample::S32P,
-			AV_SAMPLE_FMT_FLTP => Sample::FLTP,
-			AV_SAMPLE_FMT_DBLP => Sample::DBLP,
+			AV_SAMPLE_FMT_U8  => Sample::U8(Type::Packed),
+			AV_SAMPLE_FMT_S16 => Sample::I16(Type::Packed),
+			AV_SAMPLE_FMT_S32 => Sample::I32(Type::Packed),
+			AV_SAMPLE_FMT_FLT => Sample::F32(Type::Packed),
+			AV_SAMPLE_FMT_DBL => Sample::F64(Type::Packed),
+
+			AV_SAMPLE_FMT_U8P  => Sample::U8(Type::Planar),
+			AV_SAMPLE_FMT_S16P => Sample::I16(Type::Planar),
+			AV_SAMPLE_FMT_S32P => Sample::I32(Type::Planar),
+			AV_SAMPLE_FMT_FLTP => Sample::F32(Type::Planar),
+			AV_SAMPLE_FMT_DBLP => Sample::F64(Type::Planar),
 
 			AV_SAMPLE_FMT_NB => Sample::None
 		}
@@ -97,17 +99,18 @@ impl Into<AVSampleFormat> for Sample {
 	fn into(self) -> AVSampleFormat {
 		match self {
 			Sample::None => AV_SAMPLE_FMT_NONE,
-			Sample::U8   => AV_SAMPLE_FMT_U8,
-			Sample::S16  => AV_SAMPLE_FMT_S16,
-			Sample::S32  => AV_SAMPLE_FMT_S32,
-			Sample::FLT  => AV_SAMPLE_FMT_FLT,
-			Sample::DBL  => AV_SAMPLE_FMT_DBL,
 
-			Sample::U8P  => AV_SAMPLE_FMT_U8P,
-			Sample::S16P => AV_SAMPLE_FMT_S16P,
-			Sample::S32P => AV_SAMPLE_FMT_S32P,
-			Sample::FLTP => AV_SAMPLE_FMT_FLTP,
-			Sample::DBLP => AV_SAMPLE_FMT_DBLP,
+			Sample::U8(Type::Packed)  => AV_SAMPLE_FMT_U8,
+			Sample::I16(Type::Packed) => AV_SAMPLE_FMT_S16,
+			Sample::I32(Type::Packed) => AV_SAMPLE_FMT_S32,
+			Sample::F32(Type::Packed) => AV_SAMPLE_FMT_FLT,
+			Sample::F64(Type::Packed) => AV_SAMPLE_FMT_DBL,
+
+			Sample::U8(Type::Planar)  => AV_SAMPLE_FMT_U8P,
+			Sample::I16(Type::Planar) => AV_SAMPLE_FMT_S16P,
+			Sample::I32(Type::Planar) => AV_SAMPLE_FMT_S32P,
+			Sample::F32(Type::Planar) => AV_SAMPLE_FMT_FLTP,
+			Sample::F64(Type::Planar) => AV_SAMPLE_FMT_DBLP,
 		}
 	}
 }

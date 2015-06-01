@@ -16,6 +16,7 @@ pub use util::chroma;
 pub use util::time;
 pub use util::frame::{self, Frame};
 pub use util::samples::Samples;
+pub use util::channel_layout::{self, ChannelLayout};
 
 #[cfg(feature = "format")]
 pub mod format;

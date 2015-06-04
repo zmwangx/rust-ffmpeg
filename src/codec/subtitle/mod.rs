@@ -3,6 +3,7 @@ pub use self::flag::Flags;
 
 use std::marker::PhantomData;
 use std::mem;
+use std::ptr;
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 use std::ops::Deref;
@@ -42,43 +43,51 @@ impl Into<AVSubtitleType> for Type {
 	}
 }
 
-pub struct Subtitle {
-	pub val: AVSubtitle,
+pub struct Subtitle(AVSubtitle);
+
+impl Subtitle {
+	pub unsafe fn as_ptr(&self) -> *const AVSubtitle {
+		&self.0
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVSubtitle {
+		&mut self.0
+	}
 }
 
 impl Subtitle {
 	pub fn new() -> Self {
 		unsafe {
-			Subtitle { val: mem::zeroed() }
+			Subtitle(mem::zeroed())
 		}
 	}
 
 	pub fn pts(&self) -> i64 {
-		self.val.pts as i64
+		self.0.pts as i64
 	}
 
 	pub fn set_pts(&mut self, value: i64) {
-		self.val.pts = value as int64_t;
+		self.0.pts = value as int64_t;
 	}
 
 	pub fn start(&self) -> u32 {
-		self.val.start_display_time as u32
+		self.0.start_display_time as u32
 	}
 
 	pub fn set_start(&mut self, value: u32) {
-		self.val.start_display_time = value as uint32_t;
+		self.0.start_display_time = value as uint32_t;
 	}
 
 	pub fn end(&self) -> u32 {
-		self.val.end_display_time as u32
+		self.0.end_display_time as u32
 	}
 
 	pub fn set_end(&mut self, value: u32) {
-		self.val.end_display_time = value as uint32_t;
+		self.0.end_display_time = value as uint32_t;
 	}
 
 	pub fn rects(&self) -> RectIter {
-		RectIter::new(&self.val)
+		RectIter::new(&self.0)
 	}
 }
 
@@ -119,86 +128,123 @@ pub enum Rect<'a> {
 }
 
 impl<'a> Rect<'a> {
-	pub fn wrap(ptr: *mut AVSubtitleRect) -> Self {
-		unsafe {
-			match Type::from((*ptr).kind) {
-				Type::None   => Rect::None,
-				Type::Bitmap => Rect::Bitmap(Bitmap::wrap(ptr)),
-				Type::Text   => Rect::Text(Text::wrap(ptr)),
-				Type::Ass    => Rect::Ass(Ass::wrap(ptr))
-			}
+	pub unsafe fn wrap(ptr: *mut AVSubtitleRect) -> Self {
+		match Type::from((*ptr).kind) {
+			Type::None   => Rect::None,
+			Type::Bitmap => Rect::Bitmap(Bitmap::wrap(ptr)),
+			Type::Text   => Rect::Text(Text::wrap(ptr)),
+			Type::Ass    => Rect::Ass(Ass::wrap(ptr))
 		}
 	}
 
+	pub unsafe fn as_ptr(&self) -> *const AVSubtitleRect {
+		match self {
+			&Rect::None          => ptr::null(),
+			&Rect::Bitmap(ref b) => b.as_ptr(),
+			&Rect::Text(ref t)   => t.as_ptr(),
+			&Rect::Ass(ref a)    => a.as_ptr()
+		}
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVSubtitleRect {
+		match self {
+			&mut Rect::None          => ptr::null_mut(),
+			&mut Rect::Bitmap(ref mut b) => b.as_mut_ptr(),
+			&mut Rect::Text(ref mut t)   => t.as_mut_ptr(),
+			&mut Rect::Ass(ref mut a)    => a.as_mut_ptr()
+		}
+	}
+}
+
+impl<'a> Rect<'a> {
 	pub fn flags(&self) -> Flags {
 		unsafe {
 			Flags::from_bits_truncate(match self {
 				&Rect::None          => 0,
-				&Rect::Bitmap(ref b) => (*b.ptr).flags,
-				&Rect::Text(ref t)   => (*t.ptr).flags,
-				&Rect::Ass(ref a)    => (*a.ptr).flags
+				&Rect::Bitmap(ref b) => (*b.as_ptr()).flags,
+				&Rect::Text(ref t)   => (*t.as_ptr()).flags,
+				&Rect::Ass(ref a)    => (*a.as_ptr()).flags
 			})
 		}
 	}
 }
 
 pub struct Bitmap<'a> {
-	pub ptr: *mut AVSubtitleRect,
+	ptr: *mut AVSubtitleRect,
 
 	_marker: PhantomData<&'a ()>,
 }
 
 impl<'a> Bitmap<'a> {
-	pub fn wrap(ptr: *mut AVSubtitleRect) -> Self {
+	pub unsafe fn wrap(ptr: *mut AVSubtitleRect) -> Self {
 		Bitmap { ptr: ptr, _marker: PhantomData }
 	}
 
+	pub unsafe fn as_ptr(&self) -> *const AVSubtitleRect {
+		self.ptr as *const _
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVSubtitleRect {
+		self.ptr
+	}
+}
+
+impl<'a> Bitmap<'a> {
 	pub fn x(&self) -> usize {
 		unsafe {
-			(*self.ptr).x as usize
+			(*self.as_ptr()).x as usize
 		}
 	}
 
 	pub fn y(&self) -> usize {
 		unsafe {
-			(*self.ptr).y as usize
+			(*self.as_ptr()).y as usize
 		}
 	}
 
 	pub fn width(&self) -> u32 {
 		unsafe {
-			(*self.ptr).w as u32
+			(*self.as_ptr()).w as u32
 		}
 	}
 
 	pub fn height(&self) -> u32 {
 		unsafe {
-			(*self.ptr).h as u32
+			(*self.as_ptr()).h as u32
 		}
 	}
 
 	pub fn colors(&self) -> usize {
 		unsafe {
-			(*self.ptr).nb_colors as usize
+			(*self.as_ptr()).nb_colors as usize
 		}
 	}
 
+	// XXX: verify safety
 	pub fn picture(&self, format: format::Pixel) -> Picture<'a> {
 		unsafe {
-			Picture::wrap(&mut (*self.ptr).pict, format, (*self.ptr).w as u32, (*self.ptr).h as u32)
+			Picture::wrap(&(*self.as_ptr()).pict as *const _ as *mut _, format, (*self.as_ptr()).w as u32, (*self.as_ptr()).h as u32)
 		}
 	}
 }
 
 pub struct Text<'a> {
-	pub ptr: *mut AVSubtitleRect,
+	ptr: *mut AVSubtitleRect,
 
 	_marker: PhantomData<&'a ()>,
 }
 
 impl<'a> Text<'a> {
-	pub fn wrap(ptr: *mut AVSubtitleRect) -> Self {
+	pub unsafe fn wrap(ptr: *mut AVSubtitleRect) -> Self {
 		Text { ptr: ptr, _marker: PhantomData }
+	}
+
+	pub unsafe fn as_ptr(&self) -> *const AVSubtitleRect {
+		self.ptr as *const _
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVSubtitleRect {
+		self.ptr
 	}
 }
 
@@ -207,20 +253,28 @@ impl<'a> Deref for Text<'a> {
 
 	fn deref<'b>(&'b self) -> &'b str {
 		unsafe {
-			from_utf8_unchecked(CStr::from_ptr((*self.ptr).text).to_bytes())
+			from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).text).to_bytes())
 		}
 	}
 }
 
 pub struct Ass<'a> {
-	pub ptr: *mut AVSubtitleRect,
+	ptr: *mut AVSubtitleRect,
 
 	_marker: PhantomData<&'a ()>,
 }
 
 impl<'a> Ass<'a> {
-	pub fn wrap(ptr: *mut AVSubtitleRect) -> Self {
+	pub unsafe fn wrap(ptr: *mut AVSubtitleRect) -> Self {
 		Ass { ptr: ptr, _marker: PhantomData }
+	}
+
+	pub unsafe fn as_ptr(&self) -> *const AVSubtitleRect {
+		self.ptr as *const _
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVSubtitleRect {
+		self.ptr
 	}
 }
 
@@ -229,7 +283,7 @@ impl<'a> Deref for Ass<'a> {
 
 	fn deref<'b>(&'b self) -> &'b str {
 		unsafe {
-			from_utf8_unchecked(CStr::from_ptr((*self.ptr).ass).to_bytes())
+			from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).ass).to_bytes())
 		}
 	}
 }

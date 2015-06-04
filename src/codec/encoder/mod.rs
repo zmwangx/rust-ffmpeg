@@ -62,29 +62,29 @@ impl Encoder {
 
 	pub fn set_rate(&mut self, value: usize) {
 		unsafe {
-			(*self.ptr).bit_rate = value as c_int;
+			(*self.as_mut_ptr()).bit_rate = value as c_int;
 		}
 	}
 
 	pub fn set_tolerance(&mut self, value: usize) {
 		unsafe {
-			(*self.ptr).bit_rate_tolerance = value as c_int;
+			(*self.as_mut_ptr()).bit_rate_tolerance = value as c_int;
 		}
 	}
 
 	pub fn set_quality(&mut self, value: usize) {
 		unsafe {
-			(*self.ptr).global_quality = value as c_int;
+			(*self.as_mut_ptr()).global_quality = value as c_int;
 		}
 	}
 
 	pub fn set_compression(&mut self, value: Option<usize>) {
 		unsafe {
 			if let Some(value) = value {
-				(*self.ptr).compression_level = value as c_int;
+				(*self.as_mut_ptr()).compression_level = value as c_int;
 			}
 			else {
-				(*self.ptr).compression_level = -1;
+				(*self.as_mut_ptr()).compression_level = -1;
 			}
 		}
 	}
@@ -92,18 +92,18 @@ impl Encoder {
 	pub fn set_frame_rate(&mut self, value: Option<Rational>) {
 		unsafe {
 			if let Some(value) = value {
-				(*self.ptr).framerate = value.0;
+				(*self.as_mut_ptr()).framerate = value.0;
 			}
 			else {
-				(*self.ptr).framerate.num = 0;
-				(*self.ptr).framerate.den = 1;
+				(*self.as_mut_ptr()).framerate.num = 0;
+				(*self.as_mut_ptr()).framerate.den = 1;
 			}
 		}
 	}
 
 	pub fn set_time_base(&mut self, value: Rational) {
 		unsafe {
-			(*self.ptr).time_base = value.0;
+			(*self.as_mut_ptr()).time_base = value.0;
 		}
 	}
 }

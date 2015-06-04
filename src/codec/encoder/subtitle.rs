@@ -9,9 +9,9 @@ use ::Error;
 pub struct Subtitle(pub Encoder);
 
 impl Subtitle {
-	pub fn encode(&self, subtitle: &::Subtitle, out: &mut [u8]) -> Result<bool, Error> {
+	pub fn encode(&mut self, subtitle: &::Subtitle, out: &mut [u8]) -> Result<bool, Error> {
 		unsafe {
-			match avcodec_encode_subtitle(self.ptr, out.as_mut_ptr(), out.len() as c_int, &subtitle.val) {
+			match avcodec_encode_subtitle(self.as_mut_ptr(), out.as_mut_ptr(), out.len() as c_int, subtitle.as_ptr()) {
 				e if e < 0 => Err(Error::from(e)),
 				_          => Ok(true)
 			}

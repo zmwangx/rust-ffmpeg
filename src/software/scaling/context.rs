@@ -2,16 +2,9 @@ use std::ptr;
 
 use libc::{c_int};
 use ffi::*;
-use ::{Error, Picture};
+use ::{Error, frame};
 use ::util::format;
 use super::Flags;
-
-pub struct Context {
-	pub ptr: *mut SwsContext,
-
-	input:  Definition,
-	output: Definition,
-}
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub struct Definition {
@@ -20,15 +13,33 @@ pub struct Definition {
 	pub height: u32,
 }
 
+pub struct Context {
+	ptr: *mut SwsContext,
+
+	input:  Definition,
+	output: Definition,
+}
+
+impl Context {
+	pub unsafe fn as_ptr(&self) -> *const SwsContext {
+		self.ptr as *const _
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut SwsContext {
+		self.ptr
+	}
+}
+
 impl Context {
 	pub fn get(src_format: format::Pixel, src_w: u32, src_h: u32,
 	           dst_format: format::Pixel, dst_w: u32, dst_h: u32,
 	           flags: Flags) -> Result<Self, Error> {
 		unsafe {
-			let ptr = sws_getContext(src_w as c_int, src_h as c_int, src_format.into(),
-			                         dst_w as c_int, dst_h as c_int, dst_format.into(),
-			                         flags.bits(),
-			                         ptr::null_mut(), ptr::null_mut(), ptr::null_mut());
+			let ptr = sws_getContext(
+				src_w as c_int, src_h as c_int, src_format.into(),
+				dst_w as c_int, dst_h as c_int, dst_format.into(),
+				flags.bits(),
+				ptr::null_mut(), ptr::null_mut(), ptr::null_mut());
 
 			if ptr != ptr::null_mut() {
 				Ok(Context {
@@ -70,7 +81,7 @@ impl Context {
 		};
 
 		unsafe {
-			self.ptr = sws_getCachedContext(self.ptr,
+			self.ptr = sws_getCachedContext(self.as_mut_ptr(),
 				src_w as c_int, src_h as c_int, src_format.into(),
 				dst_w as c_int, dst_h as c_int, dst_format.into(),
 				flags.bits(), ptr::null_mut(), ptr::null_mut(), ptr::null());
@@ -85,7 +96,7 @@ impl Context {
 		&self.output
 	}
 
-	pub fn run(&self, input: &Picture, output: &mut Picture) -> Result<(), Error> {
+	pub fn run(&mut self, input: &frame::Video, output: &mut frame::Video) -> Result<(), Error> {
 		if input.format() != self.input.format || input.width() != self.input.width || input.height() != self.input.height {
 			return Err(Error::InputChanged);
 		}
@@ -95,10 +106,10 @@ impl Context {
 		}
 
 		unsafe {
-			sws_scale(self.ptr,
-				(*input.ptr).data.as_ptr() as *const *const _, (*input.ptr).linesize.as_ptr() as *const _,
+			sws_scale(self.as_mut_ptr(),
+				(*input.as_ptr()).data.as_ptr() as *const *const _, (*input.as_ptr()).linesize.as_ptr() as *const _,
 				0, self.output.height as c_int,
-				(*output.ptr).data.as_ptr() as *mut *mut _, (*output.ptr).linesize.as_ptr() as *mut _);
+				(*output.as_mut_ptr()).data.as_ptr() as *mut *mut _, (*output.as_mut_ptr()).linesize.as_ptr() as *mut _);
 		}
 
 		Ok(())
@@ -108,7 +119,7 @@ impl Context {
 impl Drop for Context {
 	fn drop(&mut self) {
 		unsafe {
-			sws_freeContext(self.ptr);
+			sws_freeContext(self.as_mut_ptr());
 		}
 	}
 }

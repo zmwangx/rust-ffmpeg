@@ -15,7 +15,7 @@ impl Audio {
 		unsafe {
 			let mut got: c_int = 0;
 
-			match avcodec_decode_audio4(self.ptr, out.ptr, &mut got, &packet.val) {
+			match avcodec_decode_audio4(self.as_mut_ptr(), out.as_mut_ptr(), &mut got, packet.as_ptr()) {
 				e if e < 0 => Err(Error::from(e)),
 				_          => Ok(got != 0)
 			}
@@ -24,73 +24,73 @@ impl Audio {
 
 	pub fn rate(&self) -> u32 {
 		unsafe {
-			(*self.ptr).sample_rate as u32
+			(*self.as_ptr()).sample_rate as u32
 		}
 	}
 
 	pub fn channels(&self) -> u16 {
 		unsafe {
-			(*self.ptr).channels as u16
+			(*self.as_ptr()).channels as u16
 		}
 	}
 
 	pub fn format(&self) -> format::Sample {
 		unsafe {
-			format::Sample::from((*self.ptr).sample_fmt)
+			format::Sample::from((*self.as_ptr()).sample_fmt)
 		}
 	}
 
 	pub fn request_format(&mut self, value: format::Sample) {
 		unsafe {
-			(*self.ptr).request_sample_fmt = value.into();
+			(*self.as_mut_ptr()).request_sample_fmt = value.into();
 		}
 	}
 
 	pub fn frames(&self) -> usize {
 		unsafe {
-			(*self.ptr).frame_number as usize
+			(*self.as_ptr()).frame_number as usize
 		}
 	}
 
 	pub fn align(&self) -> usize {
 		unsafe {
-			(*self.ptr).block_align as usize
+			(*self.as_ptr()).block_align as usize
 		}
 	}
 
 	pub fn channel_layout(&self) -> ChannelLayout {
 		unsafe {
-			ChannelLayout::from_bits_truncate((*self.ptr).channel_layout)
+			ChannelLayout::from_bits_truncate((*self.as_ptr()).channel_layout)
 		}
 	}
 
 	pub fn set_channel_layout(&mut self, value: ChannelLayout) {
 		unsafe {
-			(*self.ptr).channel_layout = value.bits();
+			(*self.as_mut_ptr()).channel_layout = value.bits();
 		}
 	}
 
 	pub fn request_channel_layout(&mut self, value: ChannelLayout) {
 		unsafe {
-			(*self.ptr).request_channel_layout = value.bits();
+			(*self.as_mut_ptr()).request_channel_layout = value.bits();
 		}
 	}
 
 	pub fn audio_service(&mut self) -> AudioService {
 		unsafe {
-			AudioService::from((*self.ptr).audio_service_type)
+			AudioService::from((*self.as_mut_ptr()).audio_service_type)
 		}
 	}
 
 	pub fn max_rate(&self) -> usize {
 		unsafe {
-			(*self.ptr).rc_max_rate as usize
+			(*self.as_ptr()).rc_max_rate as usize
 		}
 	}
 
 	pub fn frame_start(&self) -> Option<usize> {
 		unsafe {
-			match (*self.ptr).timecode_frame_start {
+			match (*self.as_ptr()).timecode_frame_start {
 				-1 => None,
 				n  => Some(n as usize)
 			}

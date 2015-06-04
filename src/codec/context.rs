@@ -10,9 +10,23 @@ use super::decoder::Decoder;
 use super::encoder::Encoder;
 
 pub struct Context {
-	pub ptr: *mut AVCodecContext,
+	ptr: *mut AVCodecContext,
 
 	_own: bool,
+}
+
+impl Context {
+	pub unsafe fn wrap(ptr: *mut AVCodecContext) -> Self {
+		Context { ptr: ptr, _own: false }
+	}
+
+	pub unsafe fn as_ptr(&self) -> *const AVCodecContext {
+		self.ptr as *const _
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVCodecContext {
+		self.ptr
+	}
 }
 
 impl Context {
@@ -22,22 +36,18 @@ impl Context {
 		}
 	}
 
-	pub fn wrap(ptr: *mut AVCodecContext) -> Self {
-		Context { ptr: ptr, _own: false }
-	}
-
-	pub fn open(self, codec: &Codec) -> Result<Opened, Error> {
+	pub fn open(mut self, codec: &Codec) -> Result<Opened, Error> {
 		unsafe {
-			match avcodec_open2(self.ptr, codec.ptr, ptr::null_mut()) {
+			match avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), ptr::null_mut()) {
 				0 => Ok(Opened(self)),
 				e => Err(Error::from(e))
 			}
 		}
 	}
 
-	pub fn open_with(self, codec: &Codec, mut options: Dictionary) -> Result<Opened, Error> {
+	pub fn open_with(mut self, codec: &Codec, options: Dictionary) -> Result<Opened, Error> {
 		unsafe {
-			match avcodec_open2(self.ptr, codec.ptr, &mut options.ptr) {
+			match avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), &mut options.take()) {
 				0 => Ok(Opened(self)),
 				e => Err(Error::from(e))
 			}
@@ -64,65 +74,65 @@ impl Context {
 
 	pub fn codec(&self) -> Option<Codec> {
 		unsafe {
-			if (*self.ptr).codec == ptr::null() {
+			if (*self.as_ptr()).codec == ptr::null() {
 				None
 			}
 			else {
-				Some(Codec::wrap((*self.ptr).codec as *mut _))
+				Some(Codec::wrap((*self.as_ptr()).codec as *mut _))
 			}
 		}
 	}
 
 	pub fn medium(&self) -> media::Type {
 		unsafe {
-			media::Type::from((*self.ptr).codec_type)
+			media::Type::from((*self.as_ptr()).codec_type)
 		}
 	}
 
 	pub fn id(&self) -> Id {
 		unsafe {
-			Id::from((*self.ptr).codec_id)
+			Id::from((*self.as_ptr()).codec_id)
 		}
 	}
 
 	pub fn bit_rate(&self) -> usize {
 		unsafe {
-			(*self.ptr).bit_rate as usize
+			(*self.as_ptr()).bit_rate as usize
 		}
 	}
 
 	pub fn delay(&self) -> usize {
 		unsafe {
-			(*self.ptr).delay as usize
+			(*self.as_ptr()).delay as usize
 		}
 	}
 
 	pub fn compliance(&mut self, value: Compliance) {
 		unsafe {
-			(*self.ptr).strict_std_compliance = value.into();
+			(*self.as_mut_ptr()).strict_std_compliance = value.into();
 		}
 	}
 
 	pub fn debug(&mut self, value: Debug) {
 		unsafe {
-			(*self.ptr).debug = value.bits();
+			(*self.as_mut_ptr()).debug = value.bits();
 		}
 	}
 
 	pub fn set_threading(&mut self, config: threading::Config) {
 		unsafe {
-			(*self.ptr).thread_type           = config.kind.into();
-			(*self.ptr).thread_count          = config.count as c_int;
-			(*self.ptr).thread_safe_callbacks = if config.safe { 1 } else { 0 };
+			(*self.as_mut_ptr()).thread_type           = config.kind.into();
+			(*self.as_mut_ptr()).thread_count          = config.count as c_int;
+			(*self.as_mut_ptr()).thread_safe_callbacks = if config.safe { 1 } else { 0 };
 		}
 	}
 
 	pub fn threading(&self) -> threading::Config {
 		unsafe {
 			threading::Config {
-				kind:  threading::Type::from((*self.ptr).active_thread_type),
-				count: (*self.ptr).thread_count as usize,
-				safe:  (*self.ptr).thread_safe_callbacks != 0,
+				kind:  threading::Type::from((*self.as_ptr()).active_thread_type),
+				count: (*self.as_ptr()).thread_count as usize,
+				safe:  (*self.as_ptr()).thread_safe_callbacks != 0,
 			}
 		}
 	}
@@ -134,7 +144,7 @@ impl Drop for Context {
 	fn drop(&mut self) {
 		if self._own {
 			unsafe {
-				avcodec_free_context(&mut self.ptr);
+				avcodec_free_context(&mut self.as_mut_ptr());
 			}
 		}
 	}
@@ -150,7 +160,7 @@ impl Clone for Context {
 
 	fn clone_from(&mut self, source: &Self) {
 		unsafe {
-			avcodec_copy_context(self.ptr, source.ptr);
+			avcodec_copy_context(self.as_mut_ptr(), source.as_ptr());
 		}
 	}
 }
@@ -192,7 +202,7 @@ impl Opened {
 impl Drop for Opened {
 	fn drop(&mut self) {
 		unsafe {
-			avcodec_close(self.0.ptr);
+			avcodec_close(self.as_mut_ptr());
 		}
 	}
 }

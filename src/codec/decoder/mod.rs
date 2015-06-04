@@ -58,49 +58,49 @@ impl Decoder {
 
 	pub fn conceal(&mut self, value: Conceal) {
 		unsafe {
-			(*self.ptr).error_concealment = value.bits();
+			(*self.as_mut_ptr()).error_concealment = value.bits();
 		}
 	}
 
 	pub fn check(&mut self, value: Check) {
 		unsafe {
-			(*self.ptr).err_recognition = value.bits();
+			(*self.as_mut_ptr()).err_recognition = value.bits();
 		}
 	}
 
 	pub fn profile(&self) -> Profile {
 		unsafe {
-			Profile::from((self.id(), (*self.ptr).profile))
+			Profile::from((self.id(), (*self.as_ptr()).profile))
 		}
 	}
 
 	pub fn skip_loop_filter(&mut self, value: Discard) {
 		unsafe {
-			(*self.ptr).skip_loop_filter = value.into();
+			(*self.as_mut_ptr()).skip_loop_filter = value.into();
 		}
 	}
 
 	pub fn skip_idct(&mut self, value: Discard) {
 		unsafe {
-			(*self.ptr).skip_idct = value.into();
+			(*self.as_mut_ptr()).skip_idct = value.into();
 		}
 	}
 
 	pub fn skip_frame(&mut self, value: Discard) {
 		unsafe {
-			(*self.ptr).skip_frame = value.into();
+			(*self.as_mut_ptr()).skip_frame = value.into();
 		}
 	}
 
 	pub fn subtitle_header(&self) -> &[u8] {
 		unsafe {
-			from_raw_parts((*self.ptr).subtitle_header, (*self.ptr).subtitle_header_size as usize)
+			from_raw_parts((*self.as_ptr()).subtitle_header, (*self.as_ptr()).subtitle_header_size as usize)
 		}
 	}
 
 	pub fn frame_rate(&self) -> Option<Rational> {
 		unsafe {
-			let value = (*self.ptr).framerate;
+			let value = (*self.as_ptr()).framerate;
 
 			if value == (AVRational { num: 0, den: 1 }) {
 				None
@@ -113,7 +113,7 @@ impl Decoder {
 
 	pub fn time_base(&self) -> Rational {
 		unsafe {
-			Rational((*self.ptr).time_base)
+			Rational((*self.as_ptr()).time_base)
 		}
 	}
 }

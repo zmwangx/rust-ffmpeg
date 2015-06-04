@@ -77,19 +77,29 @@ pub struct SideData<'a> {
 }
 
 impl<'a> SideData<'a> {
-	pub fn wrap(ptr: *mut AVPacketSideData) -> Self {
+	pub unsafe fn wrap(ptr: *mut AVPacketSideData) -> Self {
 		SideData { ptr: ptr, _marker: PhantomData }
 	}
 
+	pub unsafe fn as_ptr(&self) -> *const AVPacketSideData {
+		self.ptr as *const _
+	}
+	
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVPacketSideData {
+		self.ptr
+	}
+}
+
+impl<'a> SideData<'a> {
 	pub fn kind(&self) -> Type {
 		unsafe {
-			Type::from((*self.ptr).kind)
+			Type::from((*self.as_ptr()).kind)
 		}
 	}
 
 	pub fn data(&self) -> &[u8] {
 		unsafe {
-			slice::from_raw_parts((*self.ptr).data, (*self.ptr).size as usize)
+			slice::from_raw_parts((*self.as_ptr()).data, (*self.as_ptr()).size as usize)
 		}
 	}
 }

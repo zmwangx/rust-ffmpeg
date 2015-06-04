@@ -5,17 +5,27 @@ use libc::{c_int, c_double};
 use ffi::*;
 
 pub struct Vector<'a> {
-	pub ptr: *mut SwsVector,
+	ptr: *mut SwsVector,
 
 	_own: bool,
 	_marker: PhantomData<&'a ()>,
 }
 
 impl<'a> Vector<'a> {
-	pub fn wrap(ptr: *mut SwsVector) -> Self {
+	pub unsafe fn wrap(ptr: *mut SwsVector) -> Self {
 		Vector { ptr: ptr, _own: false, _marker: PhantomData }
 	}
 
+	pub unsafe fn as_ptr(&self) -> *const SwsVector {
+		self.ptr as *const _
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut SwsVector {
+		self.ptr
+	}
+}
+
+impl<'a> Vector<'a> {
 	pub fn new(length: usize) -> Self {
 		unsafe {
 			Vector { ptr: sws_allocVec(length as c_int), _own: true, _marker: PhantomData }
@@ -42,49 +52,49 @@ impl<'a> Vector<'a> {
 
 	pub fn scale(&mut self, scalar: f64) {
 		unsafe {
-			sws_scaleVec(self.ptr, scalar as c_double);
+			sws_scaleVec(self.as_mut_ptr(), scalar as c_double);
 		}
 	}
 
 	pub fn normalize(&mut self, height: f64) {
 		unsafe {
-			sws_normalizeVec(self.ptr, height as c_double);
+			sws_normalizeVec(self.as_mut_ptr(), height as c_double);
 		}
 	}
 
 	pub fn conv(&mut self, other: &Vector) {
 		unsafe {
-			sws_convVec(self.ptr, other.ptr);
+			sws_convVec(self.as_mut_ptr(), other.as_ptr());
 		}
 	}
 
 	pub fn add(&mut self, other: &Vector) {
 		unsafe {
-			sws_addVec(self.ptr, other.ptr);
+			sws_addVec(self.as_mut_ptr(), other.as_ptr());
 		}
 	}
 
 	pub fn sub(&mut self, other: &Vector) {
 		unsafe {
-			sws_subVec(self.ptr, other.ptr);
+			sws_subVec(self.as_mut_ptr(), other.as_ptr());
 		}
 	}
 
 	pub fn shift(&mut self, value: usize) {
 		unsafe {
-			sws_shiftVec(self.ptr, value as c_int);
+			sws_shiftVec(self.as_mut_ptr(), value as c_int);
 		}
 	}
 
 	pub fn coefficients(&self) -> &[f64] {
 		unsafe {
-			slice::from_raw_parts((*self.ptr).coeff, (*self.ptr).length as usize)
+			slice::from_raw_parts((*self.as_ptr()).coeff, (*self.as_ptr()).length as usize)
 		}
 	}
 
 	pub fn coefficients_mut(&self) -> &[f64] {
 		unsafe {
-			slice::from_raw_parts_mut((*self.ptr).coeff, (*self.ptr).length as usize)
+			slice::from_raw_parts_mut((*self.as_ptr()).coeff, (*self.as_ptr()).length as usize)
 		}
 	}
 }
@@ -92,7 +102,7 @@ impl<'a> Vector<'a> {
 impl<'a> Clone for Vector<'a> {
 	fn clone(&self) -> Self {
 		unsafe {
-			Vector { ptr: sws_cloneVec(self.ptr), _own: true, _marker: PhantomData }
+			Vector { ptr: sws_cloneVec(self.as_ptr()), _own: true, _marker: PhantomData }
 		}
 	}
 }
@@ -101,7 +111,7 @@ impl<'a> Drop for Vector<'a> {
 	fn drop(&mut self) {
 		unsafe {
 			if self._own {
-				sws_freeVec(self.ptr);
+				sws_freeVec(self.as_mut_ptr());
 			}
 		}
 	}

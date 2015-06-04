@@ -9,9 +9,27 @@ use ffi::*;
 use ::{Error, Dictionary, Codec, Stream, Format};
 
 pub struct Context {
-	pub ptr: *mut AVFormatContext,
+	ptr: *mut AVFormatContext,
 
 	_input: bool,
+}
+
+impl Context {
+	pub unsafe fn input(ptr: *mut AVFormatContext) -> Self {
+		Context {
+			ptr: ptr,
+
+			_input: true,
+		}
+	}
+
+	pub unsafe fn as_ptr(&self) -> *const AVFormatContext {
+		self.ptr as *const _
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVFormatContext {
+		self.ptr
+	}
 }
 
 impl Context {
@@ -25,27 +43,21 @@ impl Context {
 		}
 	}
 
-	pub fn input(ptr: *mut AVFormatContext) -> Self {
-		Context {
-			ptr: ptr,
-
-			_input: true,
-		}
-	}
-
 	pub fn streams(&self) -> StreamIter {
-		StreamIter::new(self.ptr)
+		unsafe {
+			StreamIter::new(self.as_ptr())
+		}
 	}
 
 	pub fn probe_score(&self) -> i32 {
 		unsafe {
-			av_format_get_probe_score(self.ptr)
+			av_format_get_probe_score(self.as_ptr())
 		}
 	}
 
 	pub fn video_codec(&self) -> Option<Codec> {
 		unsafe {
-			let ptr = av_format_get_video_codec(self.ptr);
+			let ptr = av_format_get_video_codec(self.as_ptr());
 
 			if ptr == ptr::null_mut() {
 				None
@@ -56,15 +68,15 @@ impl Context {
 		}
 	}
 
-	pub fn set_video_codec(&mut self, value: Codec) {
+	pub fn set_video_codec(&mut self, mut value: Codec) {
 		unsafe {
-			av_format_set_video_codec(self.ptr, value.ptr);
+			av_format_set_video_codec(self.as_mut_ptr(), value.as_mut_ptr());
 		}
 	}
 
 	pub fn audio_codec(&self) -> Option<Codec> {
 		unsafe {
-			let ptr = av_format_get_audio_codec(self.ptr);
+			let ptr = av_format_get_audio_codec(self.as_ptr());
 
 			if ptr == ptr::null_mut() {
 				None
@@ -75,15 +87,15 @@ impl Context {
 		}
 	}
 
-	pub fn set_audio_codec(&mut self, value: Codec) {
+	pub fn set_audio_codec(&mut self, mut value: Codec) {
 		unsafe {
-			av_format_set_audio_codec(self.ptr, value.ptr);
+			av_format_set_audio_codec(self.as_mut_ptr(), value.as_mut_ptr());
 		}
 	}
 
 	pub fn subtitle_codec(&self) -> Option<Codec> {
 		unsafe {
-			let ptr = av_format_get_subtitle_codec(self.ptr);
+			let ptr = av_format_get_subtitle_codec(self.as_ptr());
 
 			if ptr == ptr::null_mut() {
 				None
@@ -94,15 +106,15 @@ impl Context {
 		}
 	}
 
-	pub fn set_subtitle_codec(&mut self, value: Codec) {
+	pub fn set_subtitle_codec(&mut self, mut value: Codec) {
 		unsafe {
-			av_format_set_subtitle_codec(self.ptr, value.ptr);
+			av_format_set_subtitle_codec(self.as_mut_ptr(), value.as_mut_ptr());
 		}
 	}
 
 	pub fn data_codec(&self) -> Option<Codec> {
 		unsafe {
-			let ptr = av_format_get_data_codec(self.ptr);
+			let ptr = av_format_get_data_codec(self.as_ptr());
 
 			if ptr == ptr::null_mut() {
 				None
@@ -113,14 +125,16 @@ impl Context {
 		}
 	}
 
-	pub fn set_data_codec(&mut self, value: Codec) {
+	pub fn set_data_codec(&mut self, mut value: Codec) {
 		unsafe {
-			av_format_set_data_codec(self.ptr, value.ptr);
+			av_format_set_data_codec(self.as_mut_ptr(), value.as_mut_ptr());
 		}
 	}
 
-	pub fn packet(&self) -> Packet {
-		Packet::new(self.ptr)
+	pub fn packet(&mut self) -> Packet {
+		unsafe {
+			Packet::new(self.as_mut_ptr())
+		}
 	}
 }
 
@@ -128,10 +142,10 @@ impl Drop for Context {
 	fn drop(&mut self) {
 		unsafe {
 			if self._input {
-				avformat_close_input(&mut self.ptr);
+				avformat_close_input(&mut self.as_mut_ptr());
 			}
 			else {
-				avformat_free_context(self.ptr);
+				avformat_free_context(self.as_mut_ptr());
 			}
 		}
 	}
@@ -145,19 +159,29 @@ pub struct Packet<'a> {
 }
 
 impl<'a> Packet<'a> {
+	pub unsafe fn as_ptr(&self) -> *const AVFormatContext {
+		self.ptr as *const _
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVFormatContext {
+		self.ptr
+	}
+}
+
+impl<'a> Packet<'a> {
 	pub fn new(ptr: *mut AVFormatContext) -> Self {
-		Packet { ptr: ptr, pkt: ::Packet::new(), _marker: PhantomData }
+		Packet { ptr: ptr, pkt: ::Packet::empty(), _marker: PhantomData }
 	}
 
 	pub fn stream(&self) -> Stream {
 		unsafe {
-			Stream::wrap(*(*self.ptr).streams.offset(self.pkt.val.stream_index as isize))
+			Stream::wrap(*(*self.as_ptr()).streams.offset((*self.pkt.as_ptr()).stream_index as isize))
 		}
 	}
 
 	pub fn read(&mut self) -> Result<(), Error> {
 		unsafe {
-			match av_read_frame(self.ptr, &mut self.pkt.val) {
+			match av_read_frame(self.as_mut_ptr(), self.pkt.as_mut_ptr()) {
 				0 => Ok(()),
 				e => Err(Error::from(e))
 			}
@@ -166,7 +190,7 @@ impl<'a> Packet<'a> {
 
 	pub fn write(&mut self) -> Result<bool, Error> {
 		unsafe {
-			match av_write_frame(self.ptr, &mut self.pkt.val) {
+			match av_write_frame(self.as_mut_ptr(), self.pkt.as_mut_ptr()) {
 				1 => Ok(true),
 				0 => Ok(false),
 				e => Err(Error::from(e))
@@ -239,14 +263,14 @@ pub fn open(path: &Path) -> Result<Context, Error> {
 	}
 }
 
-pub fn open_with(path: &Path, mut options: Dictionary) -> Result<Context, Error> {
+pub fn open_with(path: &Path, options: Dictionary) -> Result<Context, Error> {
 	unsafe {
 		let mut ps     = ptr::null_mut();
 		let     path   = path.as_os_str().to_cstring().unwrap().as_ptr();
-		let     opts   = &mut options.ptr;
-		let     status = avformat_open_input(&mut ps, path, ptr::null_mut(), opts);
+		let mut opts   = options.take();
+		let     status = avformat_open_input(&mut ps, path, ptr::null_mut(), &mut opts);
 
-		av_dict_free(opts);
+		Dictionary::own(opts);
 
 		match status {
 			0 => {
@@ -268,7 +292,7 @@ pub fn open_as(path: &Path, format: &Format) -> Result<Context, Error> {
 		unsafe {
 			let mut ps     = ptr::null_mut();
 			let     path   = path.as_os_str().to_cstring().unwrap().as_ptr();
-			let     status = avformat_open_input(&mut ps, path, format.ptr, ptr::null_mut());
+			let     status = avformat_open_input(&mut ps, path, format.as_ptr(), ptr::null_mut());
 
 			match status {
 				0 => {
@@ -289,15 +313,15 @@ pub fn open_as(path: &Path, format: &Format) -> Result<Context, Error> {
 	}
 }
 
-pub fn open_as_with(path: &Path, format: &Format, mut options: Dictionary) -> Result<Context, Error> {
+pub fn open_as_with(path: &Path, format: &Format, options: Dictionary) -> Result<Context, Error> {
 	if let &Format::Input(ref format) = format {
 		unsafe {
 			let mut ps     = ptr::null_mut();
 			let     path   = path.as_os_str().to_cstring().unwrap().as_ptr();
-			let     opts   = &mut options.ptr;
-			let     status = avformat_open_input(&mut ps, path, format.ptr, opts);
+			let mut opts   = options.take();
+			let     status = avformat_open_input(&mut ps, path, format.as_ptr(), &mut opts);
 
-			av_dict_free(opts);
+			Dictionary::own(opts);
 
 			match status {
 				0 => {

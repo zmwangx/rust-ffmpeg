@@ -10,78 +10,86 @@ use libc::c_int;
 
 use ffi::*;
 
-pub struct Packet {
-	pub val: AVPacket,
+pub struct Packet(AVPacket);
+
+impl Packet {
+	pub unsafe fn as_ptr(&self) -> *const AVPacket {
+		&self.0
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVPacket {
+		&mut self.0
+	}
 }
 
 impl Packet {
-	pub fn new() -> Self {
+	pub fn empty() -> Self {
 		unsafe {
 			let mut pkt: AVPacket = mem::zeroed();
 
 			av_init_packet(&mut pkt);
 
-			Packet { val: pkt }
+			Packet(pkt)
 		}
 	}
 
-	pub fn sized(size: usize) -> Self {
+	pub fn new(size: usize) -> Self {
 		unsafe {
 			let mut pkt: AVPacket = mem::zeroed();
 
 			av_init_packet(&mut pkt);
 			av_new_packet(&mut pkt, size as c_int);
 
-			Packet { val: pkt }
+			Packet(pkt)
 		}
 	}
 
 	pub fn shrink(&mut self, size: usize) {
 		unsafe {
-			av_shrink_packet(&mut self.val, size as c_int);
+			av_shrink_packet(&mut self.0, size as c_int);
 		}
 	}
 
 	pub fn grow(&mut self, size: usize) {
 		unsafe {
-			av_grow_packet(&mut self.val, size as c_int);
+			av_grow_packet(&mut self.0, size as c_int);
 		}
 	}
 
 	pub fn flags(&self) -> Flags {
-		Flags::from_bits_truncate(self.val.flags)
+		Flags::from_bits_truncate(self.0.flags)
 	}
 
 	pub fn set_flags(&mut self, value: Flags) {
-		self.val.flags = value.bits();
+		self.0.flags = value.bits();
 	}
 
 	pub fn pts(&self) -> i64 {
-		self.val.pts as i64
+		self.0.pts as i64
 	}
 
 	pub fn dts(&self) -> i64 {
-		self.val.dts as i64
+		self.0.dts as i64
 	}
 
 	pub fn size(&self) -> usize {
-		self.val.size as usize
+		self.0.size as usize
 	}
 
 	pub fn duration(&self) -> usize {
-		self.val.duration as usize
+		self.0.duration as usize
 	}
 
 	pub fn position(&self) -> isize {
-		self.val.pos as isize
+		self.0.pos as isize
 	}
 
 	pub fn convergence(&self) -> isize {
-		self.val.convergence_duration as isize
+		self.0.convergence_duration as isize
 	}
 
 	pub fn side_data(&self) -> SideDataIter {
-		SideDataIter::new(&self.val)
+		SideDataIter::new(&self.0)
 	}
 }
 
@@ -89,7 +97,7 @@ unsafe impl Send for Packet { }
 
 impl Clone for Packet {
 	fn clone(&self) -> Self {
-		let mut pkt = Packet::new();
+		let mut pkt = Packet::empty();
 		pkt.clone_from(self);
 
 		pkt
@@ -97,7 +105,7 @@ impl Clone for Packet {
 
 	fn clone_from(&mut self, source: &Self) {
 		unsafe {
-			av_copy_packet(&mut self.val, &source.val);
+			av_copy_packet(&mut self.0, &source.0);
 		}
 	}
 }
@@ -105,7 +113,7 @@ impl Clone for Packet {
 impl Drop for Packet {
 	fn drop(&mut self) {
 		unsafe {
-			av_free_packet(&mut self.val);
+			av_free_packet(&mut self.0);
 		}
 	}
 }

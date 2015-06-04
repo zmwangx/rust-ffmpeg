@@ -17,84 +17,96 @@ pub struct Stream<'a> {
 }
 
 impl<'a> Stream<'a> {
-	pub fn wrap(ptr: *mut AVStream) -> Self {
+	pub unsafe fn wrap(ptr: *mut AVStream) -> Self {
 		Stream { ptr: ptr, _marker: PhantomData }
 	}
 
+	pub unsafe fn as_ptr(&self) -> *const AVStream {
+		self.ptr as *const _
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVStream {
+		self.ptr
+	}
+}
+
+impl<'a> Stream<'a> {
 	pub fn codec(&self) -> codec::Context {
 		unsafe {
-			codec::Context::wrap((*self.ptr).codec)
+			codec::Context::wrap((*self.as_ptr()).codec)
 		}
 	}
 
 	pub fn index(&self) -> usize {
 		unsafe {
-			(*self.ptr).index as usize
+			(*self.as_ptr()).index as usize
 		}
 	}
 
 	pub fn time_base(&self) -> Rational {
 		unsafe {
-			Rational((*self.ptr).time_base)
+			Rational((*self.as_ptr()).time_base)
 		}
 	}
 
 	pub fn start_time(&self) -> i64 {
 		unsafe {
-			(*self.ptr).start_time
+			(*self.as_ptr()).start_time
 		}
 	}
 
 	pub fn duration(&self) -> i64 {
 		unsafe {
-			(*self.ptr).duration
+			(*self.as_ptr()).duration
 		}
 	}
 
 	pub fn frames(&self) -> i64 {
 		unsafe {
-			(*self.ptr).nb_frames
+			(*self.as_ptr()).nb_frames
 		}
 	}
 
 	pub fn disposition(&self) -> Disposition {
 		unsafe {
-			Disposition::from_bits_truncate((*self.ptr).disposition)
+			Disposition::from_bits_truncate((*self.as_ptr()).disposition)
 		}
 	}
 
 	pub fn discard(&self) -> Discard {
 		unsafe {
-			Discard::from((*self.ptr).discard)
+			Discard::from((*self.as_ptr()).discard)
 		}
 	}
 
 	pub fn side_data(&self) -> SideDataIter {
-		SideDataIter::new(self.ptr)
+		unsafe {
+			SideDataIter::new(self.as_ptr())
+		}
 	}
 
 	pub fn frame_rate(&self) -> Rational {
 		unsafe {
-			Rational(av_stream_get_r_frame_rate(self.ptr))
+			Rational(av_stream_get_r_frame_rate(self.as_ptr()))
 		}
 	}
 
-	pub fn set_frame_rate(&self, value: Rational) {
+	pub fn set_frame_rate(&mut self, value: Rational) {
 		unsafe {
-			av_stream_set_r_frame_rate(self.ptr, value.0);
+			av_stream_set_r_frame_rate(self.as_mut_ptr(), value.0);
 		}
 	}
 }
 
 pub struct SideDataIter<'a> {
-	ptr: *mut AVStream,
+	ptr: *const AVStream,
 	cur: c_int,
 
 	_marker: PhantomData<&'a Stream<'a>>,
 }
 
 impl<'a> SideDataIter<'a> {
-	pub fn new(ptr: *mut AVStream) -> Self {
+	pub fn new(ptr: *const AVStream) -> Self {
 		SideDataIter { ptr: ptr, cur: 0, _marker: PhantomData }
 	}
 }

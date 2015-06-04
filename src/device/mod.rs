@@ -15,19 +15,29 @@ pub struct Info<'a> {
 }
 
 impl<'a> Info<'a> {
-	pub fn wrap(ptr: *mut AVDeviceInfo) -> Self {
+	pub unsafe fn wrap(ptr: *mut AVDeviceInfo) -> Self {
 		Info { ptr: ptr, _marker: PhantomData }
 	}
 
+	pub unsafe fn as_ptr(&self) -> *const AVDeviceInfo {
+		self.ptr as *const _
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVDeviceInfo {
+		self.ptr
+	}
+}
+
+impl<'a> Info<'a> {
 	pub fn name(&self) -> &str {
 		unsafe {
-			from_utf8_unchecked(CStr::from_ptr((*self.ptr).device_name).to_bytes())
+			from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).device_name).to_bytes())
 		}
 	}
 
 	pub fn description(&self) -> &str {
 		unsafe {
-			from_utf8_unchecked(CStr::from_ptr((*self.ptr).device_description).to_bytes())
+			from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).device_description).to_bytes())
 		}
 	}
 }

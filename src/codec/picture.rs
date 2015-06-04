@@ -1,16 +1,16 @@
 use std::mem;
 use std::slice;
-use std::marker::{Reflect, PhantomData};
+use std::marker::PhantomData;
 
 use libc::{c_int, size_t};
 use ffi::*;
-use ::util::format::Pixel;
+use ::format;
 use ::Error;
 
 pub struct Picture<'a> {
-	pub ptr: *mut AVPicture,
+	ptr: *mut AVPicture,
 
-	format: Pixel,
+	format: format::Pixel,
 	width:  u32,
 	height: u32,
 
@@ -19,7 +19,30 @@ pub struct Picture<'a> {
 }
 
 impl<'a> Picture<'a> {
-	pub fn size(format: Pixel, width: u32, height: u32) -> Result<usize, Error> {
+	pub unsafe fn wrap(ptr: *mut AVPicture, format: format::Pixel, width: u32, height: u32) -> Self {
+		Picture {
+			ptr: ptr,
+
+			format: format,
+			width:  width,
+			height: height,
+
+			_own:    false,
+			_marker: PhantomData
+		}
+	}
+
+	pub unsafe fn as_ptr(&self) -> *const AVPicture {
+		self.ptr as *const _
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVPicture {
+		self.ptr
+	}
+}
+
+impl<'a> Picture<'a> {
+	pub fn size(format: format::Pixel, width: u32, height: u32) -> Result<usize, Error> {
 		unsafe {
 			match avpicture_get_size(format.into(), width as c_int, height as c_int) {
 				v if v >= 0 => Ok(v as usize),
@@ -28,7 +51,7 @@ impl<'a> Picture<'a> {
 		}
 	}
 
-	pub fn new(format: Pixel, width: u32, height: u32) -> Result<Self, Error> {
+	pub fn new(format: format::Pixel, width: u32, height: u32) -> Result<Self, Error> {
 		unsafe {
 			let ptr = av_malloc(mem::size_of::<AVPicture>() as size_t) as *mut AVPicture;
 
@@ -49,20 +72,7 @@ impl<'a> Picture<'a> {
 		}
 	}
 
-	pub fn wrap(ptr: *mut AVPicture, format: Pixel, width: u32, height: u32) -> Self {
-		Picture {
-			ptr: ptr,
-
-			format: format,
-			width:  width,
-			height: height,
-
-			_own:    false,
-			_marker: PhantomData
-		}
-	}
-
-	pub fn format(&self) -> Pixel {
+	pub fn format(&self) -> format::Pixel {
 		self.format
 	}
 
@@ -83,62 +93,50 @@ impl<'a> Picture<'a> {
 		}
 	}
 
-	pub fn layout_as(&self, format: Pixel, width: u32, height: u32, out: &mut [u8]) -> Result<usize, Error> {
+	pub fn layout_as(&self, format: format::Pixel, width: u32, height: u32, out: &mut [u8]) -> Result<usize, Error> {
 		unsafe {
-			match avpicture_layout(self.ptr, format.into(), width as c_int, height as c_int, out.as_mut_ptr(), out.len() as c_int) {
+			match avpicture_layout(self.as_ptr(), format.into(), width as c_int, height as c_int, out.as_mut_ptr(), out.len() as c_int) {
 				s if s >= 0 => Ok(s as usize),
 				e           => Err(Error::from(e))
 			}
 		}
 	}
 
-	pub fn crop(&mut self, source: &Picture, top: u32, left: u32) -> Result<(), Error> {
+	pub fn crop(&self, source: &mut Picture, top: u32, left: u32) -> Result<(), Error> {
 		if self.format != source.format {
 			return Err(Error::Bug);
 		}
 
 		unsafe {
-			match av_picture_crop(self.ptr, source.ptr, self.format.into(), top as c_int, left as c_int) {
+			match av_picture_crop(source.as_mut_ptr(), self.as_ptr(), self.format.into(), top as c_int, left as c_int) {
 				0 => Ok(()),
 				e => Err(Error::from(e))
 			}
 		}
 	}
 
-	pub fn data<T: Reflect + 'static>(&self) -> Result<Vec<&[T]>, Error> {
-		if !valid::<T>(self.format) {
-			return Err(Error::InvalidData);
-		}
-
+	pub fn data(&self) -> Vec<&[u8]> {
 		let mut result = Vec::new();
 
 		unsafe {
-			for (i, length) in (*self.ptr).linesize.iter().take_while(|l| **l > 0).enumerate() {
-				result.push(slice::from_raw_parts(
-					mem::transmute((*self.ptr).data[i]),
-					((*length as usize) * (self.height as usize)) / mem::size_of::<T>()));
+			for (i, length) in (*self.as_ptr()).linesize.iter().take_while(|l| **l > 0).enumerate() {
+				result.push(slice::from_raw_parts((*self.as_ptr()).data[i], (*length as usize) * (self.height as usize)))
 			}
 		}
 
-		Ok(result)
+		result
 	}
 
-	pub fn data_mut<T: Reflect + 'static>(&mut self) -> Result<Vec<&mut [u8]>, Error> {
-		if !valid::<T>(self.format) {
-			return Err(Error::InvalidData);
-		}
-
+	pub fn data_mut(&mut self) -> Vec<&mut [u8]> {
 		let mut result = Vec::new();
 
 		unsafe {
-			for (i, length) in (*self.ptr).linesize.iter().take_while(|l| **l > 0).enumerate() {
-				result.push(slice::from_raw_parts_mut(
-					mem::transmute((*self.ptr).data[i]),
-					((*length as usize) * (self.height as usize)) / mem::size_of::<T>()));
+			for (i, length) in (*self.as_ptr()).linesize.iter().take_while(|l| **l > 0).enumerate() {
+				result.push(slice::from_raw_parts_mut((*self.as_ptr()).data[i], (*length as usize) * (self.height as usize)))
 			}
 		}
 
-		Ok(result)
+		result
 	}
 }
 
@@ -152,7 +150,7 @@ impl<'a> Clone for Picture<'a> {
 
 	fn clone_from(&mut self, source: &Self) {
 		unsafe {
-			av_picture_copy(self.ptr, source.ptr, source.format.into(), source.width as c_int, source.height as c_int);
+			av_picture_copy(self.as_mut_ptr(), source.as_ptr(), source.format.into(), source.width as c_int, source.height as c_int);
 		}
 	}
 }
@@ -161,31 +159,8 @@ impl<'a> Drop for Picture<'a> {
 	fn drop(&mut self) {
 		if self._own {
 			unsafe {
-				av_free(mem::transmute(self.ptr));
+				av_free(self.as_mut_ptr() as *mut _);
 			}
 		}
-	}
-}
-
-pub fn valid<T: Reflect + 'static>(format: Pixel) -> bool {
-	if mem::size_of::<T>() == 1 {
-		return true;
-	}
-
-	match format {
-		Pixel::None =>
-			false,
-
-		Pixel::RGB24 | Pixel::BGR24 =>
-			mem::size_of::<T>() == 3,
-
-		Pixel::ARGB | Pixel::RGBA | Pixel::ABGR | Pixel::BGRA =>
-			mem::size_of::<T>() == 4 * 4,
-
-		Pixel::ZRGB | Pixel::RGBZ | Pixel::ZBGR | Pixel::BGRZ =>
-			mem::size_of::<T>() == 4 * 4,
-
-		_ =>
-			false
 	}
 }

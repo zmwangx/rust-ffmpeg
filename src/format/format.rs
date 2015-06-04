@@ -40,29 +40,39 @@ impl Format {
 }
 
 pub struct Input {
-	pub ptr: *mut AVInputFormat,
+	ptr: *mut AVInputFormat,
 }
 
 impl Input {
-	pub fn wrap(ptr: *mut AVInputFormat) -> Self {
+	pub unsafe fn wrap(ptr: *mut AVInputFormat) -> Self {
 		Input { ptr: ptr }
 	}
 
+	pub unsafe fn as_ptr(&self) -> *const AVInputFormat {
+		self.ptr as *const _
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVInputFormat {
+		self.ptr
+	}
+}
+
+impl Input {
 	pub fn name(&self) -> &str {
 		unsafe {
-			from_utf8_unchecked(CStr::from_ptr((*self.ptr).name).to_bytes())
+			from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).name).to_bytes())
 		}
 	}
 
 	pub fn description(&self) -> &str {
 		unsafe {
-			from_utf8_unchecked(CStr::from_ptr((*self.ptr).name).to_bytes())
+			from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).name).to_bytes())
 		}
 	}
 
 	pub fn extensions(&self) -> Vec<&str> {
 		unsafe {
-			let ptr = (*self.ptr).extensions;
+			let ptr = (*self.as_ptr()).extensions;
 
 			if ptr == ptr::null() {
 				vec!()
@@ -75,7 +85,7 @@ impl Input {
 
 	pub fn mime_types(&self) -> Vec<&str> {
 		unsafe {
-			let ptr = (*self.ptr).mime_type;
+			let ptr = (*self.as_ptr()).mime_type;
 
 			if ptr == ptr::null() {
 				vec!()
@@ -88,29 +98,39 @@ impl Input {
 }
 
 pub struct Output {
-	pub ptr: *mut AVOutputFormat,
+	ptr: *mut AVOutputFormat,
 }
 
 impl Output {
-	pub fn wrap(ptr: *mut AVOutputFormat) -> Self {
+	pub unsafe fn wrap(ptr: *mut AVOutputFormat) -> Self {
 		Output { ptr: ptr }
 	}
 
+	pub unsafe fn as_ptr(&self) -> *const AVOutputFormat {
+		self.ptr as *const _
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVOutputFormat {
+		self.ptr
+	}
+}
+
+impl Output {
 	pub fn name(&self) -> &str {
 		unsafe {
-			from_utf8_unchecked(CStr::from_ptr((*self.ptr).name).to_bytes())
+			from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).name).to_bytes())
 		}
 	}
 
 	pub fn description(&self) -> &str {
 		unsafe {
-			from_utf8_unchecked(CStr::from_ptr((*self.ptr).name).to_bytes())
+			from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).name).to_bytes())
 		}
 	}
 
 	pub fn extensions(&self) -> Vec<&str> {
 		unsafe {
-			let ptr = (*self.ptr).extensions;
+			let ptr = (*self.as_ptr()).extensions;
 
 			if ptr == ptr::null() {
 				vec!()
@@ -123,7 +143,7 @@ impl Output {
 
 	pub fn mime_types(&self) -> Vec<&str> {
 		unsafe {
-			let ptr = (*self.ptr).mime_type;
+			let ptr = (*self.as_ptr()).mime_type;
 
 			if ptr == ptr::null() {
 				vec!()

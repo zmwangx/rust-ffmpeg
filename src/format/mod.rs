@@ -1,5 +1,5 @@
-pub use ::util::format::Sample;
-pub use ::util::format::Pixel;
+pub use ::util::format::{sample, Sample};
+pub use ::util::format::{pixel, Pixel};
 
 pub mod stream;
 
@@ -26,11 +26,11 @@ pub fn register_all() {
 pub fn register(format: &Format) {
 	match format {
 		&Format::Input(ref format) => unsafe {
-			av_register_input_format(format.ptr);
+			av_register_input_format(format.as_ptr());
 		},
 
 		&Format::Output(ref format) => unsafe {
-			av_register_output_format(format.ptr);
+			av_register_output_format(format.as_ptr());
 		}
 	}
 }

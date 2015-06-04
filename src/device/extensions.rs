@@ -9,7 +9,9 @@ use libc::c_int;
 
 impl Context {
 	pub fn devices(&self) -> Result<DeviceIter, Error> {
-		DeviceIter::new(self.ptr)
+		unsafe {
+			DeviceIter::wrap(self.as_ptr())
+		}
 	}
 }
 
@@ -21,20 +23,20 @@ pub struct DeviceIter<'a> {
 }
 
 impl<'a> DeviceIter<'a> {
-	pub fn new(ctx: *mut AVFormatContext) -> Result<Self, Error> {
-		unsafe {
-			let mut ptr: *mut AVDeviceInfoList = ptr::null_mut();
+	pub unsafe fn wrap(ctx: *const AVFormatContext) -> Result<Self, Error> {
+		let mut ptr: *mut AVDeviceInfoList = ptr::null_mut();
 
-			match avdevice_list_devices(ctx, &mut ptr) {
-				n if n < 0 =>
-					Err(Error::from(n)),
+		match avdevice_list_devices(ctx, &mut ptr) {
+			n if n < 0 =>
+				Err(Error::from(n)),
 
-				_ =>
-					Ok(DeviceIter { ptr: ptr, cur: 0, _marker: PhantomData })
-			}
+			_ =>
+				Ok(DeviceIter { ptr: ptr, cur: 0, _marker: PhantomData })
 		}
 	}
+}
 
+impl<'a> DeviceIter<'a> {
 	pub fn default(&self) -> usize {
 		unsafe {
 			(*self.ptr).default_device as usize

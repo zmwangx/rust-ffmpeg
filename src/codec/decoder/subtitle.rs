@@ -13,7 +13,7 @@ impl Subtitle {
 		unsafe {
 			let mut got: c_int = 0;
 
-			match avcodec_decode_subtitle2(self.ptr, &mut out.val, &mut got, &packet.val) {
+			match avcodec_decode_subtitle2(self.as_mut_ptr(), out.as_mut_ptr(), &mut got, packet.as_ptr()) {
 				e if e < 0 => Err(Error::from(e)),
 				_          => Ok(got != 0)
 			}

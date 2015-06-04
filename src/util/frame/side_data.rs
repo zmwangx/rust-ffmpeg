@@ -67,31 +67,41 @@ impl Into<AVFrameSideDataType> for Type {
 }
 
 pub struct SideData<'a> {
-	pub ptr: *mut AVFrameSideData,
+	ptr: *mut AVFrameSideData,
 
 	_marker: PhantomData<&'a Frame>,
 }
 
 impl<'a> SideData<'a> {
-	pub fn wrap(ptr: *mut AVFrameSideData) -> Self {
+	pub unsafe fn wrap(ptr: *mut AVFrameSideData) -> Self {
 		SideData { ptr: ptr, _marker: PhantomData }
 	}
 
+	pub unsafe fn as_ptr(&self) -> *const AVFrameSideData {
+		self.ptr as *const _
+	}
+
+	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVFrameSideData {
+		self.ptr
+	}
+}
+
+impl<'a> SideData<'a> {
 	pub fn kind(&self) -> Type {
 		unsafe {
-			Type::from((*self.ptr).kind)
+			Type::from((*self.as_ptr()).kind)
 		}
 	}
 
 	pub fn data(&self) -> &[u8] {
 		unsafe {
-			slice::from_raw_parts((*self.ptr).data, (*self.ptr).size as usize)
+			slice::from_raw_parts((*self.as_ptr()).data, (*self.as_ptr()).size as usize)
 		}
 	}
 
 	pub fn metadata(&self) -> Dictionary {
 		unsafe {
-			Dictionary::wrap((*self.ptr).metadata)
+			Dictionary::wrap((*self.as_ptr()).metadata)
 		}
 	}
 }

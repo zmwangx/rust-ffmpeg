@@ -20,7 +20,6 @@ pub mod decision;
 pub use self::decision::Decision;
 
 use std::ffi::CString;
-use std::ptr;
 use std::ops::{Deref, DerefMut};
 
 use libc::c_int;
@@ -126,7 +125,7 @@ pub fn find(id: Id) -> Option<Codec<'static>> {
 	unsafe {
 		let ptr = avcodec_find_encoder(id.into());
 
-		if ptr == ptr::null_mut() {
+		if ptr.is_null() {
 			None
 		}
 		else {
@@ -139,7 +138,7 @@ pub fn find_by_name(name: &str) -> Option<Codec<'static>> {
 	unsafe {
 		let ptr = avcodec_find_encoder_by_name(CString::new(name).unwrap().as_ptr());
 
-		if ptr == ptr::null_mut() {
+		if ptr.is_null() {
 			None
 		}
 		else {

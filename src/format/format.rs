@@ -74,8 +74,8 @@ impl Input {
 		unsafe {
 			let ptr = (*self.as_ptr()).extensions;
 
-			if ptr == ptr::null() {
-				vec!()
+			if ptr.is_null() {
+				Vec::new()
 			}
 			else {
 				from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()).split(',').collect()
@@ -87,8 +87,8 @@ impl Input {
 		unsafe {
 			let ptr = (*self.as_ptr()).mime_type;
 
-			if ptr == ptr::null() {
-				vec!()
+			if ptr.is_null() {
+				Vec::new()
 			}
 			else {
 				from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()).split(',').collect()
@@ -132,8 +132,8 @@ impl Output {
 		unsafe {
 			let ptr = (*self.as_ptr()).extensions;
 
-			if ptr == ptr::null() {
-				vec!()
+			if ptr.is_null() {
+				Vec::new()
 			}
 			else {
 				from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()).split(',').collect()
@@ -145,8 +145,8 @@ impl Output {
 		unsafe {
 			let ptr = (*self.as_ptr()).mime_type;
 
-			if ptr == ptr::null() {
-				vec!()
+			if ptr.is_null() {
+				Vec::new()
 			}
 			else {
 				from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()).split(',').collect()
@@ -180,7 +180,7 @@ impl Iterator for FormatIter {
 				0 => {
 					let ptr = av_iformat_next(self.input);
 
-					if ptr == ptr::null_mut() && self.input != ptr::null_mut() {
+					if ptr.is_null() && !self.input.is_null() {
 						self.step = 1;
 
 						self.next()
@@ -195,7 +195,7 @@ impl Iterator for FormatIter {
 				1 => {
 					let ptr = av_oformat_next(self.output);
 
-					if ptr == ptr::null_mut() && self.output != ptr::null_mut() {
+					if ptr.is_null() && !self.output.is_null() {
 						self.step = 2;
 
 						self.next()

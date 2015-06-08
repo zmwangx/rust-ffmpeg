@@ -59,7 +59,7 @@ impl Context {
 		unsafe {
 			let ptr = av_format_get_video_codec(self.as_ptr());
 
-			if ptr == ptr::null_mut() {
+			if ptr.is_null() {
 				None
 			}
 			else {
@@ -78,7 +78,7 @@ impl Context {
 		unsafe {
 			let ptr = av_format_get_audio_codec(self.as_ptr());
 
-			if ptr == ptr::null_mut() {
+			if ptr.is_null() {
 				None
 			}
 			else {
@@ -97,7 +97,7 @@ impl Context {
 		unsafe {
 			let ptr = av_format_get_subtitle_codec(self.as_ptr());
 
-			if ptr == ptr::null_mut() {
+			if ptr.is_null() {
 				None
 			}
 			else {
@@ -116,7 +116,7 @@ impl Context {
 		unsafe {
 			let ptr = av_format_get_data_codec(self.as_ptr());
 
-			if ptr == ptr::null_mut() {
+			if ptr.is_null() {
 				None
 			}
 			else {

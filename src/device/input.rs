@@ -13,7 +13,7 @@ impl Iterator for AudioIter {
 		unsafe {
 			let ptr = av_input_audio_device_next(self.0);
 
-			if ptr == ptr::null_mut() && self.0 != ptr::null_mut() {
+			if ptr.is_null() && !self.0.is_null() {
 				None
 			}
 			else {
@@ -38,7 +38,7 @@ impl Iterator for VideoIter {
 		unsafe {
 			let ptr = av_input_video_device_next(self.0);
 
-			if ptr == ptr::null_mut() && self.0 != ptr::null_mut() {
+			if ptr.is_null() && !self.0.is_null() {
 				None
 			}
 			else {

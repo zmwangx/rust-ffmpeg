@@ -74,7 +74,7 @@ impl Context {
 
 	pub fn codec(&self) -> Option<Codec> {
 		unsafe {
-			if (*self.as_ptr()).codec == ptr::null() {
+			if (*self.as_ptr()).codec.is_null() {
 				None
 			}
 			else {

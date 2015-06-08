@@ -16,7 +16,6 @@ pub mod check;
 pub use self::check::Check;
 
 use std::ffi::CString;
-use std::ptr;
 use std::slice::from_raw_parts;
 use std::ops::{Deref, DerefMut};
 
@@ -136,7 +135,7 @@ pub fn find(id: Id) -> Option<Codec<'static>> {
 	unsafe {
 		let ptr = avcodec_find_decoder(id.into());
 
-		if ptr == ptr::null_mut() {
+		if ptr.is_null() {
 			None
 		}
 		else {
@@ -149,7 +148,7 @@ pub fn find_by_name(name: &str) -> Option<Codec<'static>> {
 	unsafe {
 		let ptr = avcodec_find_decoder_by_name(CString::new(name).unwrap().as_ptr());
 
-		if ptr == ptr::null_mut() {
+		if ptr.is_null() {
 			None
 		}
 		else {

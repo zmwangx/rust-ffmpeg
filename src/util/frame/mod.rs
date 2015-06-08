@@ -10,8 +10,6 @@ pub use self::audio::Audio;
 pub mod flag;
 pub use self::flag::Flags;
 
-use std::ptr;
-
 use libc::c_int;
 use ffi::*;
 use ::Dictionary;
@@ -48,6 +46,10 @@ impl Frame {
 
 	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVFrame {
 		self.ptr
+	}
+
+	pub unsafe fn is_empty(&self) -> bool {
+		(*self.as_ptr()).data[0].is_null()
 	}
 }
 
@@ -118,7 +120,7 @@ impl Frame {
 		unsafe {
 			let ptr = av_frame_get_side_data(self.as_ptr(), kind.into());
 
-			if ptr == ptr::null_mut() {
+			if ptr.is_null() {
 				None
 			}
 			else {
@@ -131,7 +133,7 @@ impl Frame {
 		unsafe {
 			let ptr = av_frame_new_side_data(self.as_mut_ptr(), kind.into(), size as c_int);
 
-			if ptr == ptr::null_mut() {
+			if ptr.is_null() {
 				None
 			}
 			else {

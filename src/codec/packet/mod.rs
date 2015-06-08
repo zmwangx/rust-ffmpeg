@@ -6,9 +6,10 @@ pub use self::flag::Flags;
 
 use std::marker::PhantomData;
 use std::mem;
-use libc::c_int;
 
+use libc::c_int;
 use ffi::*;
+use ::{Error, format};
 
 pub struct Packet(AVPacket);
 
@@ -64,6 +65,14 @@ impl Packet {
 		self.0.flags = value.bits();
 	}
 
+	pub fn stream(&self) -> usize {
+		self.0.stream_index as usize
+	}
+
+	pub fn set_stream(&mut self, index: usize) {
+		self.0.stream_index = index as c_int;
+	}
+
 	pub fn pts(&self) -> i64 {
 		self.0.pts as i64
 	}
@@ -90,6 +99,35 @@ impl Packet {
 
 	pub fn side_data(&self) -> SideDataIter {
 		SideDataIter::new(&self.0)
+	}
+
+	pub fn read(&mut self, format: &mut format::Context) -> Result<(), Error> {
+		unsafe {
+			match av_read_frame(format.as_mut_ptr(), self.as_mut_ptr()) {
+				0 => Ok(()),
+				e => Err(Error::from(e))
+			}
+		}
+	}
+
+	pub fn write(&self, format: &mut format::Context) -> Result<bool, Error> {
+		unsafe {
+			match av_write_frame(format.as_mut_ptr(), self.as_ptr()) {
+				1 => Ok(true),
+				0 => Ok(false),
+				e => Err(Error::from(e))
+			}
+		}
+	}
+
+	pub fn write_interleaved(&self, format: &mut format::Context) -> Result<bool, Error> {
+		unsafe {
+			match av_interleaved_write_frame(format.as_mut_ptr(), self.as_ptr()) {
+				1 => Ok(true),
+				0 => Ok(false),
+				e => Err(Error::from(e))
+			}
+		}
 	}
 }
 

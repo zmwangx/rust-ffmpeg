@@ -100,6 +100,12 @@ impl Context {
 		if input.format() != self.input.format || input.width() != self.input.width || input.height() != self.input.height {
 			return Err(Error::InputChanged);
 		}
+		
+		unsafe {
+			if output.is_empty() {
+				output.alloc(self.output.format, self.output.width, self.output.height);
+			}
+		}
 
 		if output.format() != self.output.format || output.width() != self.output.width || output.height() != self.output.height {
 			return Err(Error::OutputChanged);

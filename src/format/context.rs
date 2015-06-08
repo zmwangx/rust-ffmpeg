@@ -206,10 +206,10 @@ impl<'a> Iterator for PacketIter<'a> {
 	}
 }
 
-pub fn open(path: &Path) -> Result<Context, Error> {
+pub fn open<T: AsRef<Path>>(path: &T) -> Result<Context, Error> {
 	unsafe {
 		let mut ps     = ptr::null_mut();
-		let     path   = path.as_os_str().to_cstring().unwrap().as_ptr();
+		let     path   = path.as_ref().as_os_str().to_cstring().unwrap().as_ptr();
 		let     status = avformat_open_input(&mut ps, path, ptr::null_mut(), ptr::null_mut());
 
 		match status {
@@ -227,10 +227,10 @@ pub fn open(path: &Path) -> Result<Context, Error> {
 	}
 }
 
-pub fn open_with(path: &Path, options: Dictionary) -> Result<Context, Error> {
+pub fn open_with<T: AsRef<Path>>(path: &T, options: Dictionary) -> Result<Context, Error> {
 	unsafe {
 		let mut ps     = ptr::null_mut();
-		let     path   = path.as_os_str().to_cstring().unwrap().as_ptr();
+		let     path   = path.as_ref().as_os_str().to_cstring().unwrap().as_ptr();
 		let mut opts   = options.take();
 		let     status = avformat_open_input(&mut ps, path, ptr::null_mut(), &mut opts);
 
@@ -251,11 +251,11 @@ pub fn open_with(path: &Path, options: Dictionary) -> Result<Context, Error> {
 	}
 }
 
-pub fn open_as(path: &Path, format: &Format) -> Result<Context, Error> {
+pub fn open_as<T: AsRef<Path>>(path: &T, format: &Format) -> Result<Context, Error> {
 	if let &Format::Input(ref format) = format {
 		unsafe {
 			let mut ps     = ptr::null_mut();
-			let     path   = path.as_os_str().to_cstring().unwrap().as_ptr();
+			let     path   = path.as_ref().as_os_str().to_cstring().unwrap().as_ptr();
 			let     status = avformat_open_input(&mut ps, path, format.as_ptr(), ptr::null_mut());
 
 			match status {
@@ -277,11 +277,11 @@ pub fn open_as(path: &Path, format: &Format) -> Result<Context, Error> {
 	}
 }
 
-pub fn open_as_with(path: &Path, format: &Format, options: Dictionary) -> Result<Context, Error> {
+pub fn open_as_with<T: AsRef<Path>>(path: &T, format: &Format, options: Dictionary) -> Result<Context, Error> {
 	if let &Format::Input(ref format) = format {
 		unsafe {
 			let mut ps     = ptr::null_mut();
-			let     path   = path.as_os_str().to_cstring().unwrap().as_ptr();
+			let     path   = path.as_ref().as_os_str().to_cstring().unwrap().as_ptr();
 			let mut opts   = options.take();
 			let     status = avformat_open_input(&mut ps, path, format.as_ptr(), &mut opts);
 

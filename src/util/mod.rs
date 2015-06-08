@@ -8,7 +8,6 @@ pub mod format;
 pub mod frame;
 pub mod chroma;
 pub mod time;
-pub mod samples;
 pub mod channel_layout;
 
 use std::ffi::CStr;

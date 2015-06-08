@@ -1,11 +1,13 @@
-use libc::c_int;
 use std::mem;
+use std::slice;
 use std::ops::{Deref, DerefMut};
+use std::any::TypeId;
+use std::marker::Reflect;
 
-use libc::{int64_t, c_ulonglong};
+use libc::{c_int, int64_t, c_ulonglong};
 use ffi::*;
-use ::{ChannelLayout, Samples};
-use ::util::format;
+use ::ChannelLayout;
+use ::util::format::Sample;
 use super::Frame;
 
 #[derive(PartialEq, Eq)]
@@ -14,6 +16,14 @@ pub struct Audio(Frame);
 impl Audio {
 	pub unsafe fn wrap(ptr: *mut AVFrame) -> Self {
 		Audio(Frame::wrap(ptr))
+	}
+
+	pub unsafe fn alloc(&mut self, format: Sample, samples: usize, layout: ChannelLayout) {
+		self.set_format(format);
+		self.set_samples(samples);
+		self.set_channel_layout(layout);
+
+		av_frame_get_buffer(self.as_mut_ptr(), 1);
 	}
 }
 
@@ -24,32 +34,27 @@ impl Audio {
 		}
 	}
 
-	pub fn new(format: format::Sample, length: usize, layout: ChannelLayout) -> Self {
+	pub fn new(format: Sample, samples: usize, layout: ChannelLayout) -> Self {
 		unsafe {
 			let mut frame = Audio::empty();
-
-			frame.set_format(format);
-			frame.set_length(length);
-			frame.set_channel_layout(layout);
-
-			av_frame_get_buffer(frame.as_mut_ptr(), 1);
+			frame.alloc(format, samples, layout);
 
 			frame
 		}
 	}
 
-	pub fn format(&self) -> format::Sample {
+	pub fn format(&self) -> Sample {
 		unsafe {
 			if (*self.as_ptr()).format == -1 {
-				format::Sample::None
+				Sample::None
 			}
 			else {
-				format::Sample::from(mem::transmute::<_, AVSampleFormat>(((*self.as_ptr()).format)))
+				Sample::from(mem::transmute::<_, AVSampleFormat>(((*self.as_ptr()).format)))
 			}
 		}
 	}
 
-	pub fn set_format(&mut self, value: format::Sample) {
+	pub fn set_format(&mut self, value: Sample) {
 		unsafe {
 			(*self.as_mut_ptr()).format = mem::transmute::<AVSampleFormat, c_int>(value.into());
 		}
@@ -91,27 +96,70 @@ impl Audio {
 		}
 	}
 
-	pub fn length(&self) -> usize {
+	pub fn samples(&self) -> usize {
 		unsafe {
 			(*self.as_ptr()).nb_samples as usize
 		}
 	}
 
-	pub fn set_length(&mut self, value: usize) {
+	pub fn set_samples(&mut self, value: usize) {
 		unsafe {
 			(*self.as_mut_ptr()).nb_samples = value as c_int;
 		}
 	}
 
-	pub fn samples(&self) -> Samples {
+	pub fn is_planar(&self) -> bool {
+		self.format().is_planar()
+	}
+
+	pub fn is_packed(&self) -> bool {
+		self.format().is_packed()
+	}
+
+	pub fn planes(&self) -> usize {
 		unsafe {
-			Samples::wrap(self.as_ptr() as *mut AVPicture, self.format(), self.rate(), self.length(), self.channels(), self.channel_layout())
+			if (*self.as_ptr()).linesize[0] == 0 {
+				return 0;
+			}
+		}
+
+		if self.is_packed() {
+			1
+		}
+		else {
+			self.samples()
 		}
 	}
 
-	pub fn samples_mut(&mut self) -> Samples {
+	pub fn plane<T: Reflect + 'static>(&self, index: usize) -> &[T] {
+		if index >= self.planes() {
+			panic!("out of bounds");
+		}
+
+		if !valid::<T>(self.format()) {
+			panic!("unsupported type");
+		}
+
 		unsafe {
-			Samples::wrap(self.as_ptr() as *mut AVPicture, self.format(), self.rate(), self.length(), self.channels(), self.channel_layout())
+			slice::from_raw_parts(
+				mem::transmute((*self.as_ptr()).data[index]),
+				mem::size_of::<T>() * self.samples())
+		}
+	}
+
+	pub fn plane_mut<T: Reflect + 'static>(&mut self, index: usize) -> &[T] {
+		if index >= self.planes() {
+			panic!("out of bounds");
+		}
+
+		if !valid::<T>(self.format()) {
+			panic!("unsupported type");
+		}
+
+		unsafe {
+			slice::from_raw_parts_mut(
+				mem::transmute((*self.as_mut_ptr()).data[index]),
+				mem::size_of::<T>() * self.samples())
 		}
 	}
 }
@@ -134,7 +182,7 @@ impl DerefMut for Audio {
 
 impl Clone for Audio {
 	fn clone(&self) -> Self {
-		let mut cloned = Audio::new(self.format(), self.length(), self.channel_layout());
+		let mut cloned = Audio::new(self.format(), self.samples(), self.channel_layout());
 		cloned.clone_from(self);
 
 		cloned
@@ -145,5 +193,30 @@ impl Clone for Audio {
 			av_frame_copy(self.as_mut_ptr(), source.as_ptr());
 			av_frame_copy_props(self.as_mut_ptr(), source.as_ptr());
 		}
+	}
+}
+
+fn valid<T: Reflect + 'static>(format: Sample) -> bool {
+	match format {
+		Sample::None =>
+			false,
+
+		Sample::U8(..) if TypeId::of::<T>() != TypeId::of::<u8>() =>
+			false,
+
+		Sample::I16(..) if TypeId::of::<T>() != TypeId::of::<i16>() =>
+			false,
+
+		Sample::I32(..) if TypeId::of::<T>() != TypeId::of::<i32>() =>
+			false,
+
+		Sample::F32(..) if TypeId::of::<T>() != TypeId::of::<f32>() =>
+			false,
+
+		Sample::F64(..) if TypeId::of::<T>() != TypeId::of::<f64>() =>
+			false,
+
+		_ =>
+			true
 	}
 }

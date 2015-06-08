@@ -1,10 +1,12 @@
-use libc::c_int;
 use std::mem;
+use std::slice;
 use std::ops::{Deref, DerefMut};
+use std::marker::Reflect;
 
+use libc::c_int;
 use ffi::*;
 use ::Rational;
-use ::util::format;
+use ::util::format::Pixel;
 use ::util::chroma;
 use ::picture;
 use ::color;
@@ -17,6 +19,14 @@ impl Video {
 	pub unsafe fn wrap(ptr: *mut AVFrame) -> Self {
 		Video(Frame::wrap(ptr))
 	}
+
+	pub unsafe fn alloc(&mut self, format: Pixel, width: u32, height: u32) {
+		self.set_format(format);
+		self.set_width(width);
+		self.set_height(height);
+
+		av_frame_get_buffer(self.as_mut_ptr(), 1);
+	}
 }
 
 impl Video {
@@ -26,32 +36,27 @@ impl Video {
 		}
 	}
 
-	pub fn new(format: format::Pixel, width: u32, height: u32) -> Self {
+	pub fn new(format: Pixel, width: u32, height: u32) -> Self {
 		unsafe {
 			let mut frame = Video::empty();
-
-			frame.set_format(format);
-			frame.set_width(width);
-			frame.set_height(height);
-
-			av_frame_get_buffer(frame.as_mut_ptr(), 1);
+			frame.alloc(format, width, height);
 
 			frame
 		}
 	}
 
-	pub fn format(&self) -> format::Pixel {
+	pub fn format(&self) -> Pixel {
 		unsafe {
 			if (*self.as_ptr()).format == -1 {
-				format::Pixel::None
+				Pixel::None
 			}
 			else {
-				format::Pixel::from(mem::transmute::<_, AVPixelFormat>(((*self.as_ptr()).format)))
+				Pixel::from(mem::transmute::<_, AVPixelFormat>(((*self.as_ptr()).format)))
 			}
 		}
 	}
 
-	pub fn set_format(&mut self, value: format::Pixel) {
+	pub fn set_format(&mut self, value: Pixel) {
 		unsafe {
 			(*self.as_mut_ptr()).format = mem::transmute::<AVPixelFormat, c_int>(value.into());
 		}
@@ -182,6 +187,78 @@ impl Video {
 			(*self.as_ptr()).repeat_pict as f64
 		}
 	}
+
+	pub fn planes(&self) -> usize {
+		for i in 0 .. 8 {
+			unsafe {
+				if (*self.as_ptr()).linesize[i] == 0 {
+					return i;
+				}
+			}
+		}
+
+		8
+	}
+
+	pub fn plane<T: Reflect + 'static>(&self, index: usize) -> &[T] {
+		if index >= self.planes() {
+			panic!("out of bounds");
+		}
+
+		if !valid::<T>(self.format()) {
+			panic!("unsupported type");
+		}
+
+		unsafe {
+			slice::from_raw_parts(
+				mem::transmute((*self.as_ptr()).data[index]),
+				(*self.as_ptr()).linesize[index] as usize * self.height() as usize / mem::size_of::<T>())
+		}
+	}
+
+	pub fn plane_mut<T: Reflect + 'static>(&mut self, index: usize) -> &mut[T] {
+		if index >= self.planes() {
+			panic!("out of bounds");
+		}
+
+		if !valid::<T>(self.format()) {
+			panic!("unsupported type");
+		}
+
+		unsafe {
+			slice::from_raw_parts_mut(
+				mem::transmute((*self.as_mut_ptr()).data[index]),
+				(*self.as_ptr()).linesize[index] as usize * self.height() as usize / mem::size_of::<T>())
+		}
+	}
+
+	pub fn data(&self) -> Vec<&[u8]> {
+		let mut result = Vec::new();
+
+		unsafe {
+			for (i, length) in (*self.as_ptr()).linesize.iter().take_while(|l| **l > 0).enumerate() {
+				result.push(slice::from_raw_parts(
+					(*self.as_ptr()).data[i],
+					*length as usize * self.height() as usize));
+			}
+		}
+
+		result
+	}
+
+	pub fn data_mut(&mut self) -> Vec<&mut [u8]> {
+		let mut result = Vec::new();
+
+		unsafe {
+			for (i, length) in (*self.as_ptr()).linesize.iter().take_while(|l| **l > 0).enumerate() {
+				result.push(slice::from_raw_parts_mut(
+					(*self.as_mut_ptr()).data[i],
+					*length as usize * self.height() as usize));
+			}
+		}
+
+		result
+	}
 }
 
 unsafe impl Send for Video { }
@@ -213,5 +290,24 @@ impl Clone for Video {
 			av_frame_copy(self.as_mut_ptr(), source.as_ptr());
 			av_frame_copy_props(self.as_mut_ptr(), source.as_ptr());
 		}
+	}
+}
+
+fn valid<T: Reflect + 'static>(format: Pixel) -> bool {
+	match format {
+		Pixel::None =>
+			false,
+
+		Pixel::RGB24 | Pixel::BGR24 =>
+			mem::size_of::<T>() == 3,
+
+		Pixel::ARGB | Pixel::RGBA | Pixel::ABGR | Pixel::BGRA =>
+			mem::size_of::<T>() == 4 * 4,
+
+		Pixel::ZRGB | Pixel::RGBZ | Pixel::ZBGR | Pixel::BGRZ =>
+			mem::size_of::<T>() == 4 * 4,
+
+		_ =>
+			false
 	}
 }

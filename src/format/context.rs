@@ -2,11 +2,10 @@ use std::ffi::CString;
 use std::ptr;
 use std::path::Path;
 use std::marker::PhantomData;
-use std::ops::{Deref, DerefMut};
 
 use libc::c_uint;
 use ffi::*;
-use ::{Error, Dictionary, Codec, Stream, Format};
+use ::{Error, Dictionary, Codec, Stream, Format, Packet};
 
 pub struct Context {
 	ptr: *mut AVFormatContext,
@@ -131,10 +130,8 @@ impl Context {
 		}
 	}
 
-	pub fn packet(&mut self) -> Packet {
-		unsafe {
-			Packet::new(self.as_mut_ptr())
-		}
+	pub fn packets(&mut self) -> PacketIter {
+		PacketIter::new(self)
 	}
 }
 
@@ -148,68 +145,6 @@ impl Drop for Context {
 				avformat_free_context(self.as_mut_ptr());
 			}
 		}
-	}
-}
-
-pub struct Packet<'a> {
-	ptr: *mut AVFormatContext,
-	pkt: ::Packet,
-
-	_marker: PhantomData<&'a Context>,
-}
-
-impl<'a> Packet<'a> {
-	pub unsafe fn as_ptr(&self) -> *const AVFormatContext {
-		self.ptr as *const _
-	}
-
-	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVFormatContext {
-		self.ptr
-	}
-}
-
-impl<'a> Packet<'a> {
-	pub fn new(ptr: *mut AVFormatContext) -> Self {
-		Packet { ptr: ptr, pkt: ::Packet::empty(), _marker: PhantomData }
-	}
-
-	pub fn stream(&self) -> Stream {
-		unsafe {
-			Stream::wrap(*(*self.as_ptr()).streams.offset((*self.pkt.as_ptr()).stream_index as isize))
-		}
-	}
-
-	pub fn read(&mut self) -> Result<(), Error> {
-		unsafe {
-			match av_read_frame(self.as_mut_ptr(), self.pkt.as_mut_ptr()) {
-				0 => Ok(()),
-				e => Err(Error::from(e))
-			}
-		}
-	}
-
-	pub fn write(&mut self) -> Result<bool, Error> {
-		unsafe {
-			match av_write_frame(self.as_mut_ptr(), self.pkt.as_mut_ptr()) {
-				1 => Ok(true),
-				0 => Ok(false),
-				e => Err(Error::from(e))
-			}
-		}
-	}
-}
-
-impl<'a> Deref for Packet<'a> {
-	type Target = ::Packet;
-
-	fn deref<'b>(&'b self) -> &'b ::Packet {
-		&self.pkt
-	}
-}
-
-impl<'a> DerefMut for Packet<'a> {
-	fn deref_mut<'b>(&'b mut self) -> &'b mut ::Packet {
-		&mut self.pkt
 	}
 }
 
@@ -238,6 +173,35 @@ impl<'a> Iterator for StreamIter<'a> {
 				self.cur += 1;
 				Some(Stream::wrap(*(*self.ptr).streams.offset((self.cur - 1) as isize)))
 			}
+		}
+	}
+}
+
+pub struct PacketIter<'a> {
+	context: &'a mut Context,
+}
+
+impl<'a> PacketIter<'a> {
+	pub fn new(context: &mut Context) -> PacketIter {
+		PacketIter { context: context }
+	}
+}
+
+impl<'a> Iterator for PacketIter<'a> {
+	type Item = (Stream<'a>, Packet);
+
+	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+		let mut packet = Packet::empty();
+
+		match packet.read(self.context) {
+			Ok(..) => unsafe {
+				let stream = Stream::wrap(*(*self.context.as_ptr()).streams.offset(packet.stream() as isize));
+
+				Some((stream, packet))
+			},
+
+			_ =>
+				None
 		}
 	}
 }

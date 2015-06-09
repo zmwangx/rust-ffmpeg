@@ -13,6 +13,8 @@ pub struct Context {
 	_input: bool,
 }
 
+unsafe impl Send for Context { }
+
 impl Context {
 	pub unsafe fn input(ptr: *mut AVFormatContext) -> Self {
 		Context {

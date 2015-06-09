@@ -127,7 +127,7 @@ impl Audio {
 			1
 		}
 		else {
-			self.samples()
+			self.channels() as usize
 		}
 	}
 
@@ -162,9 +162,35 @@ impl Audio {
 				mem::size_of::<T>() * self.samples())
 		}
 	}
-}
 
-unsafe impl Send for Audio { }
+	pub fn data(&self) -> Vec<&[u8]> {
+		let mut result = Vec::new();
+
+		unsafe {
+			for i in 0 .. self.planes() {
+				result.push(slice::from_raw_parts(
+					(*self.as_ptr()).data[i],
+					(*self.as_ptr()).linesize[0] as usize));
+			}
+		}
+
+		result
+	}
+
+	pub fn data_mut(&mut self) -> Vec<&mut [u8]> {
+		let mut result = Vec::new();
+
+		unsafe {
+			for i in 0 .. self.planes() {
+				result.push(slice::from_raw_parts_mut(
+					(*self.as_mut_ptr()).data[i],
+					(*self.as_ptr()).linesize[0] as usize));
+			}
+		}
+
+		result
+	}
+}
 
 impl Deref for Audio {
 	type Target = Frame;

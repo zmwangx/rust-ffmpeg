@@ -261,8 +261,6 @@ impl Video {
 	}
 }
 
-unsafe impl Send for Video { }
-
 impl Deref for Video {
 	type Target = Frame;
 

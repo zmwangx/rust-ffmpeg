@@ -31,6 +31,8 @@ pub struct Frame {
 	_own: bool,
 }
 
+unsafe impl Send for Frame { }
+
 impl Frame {
 	pub unsafe fn wrap(ptr: *mut AVFrame) -> Self {
 		Frame { ptr: ptr, _own: false }
@@ -148,8 +150,6 @@ impl Frame {
 		}
 	}
 }
-
-unsafe impl Send for Frame { }
 
 impl Drop for Frame {
 	fn drop(&mut self) {

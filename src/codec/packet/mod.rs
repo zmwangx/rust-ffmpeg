@@ -13,6 +13,8 @@ use ::{Error, format};
 
 pub struct Packet(AVPacket);
 
+unsafe impl Send for Packet { }
+
 impl Packet {
 	pub unsafe fn as_ptr(&self) -> *const AVPacket {
 		&self.0
@@ -130,8 +132,6 @@ impl Packet {
 		}
 	}
 }
-
-unsafe impl Send for Packet { }
 
 impl Clone for Packet {
 	fn clone(&self) -> Self {

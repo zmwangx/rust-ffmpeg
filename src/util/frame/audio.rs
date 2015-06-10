@@ -1,13 +1,11 @@
 use std::mem;
 use std::slice;
 use std::ops::{Deref, DerefMut};
-use std::any::TypeId;
-use std::marker::Reflect;
 
 use libc::{c_int, int64_t, c_ulonglong};
 use ffi::*;
 use ::ChannelLayout;
-use ::util::format::Sample;
+use ::util::format;
 use super::Frame;
 
 #[derive(PartialEq, Eq)]
@@ -18,7 +16,7 @@ impl Audio {
 		Audio(Frame::wrap(ptr))
 	}
 
-	pub unsafe fn alloc(&mut self, format: Sample, samples: usize, layout: ChannelLayout) {
+	pub unsafe fn alloc(&mut self, format: format::Sample, samples: usize, layout: ChannelLayout) {
 		self.set_format(format);
 		self.set_samples(samples);
 		self.set_channel_layout(layout);
@@ -34,7 +32,7 @@ impl Audio {
 		}
 	}
 
-	pub fn new(format: Sample, samples: usize, layout: ChannelLayout) -> Self {
+	pub fn new(format: format::Sample, samples: usize, layout: ChannelLayout) -> Self {
 		unsafe {
 			let mut frame = Audio::empty();
 			frame.alloc(format, samples, layout);
@@ -43,18 +41,18 @@ impl Audio {
 		}
 	}
 
-	pub fn format(&self) -> Sample {
+	pub fn format(&self) -> format::Sample {
 		unsafe {
 			if (*self.as_ptr()).format == -1 {
-				Sample::None
+				format::Sample::None
 			}
 			else {
-				Sample::from(mem::transmute::<_, AVSampleFormat>(((*self.as_ptr()).format)))
+				format::Sample::from(mem::transmute::<_, AVSampleFormat>(((*self.as_ptr()).format)))
 			}
 		}
 	}
 
-	pub fn set_format(&mut self, value: Sample) {
+	pub fn set_format(&mut self, value: format::Sample) {
 		unsafe {
 			(*self.as_mut_ptr()).format = mem::transmute::<AVSampleFormat, c_int>(value.into());
 		}
@@ -131,12 +129,12 @@ impl Audio {
 		}
 	}
 
-	pub fn plane<T: Reflect + 'static>(&self, index: usize) -> &[T] {
+	pub fn plane<T: Sample>(&self, index: usize) -> &[T] {
 		if index >= self.planes() {
 			panic!("out of bounds");
 		}
 
-		if !valid::<T>(self.format()) {
+		if !<T as Sample>::is_valid(self.format()) {
 			panic!("unsupported type");
 		}
 
@@ -147,12 +145,12 @@ impl Audio {
 		}
 	}
 
-	pub fn plane_mut<T: Reflect + 'static>(&mut self, index: usize) -> &[T] {
+	pub fn plane_mut<T: Sample>(&mut self, index: usize) -> &[T] {
 		if index >= self.planes() {
 			panic!("out of bounds");
 		}
 
-		if !valid::<T>(self.format()) {
+		if !<T as Sample>::is_valid(self.format()) {
 			panic!("unsupported type");
 		}
 
@@ -222,27 +220,61 @@ impl Clone for Audio {
 	}
 }
 
-fn valid<T: Reflect + 'static>(format: Sample) -> bool {
-	match format {
-		Sample::None =>
-			false,
+pub trait Sample {
+	fn is_valid(format: format::Sample) -> bool;
+}
 
-		Sample::U8(..) if TypeId::of::<T>() != TypeId::of::<u8>() =>
-			false,
-
-		Sample::I16(..) if TypeId::of::<T>() != TypeId::of::<i16>() =>
-			false,
-
-		Sample::I32(..) if TypeId::of::<T>() != TypeId::of::<i32>() =>
-			false,
-
-		Sample::F32(..) if TypeId::of::<T>() != TypeId::of::<f32>() =>
-			false,
-
-		Sample::F64(..) if TypeId::of::<T>() != TypeId::of::<f64>() =>
-			false,
-
-		_ =>
+impl Sample for u8 {
+	fn is_valid(format: format::Sample) -> bool {
+		if let format::Sample::U8(..) = format {
 			true
+		}
+		else {
+			false
+		}
+	}
+}
+
+impl Sample for i16 {
+	fn is_valid(format: format::Sample) -> bool {
+		if let format::Sample::I16(..) = format {
+			true
+		}
+		else {
+			false
+		}
+	}
+}
+
+impl Sample for i32 {
+	fn is_valid(format: format::Sample) -> bool {
+		if let format::Sample::I32(..) = format {
+			true
+		}
+		else {
+			false
+		}
+	}
+}
+
+impl Sample for f32 {
+	fn is_valid(format: format::Sample) -> bool {
+		if let format::Sample::F32(..) = format {
+			true
+		}
+		else {
+			false
+		}
+	}
+}
+
+impl Sample for f64 {
+	fn is_valid(format: format::Sample) -> bool {
+		if let format::Sample::F64(..) = format {
+			true
+		}
+		else {
+			false
+		}
 	}
 }

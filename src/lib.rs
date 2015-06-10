@@ -1,4 +1,3 @@
-#![feature(convert, core)]
 #![allow(raw_pointer_derive, non_camel_case_types)]
 
 extern crate libc;

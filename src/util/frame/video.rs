@@ -1,12 +1,11 @@
 use std::mem;
 use std::slice;
 use std::ops::{Deref, DerefMut};
-use std::marker::Reflect;
 
 use libc::c_int;
 use ffi::*;
 use ::Rational;
-use ::util::format::Pixel;
+use ::util::format;
 use ::util::chroma;
 use ::picture;
 use ::color;
@@ -20,7 +19,7 @@ impl Video {
 		Video(Frame::wrap(ptr))
 	}
 
-	pub unsafe fn alloc(&mut self, format: Pixel, width: u32, height: u32) {
+	pub unsafe fn alloc(&mut self, format: format::Pixel, width: u32, height: u32) {
 		self.set_format(format);
 		self.set_width(width);
 		self.set_height(height);
@@ -36,7 +35,7 @@ impl Video {
 		}
 	}
 
-	pub fn new(format: Pixel, width: u32, height: u32) -> Self {
+	pub fn new(format: format::Pixel, width: u32, height: u32) -> Self {
 		unsafe {
 			let mut frame = Video::empty();
 			frame.alloc(format, width, height);
@@ -45,18 +44,18 @@ impl Video {
 		}
 	}
 
-	pub fn format(&self) -> Pixel {
+	pub fn format(&self) -> format::Pixel {
 		unsafe {
 			if (*self.as_ptr()).format == -1 {
-				Pixel::None
+				format::Pixel::None
 			}
 			else {
-				Pixel::from(mem::transmute::<_, AVPixelFormat>(((*self.as_ptr()).format)))
+				format::Pixel::from(mem::transmute::<_, AVPixelFormat>(((*self.as_ptr()).format)))
 			}
 		}
 	}
 
-	pub fn set_format(&mut self, value: Pixel) {
+	pub fn set_format(&mut self, value: format::Pixel) {
 		unsafe {
 			(*self.as_mut_ptr()).format = mem::transmute::<AVPixelFormat, c_int>(value.into());
 		}
@@ -200,12 +199,12 @@ impl Video {
 		8
 	}
 
-	pub fn plane<T: Reflect + 'static>(&self, index: usize) -> &[T] {
+	pub fn plane<T: Component>(&self, index: usize) -> &[T] {
 		if index >= self.planes() {
 			panic!("out of bounds");
 		}
 
-		if !valid::<T>(self.format()) {
+		if !<T as Component>::is_valid(self.format()) {
 			panic!("unsupported type");
 		}
 
@@ -216,12 +215,12 @@ impl Video {
 		}
 	}
 
-	pub fn plane_mut<T: Reflect + 'static>(&mut self, index: usize) -> &mut[T] {
+	pub fn plane_mut<T: Component>(&mut self, index: usize) -> &mut[T] {
 		if index >= self.planes() {
 			panic!("out of bounds");
 		}
 
-		if !valid::<T>(self.format()) {
+		if !<T as Component>::is_valid(self.format()) {
 			panic!("unsupported type");
 		}
 
@@ -291,21 +290,6 @@ impl Clone for Video {
 	}
 }
 
-fn valid<T: Reflect + 'static>(format: Pixel) -> bool {
-	match format {
-		Pixel::None =>
-			false,
-
-		Pixel::RGB24 | Pixel::BGR24 =>
-			mem::size_of::<T>() == 3,
-
-		Pixel::ARGB | Pixel::RGBA | Pixel::ABGR | Pixel::BGRA =>
-			mem::size_of::<T>() == 4 * 4,
-
-		Pixel::ZRGB | Pixel::RGBZ | Pixel::ZBGR | Pixel::BGRZ =>
-			mem::size_of::<T>() == 4 * 4,
-
-		_ =>
-			false
-	}
+pub trait Component {
+	fn is_valid(format: format::Pixel) -> bool;
 }

@@ -3,7 +3,7 @@ use std::ptr;
 use std::path::Path;
 use std::marker::PhantomData;
 
-use libc::c_uint;
+use libc::{c_char, c_uint};
 use ffi::*;
 use ::{Error, Dictionary, Codec, Stream, Format, Packet};
 
@@ -208,10 +208,15 @@ impl<'a> Iterator for PacketIter<'a> {
 	}
 }
 
+// XXX: use to_cstring when stable
+fn from_path<T: AsRef<Path>>(path: &T) -> *const c_char {
+	CString::new(path.as_ref().as_os_str().to_str().unwrap()).unwrap().as_ptr()
+}
+
 pub fn open<T: AsRef<Path>>(path: &T) -> Result<Context, Error> {
 	unsafe {
 		let mut ps     = ptr::null_mut();
-		let     path   = path.as_ref().as_os_str().to_cstring().unwrap().as_ptr();
+		let     path   = from_path(path);
 		let     status = avformat_open_input(&mut ps, path, ptr::null_mut(), ptr::null_mut());
 
 		match status {
@@ -232,7 +237,7 @@ pub fn open<T: AsRef<Path>>(path: &T) -> Result<Context, Error> {
 pub fn open_with<T: AsRef<Path>>(path: &T, options: Dictionary) -> Result<Context, Error> {
 	unsafe {
 		let mut ps     = ptr::null_mut();
-		let     path   = path.as_ref().as_os_str().to_cstring().unwrap().as_ptr();
+		let     path   = from_path(path);
 		let mut opts   = options.take();
 		let     status = avformat_open_input(&mut ps, path, ptr::null_mut(), &mut opts);
 
@@ -257,7 +262,7 @@ pub fn open_as<T: AsRef<Path>>(path: &T, format: &Format) -> Result<Context, Err
 	if let &Format::Input(ref format) = format {
 		unsafe {
 			let mut ps     = ptr::null_mut();
-			let     path   = path.as_ref().as_os_str().to_cstring().unwrap().as_ptr();
+			let     path   = from_path(path);
 			let     status = avformat_open_input(&mut ps, path, format.as_ptr(), ptr::null_mut());
 
 			match status {
@@ -283,7 +288,7 @@ pub fn open_as_with<T: AsRef<Path>>(path: &T, format: &Format, options: Dictiona
 	if let &Format::Input(ref format) = format {
 		unsafe {
 			let mut ps     = ptr::null_mut();
-			let     path   = path.as_ref().as_os_str().to_cstring().unwrap().as_ptr();
+			let     path   = from_path(path);
 			let mut opts   = options.take();
 			let     status = avformat_open_input(&mut ps, path, format.as_ptr(), &mut opts);
 

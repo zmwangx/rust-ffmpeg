@@ -15,6 +15,8 @@ pub struct Context {
 	_own: bool,
 }
 
+unsafe impl Send for Context { }
+
 impl Context {
 	pub unsafe fn wrap(ptr: *mut AVCodecContext) -> Self {
 		Context { ptr: ptr, _own: false }
@@ -137,8 +139,6 @@ impl Context {
 		}
 	}
 }
-
-unsafe impl Send for Context { }
 
 impl Drop for Context {
 	fn drop(&mut self) {

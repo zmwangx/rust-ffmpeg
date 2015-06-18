@@ -128,6 +128,12 @@ impl Video {
 
 	// intra_matrix
 	// inter_matrix
+
+	pub fn intra_dc_precision(&self) -> u8 {
+		unsafe {
+			(*self.as_ptr()).intra_dc_precision as u8
+		}
+	}
 }
 
 impl Deref for Video {

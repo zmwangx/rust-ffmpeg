@@ -12,6 +12,7 @@ keywords    = ["audio", "video"]
 [features]
 default = ["codec", "device", "filter", "format", "resampling", "postprocessing", "software-resampling", "software-scaling"]
 
+static              = ["ffmpeg-sys/static"]
 codec               = ["ffmpeg-sys/avcodec"]
 device              = ["ffmpeg-sys/avdevice", "format"]
 filter              = ["ffmpeg-sys/avfilter"]
@@ -26,6 +27,6 @@ libc     = "0.1"
 bitflags = "0.1"
 
 [dependencies.ffmpeg-sys]
-version = "2.6.2"
+version = "2.7.0"
 
 default-features = false

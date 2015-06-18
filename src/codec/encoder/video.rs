@@ -217,6 +217,12 @@ impl Video {
 			(*self.as_mut_ptr()).mb_decision = value.into();
 		}
 	}
+
+	pub fn set_intra_dc_precision(&mut self, value: u8) {
+		unsafe {
+			(*self.as_mut_ptr()).intra_dc_precision = value as c_int;
+		}
+	}
 }
 
 impl Deref for Video {

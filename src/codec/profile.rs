@@ -16,6 +16,7 @@ pub enum Profile {
 	MPEG4(MPEG4),
 	JPEG2000(JPEG2000),
 	HEVC(HEVC),
+	VP9(VP9),
 }
 
 #[allow(non_camel_case_types)]
@@ -42,6 +43,7 @@ pub enum DTS {
 	_96_24,
 	HD_HRA,
 	HD_MA,
+	Express,
 }
 
 #[allow(non_camel_case_types)]
@@ -124,6 +126,15 @@ pub enum HEVC {
 	Rext,
 }
 
+#[allow(non_camel_case_types)]
+#[derive(Eq, PartialEq, Clone, Copy, Debug)]
+pub enum VP9 {
+	_0,
+	_1,
+	_2,
+	_3,
+}
+
 impl From<(Id, c_int)> for Profile {
 	fn from((id, value): (Id, c_int)) -> Profile {
 		if value == FF_PROFILE_UNKNOWN {
@@ -152,11 +163,12 @@ impl From<(Id, c_int)> for Profile {
 			},
 
 			Id::DTS => match value {
-				FF_PROFILE_DTS        => Profile::DTS(DTS::Default),
-				FF_PROFILE_DTS_ES     => Profile::DTS(DTS::ES),
-				FF_PROFILE_DTS_96_24  => Profile::DTS(DTS::_96_24),
-				FF_PROFILE_DTS_HD_HRA => Profile::DTS(DTS::HD_HRA),
-				FF_PROFILE_DTS_HD_MA  => Profile::DTS(DTS::HD_MA),
+				FF_PROFILE_DTS         => Profile::DTS(DTS::Default),
+				FF_PROFILE_DTS_ES      => Profile::DTS(DTS::ES),
+				FF_PROFILE_DTS_96_24   => Profile::DTS(DTS::_96_24),
+				FF_PROFILE_DTS_HD_HRA  => Profile::DTS(DTS::HD_HRA),
+				FF_PROFILE_DTS_HD_MA   => Profile::DTS(DTS::HD_MA),
+				FF_PROFILE_DTS_EXPRESS => Profile::DTS(DTS::Express),
 
 				_ => Profile::Unknown,
 			},
@@ -241,6 +253,15 @@ impl From<(Id, c_int)> for Profile {
 				_ => Profile::Unknown,
 			},
 
+			Id::VP9 => match value {
+				FF_PROFILE_VP9_0 => Profile::VP9(VP9::_0),
+				FF_PROFILE_VP9_1 => Profile::VP9(VP9::_1),
+				FF_PROFILE_VP9_2 => Profile::VP9(VP9::_2),
+				FF_PROFILE_VP9_3 => Profile::VP9(VP9::_3),
+
+				_ => Profile::Unknown,
+			},
+
 			_ => Profile::Unknown
 		}
 	}
@@ -269,6 +290,7 @@ impl Into<c_int> for Profile {
 			Profile::DTS(DTS::_96_24)  => FF_PROFILE_DTS_96_24,
 			Profile::DTS(DTS::HD_HRA)  => FF_PROFILE_DTS_HD_HRA,
 			Profile::DTS(DTS::HD_MA)   => FF_PROFILE_DTS_HD_MA,
+			Profile::DTS(DTS::Express) => FF_PROFILE_DTS_EXPRESS,
 
 			Profile::MPEG2(MPEG2::_422)        => FF_PROFILE_MPEG2_422,
 			Profile::MPEG2(MPEG2::High)        => FF_PROFILE_MPEG2_HIGH,
@@ -325,6 +347,11 @@ impl Into<c_int> for Profile {
 			Profile::HEVC(HEVC::Main10)           => FF_PROFILE_HEVC_MAIN_10,
 			Profile::HEVC(HEVC::MainStillPicture) => FF_PROFILE_HEVC_MAIN_STILL_PICTURE,
 			Profile::HEVC(HEVC::Rext)             => FF_PROFILE_HEVC_REXT,
+
+			Profile::VP9(VP9::_0) => FF_PROFILE_VP9_0,
+			Profile::VP9(VP9::_1) => FF_PROFILE_VP9_1,
+			Profile::VP9(VP9::_2) => FF_PROFILE_VP9_2,
+			Profile::VP9(VP9::_3) => FF_PROFILE_VP9_3,
 		}
 	}
 }

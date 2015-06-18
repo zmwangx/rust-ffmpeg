@@ -196,6 +196,8 @@ pub enum Id {
 	MVC1_DEPRECATED,
 	MVC2_DEPRECATED,
 	HQX,
+	TDSC,
+	HQ_HQA,
 
 	BRENDER_PIX,
 	Y41P,
@@ -646,6 +648,8 @@ impl From<AVCodecID> for Id {
 			AV_CODEC_ID_MVC1_DEPRECATED        => Id::MVC1_DEPRECATED,
 			AV_CODEC_ID_MVC2_DEPRECATED        => Id::MVC2_DEPRECATED,
 			AV_CODEC_ID_HQX                    => Id::HQX,
+			AV_CODEC_ID_TDSC                   => Id::TDSC,
+			AV_CODEC_ID_HQ_HQA                 => Id::HQ_HQA,
 
 			AV_CODEC_ID_BRENDER_PIX => Id::BRENDER_PIX,
 			AV_CODEC_ID_Y41P        => Id::Y41P,
@@ -1083,6 +1087,8 @@ impl Into<AVCodecID> for Id {
 			Id::MVC1_DEPRECATED        => AV_CODEC_ID_MVC1_DEPRECATED,
 			Id::MVC2_DEPRECATED        => AV_CODEC_ID_MVC2_DEPRECATED,
 			Id::HQX                    => AV_CODEC_ID_HQX,
+			Id::TDSC                   => AV_CODEC_ID_TDSC,
+			Id::HQ_HQA                 => AV_CODEC_ID_HQ_HQA,
 
 			Id::BRENDER_PIX => AV_CODEC_ID_BRENDER_PIX,
 			Id::Y41P        => AV_CODEC_ID_Y41P,

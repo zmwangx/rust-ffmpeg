@@ -195,15 +195,19 @@ impl<'a> Iterator for PacketIter<'a> {
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
 		let mut packet = Packet::empty();
 
-		match packet.read(self.context) {
-			Ok(..) => unsafe {
-				let stream = Stream::wrap(*(*self.context.as_ptr()).streams.offset(packet.stream() as isize));
+		loop {
+			match packet.read(self.context) {
+				Ok(..) =>
+					return Some((unsafe {
+						Stream::wrap(*(*self.context.as_ptr()).streams.offset(packet.stream() as isize))
+					}, packet)),
 
-				Some((stream, packet))
-			},
+				Err(Error::Eof) =>
+					return None,
 
-			_ =>
-				None
+				Err(..) =>
+					()
+			}
 		}
 	}
 }

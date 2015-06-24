@@ -21,7 +21,14 @@ impl Rational {
 		self.0.den as i32
 	}
 
-	pub fn reduce(&self, max: i32) -> (Rational, bool) {
+	pub fn reduce(&self) -> Rational {
+		match self.reduce_with_limit(i32::max_value()) {
+			Ok(r)  => r,
+			Err(r) => r,
+		}
+	}
+
+	pub fn reduce_with_limit(&self, max: i32) -> Result<Rational, Rational> {
 		unsafe {
 			let mut dst_num: c_int = 0;
 			let mut dst_den: c_int = 0;
@@ -30,7 +37,12 @@ impl Rational {
 			                      self.numerator() as int64_t, self.denominator() as int64_t,
 			                      max as int64_t);
 
-			(Rational::new(dst_num, dst_den), exact == 1)
+			if exact == 1 {
+				Ok(Rational::new(dst_num, dst_den))
+			}
+			else {
+				Err(Rational::new(dst_num, dst_den))
+			}
 		}
 	}
 
@@ -61,10 +73,18 @@ impl From<f64> for Rational {
 	}
 }
 
-impl Into<f64> for Rational {
-	fn into(self) -> f64 {
+impl From<Rational> for f64 {
+	fn from(value: Rational) -> f64 {
 		unsafe {
-			av_q2d(self.0)
+			av_q2d(value.0)
+		}
+	}
+}
+
+impl From<Rational> for u32 {
+	fn from(value: Rational) -> u32 {
+		unsafe {
+			av_q2intfloat(value.0)
 		}
 	}
 }

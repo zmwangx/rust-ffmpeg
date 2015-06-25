@@ -120,7 +120,7 @@ impl Video {
 
 	pub fn set_aspect_ratio(&mut self, value: Rational) {
 		unsafe {
-			(*self.as_mut_ptr()).sample_aspect_ratio = value.0;
+			(*self.as_mut_ptr()).sample_aspect_ratio = value.into();
 		}
 	}
 

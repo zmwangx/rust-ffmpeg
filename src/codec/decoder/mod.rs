@@ -105,14 +105,14 @@ impl Decoder {
 				None
 			}
 			else {
-				Some(Rational(value))
+				Some(Rational::from(value))
 			}
 		}
 	}
 
 	pub fn time_base(&self) -> Rational {
 		unsafe {
-			Rational((*self.as_ptr()).time_base)
+			Rational::from((*self.as_ptr()).time_base)
 		}
 	}
 }

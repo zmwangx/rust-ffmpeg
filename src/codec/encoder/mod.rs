@@ -91,7 +91,7 @@ impl Encoder {
 	pub fn set_frame_rate(&mut self, value: Option<Rational>) {
 		unsafe {
 			if let Some(value) = value {
-				(*self.as_mut_ptr()).framerate = value.0;
+				(*self.as_mut_ptr()).framerate = value.into();
 			}
 			else {
 				(*self.as_mut_ptr()).framerate.num = 0;
@@ -102,7 +102,7 @@ impl Encoder {
 
 	pub fn set_time_base(&mut self, value: Rational) {
 		unsafe {
-			(*self.as_mut_ptr()).time_base = value.0;
+			(*self.as_mut_ptr()).time_base = value.into();
 		}
 	}
 }

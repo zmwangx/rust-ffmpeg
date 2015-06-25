@@ -56,7 +56,7 @@ impl Video {
 
 	pub fn aspect_ratio(&self) -> Rational {
 		unsafe {
-			Rational((*self.as_ptr()).sample_aspect_ratio)
+			Rational::from((*self.as_ptr()).sample_aspect_ratio)
 		}
 	}
 

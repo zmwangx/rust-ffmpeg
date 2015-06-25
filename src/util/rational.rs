@@ -6,19 +6,19 @@ use libc::{c_int, int64_t};
 use ffi::*;
 
 #[derive(Eq, PartialEq, Copy, Clone)]
-pub struct Rational(pub AVRational);
+pub struct Rational(pub i32, pub i32);
 
 impl Rational {
 	pub fn new(numerator: i32, denominator: i32) -> Self {
-		Rational(AVRational { num: numerator as c_int, den: denominator as c_int })
+		Rational(numerator, denominator)
 	}
 
 	pub fn numerator(&self) -> i32 {
-		self.0.num as i32
+		self.0
 	}
 
 	pub fn denominator(&self) -> i32 {
-		self.0.den as i32
+		self.1
 	}
 
 	pub fn reduce(&self) -> Rational {
@@ -38,18 +38,30 @@ impl Rational {
 			                      max as int64_t);
 
 			if exact == 1 {
-				Ok(Rational::new(dst_num, dst_den))
+				Ok(Rational(dst_num, dst_den))
 			}
 			else {
-				Err(Rational::new(dst_num, dst_den))
+				Err(Rational(dst_num, dst_den))
 			}
 		}
 	}
 
 	pub fn invert(&self) -> Rational {
 		unsafe {
-			Rational(av_inv_q(self.0))
+			Rational::from(av_inv_q((*self).into()))
 		}
+	}
+}
+
+impl From<AVRational> for Rational {
+	fn from(value: AVRational) -> Rational {
+		Rational(value.num, value.den)
+	}
+}
+
+impl Into<AVRational> for Rational {
+	fn into(self) -> AVRational {
+		AVRational { num: self.0, den: self.1 }
 	}
 }
 
@@ -68,7 +80,7 @@ impl fmt::Debug for Rational {
 impl From<f64> for Rational {
 	fn from(value: f64) -> Rational {
 		unsafe {
-			Rational(av_d2q(value, c_int::max_value()))
+			Rational::from(av_d2q(value, c_int::max_value()))
 		}
 	}
 }
@@ -76,7 +88,7 @@ impl From<f64> for Rational {
 impl From<Rational> for f64 {
 	fn from(value: Rational) -> f64 {
 		unsafe {
-			av_q2d(value.0)
+			av_q2d(value.into())
 		}
 	}
 }
@@ -84,7 +96,7 @@ impl From<Rational> for f64 {
 impl From<Rational> for u32 {
 	fn from(value: Rational) -> u32 {
 		unsafe {
-			av_q2intfloat(value.0)
+			av_q2intfloat(value.into())
 		}
 	}
 }
@@ -92,7 +104,7 @@ impl From<Rational> for u32 {
 impl PartialOrd for Rational {
 	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
 		unsafe {
-			match av_cmp_q(self.0, other.0) {
+			match av_cmp_q((*self).into(), (*other).into()) {
 				 0 => Some(Ordering::Equal),
 				 1 => Some(Ordering::Greater),
 				-1 => Some(Ordering::Less),
@@ -108,7 +120,7 @@ impl Add for Rational {
 
 	fn add(self, other: Rational) -> Rational {
 		unsafe {
-			Rational(av_add_q(self.0, other.0))
+			Rational::from(av_add_q(self.into(), other.into()))
 		}
 	}
 }
@@ -118,7 +130,7 @@ impl Sub for Rational {
 
 	fn sub(self, other: Rational) -> Rational {
 		unsafe {
-			Rational(av_sub_q(self.0, other.0))
+			Rational::from(av_sub_q(self.into(), other.into()))
 		}
 	}
 }
@@ -128,7 +140,7 @@ impl Mul for Rational {
 
 	fn mul(self, other: Rational) -> Rational {
 		unsafe {
-			Rational(av_mul_q(self.0, other.0))
+			Rational::from(av_mul_q(self.into(), other.into()))
 		}
 	}
 }
@@ -138,14 +150,14 @@ impl Div for Rational {
 
 	fn div(self, other: Rational) -> Rational {
 		unsafe {
-			Rational(av_div_q(self.0, other.0))
+			Rational::from(av_div_q(self.into(), other.into()))
 		}
 	}
 }
 
 pub fn nearer(q: Rational, q1: Rational, q2: Rational) -> Ordering {
 	unsafe {
-		match av_nearer_q(q.0, q1.0, q2.0) {
+		match av_nearer_q(q.into(), q1.into(), q2.into()) {
 			 1 => Ordering::Greater,
 			-1 => Ordering::Less,
 			 _ => Ordering::Equal,

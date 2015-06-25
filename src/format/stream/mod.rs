@@ -45,7 +45,7 @@ impl<'a> Stream<'a> {
 
 	pub fn time_base(&self) -> Rational {
 		unsafe {
-			Rational((*self.as_ptr()).time_base)
+			Rational::from((*self.as_ptr()).time_base)
 		}
 	}
 
@@ -87,13 +87,13 @@ impl<'a> Stream<'a> {
 
 	pub fn frame_rate(&self) -> Rational {
 		unsafe {
-			Rational(av_stream_get_r_frame_rate(self.as_ptr()))
+			Rational::from(av_stream_get_r_frame_rate(self.as_ptr()))
 		}
 	}
 
 	pub fn set_frame_rate(&mut self, value: Rational) {
 		unsafe {
-			av_stream_set_r_frame_rate(self.as_mut_ptr(), value.0);
+			av_stream_set_r_frame_rate(self.as_mut_ptr(), value.into());
 		}
 	}
 }

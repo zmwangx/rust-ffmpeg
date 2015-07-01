@@ -5,7 +5,7 @@ use std::fmt;
 use libc::{c_int, int64_t};
 use ffi::*;
 
-#[derive(Eq, PartialEq, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct Rational(pub i32, pub i32);
 
 impl Rational {
@@ -100,6 +100,25 @@ impl From<Rational> for u32 {
 		}
 	}
 }
+
+impl PartialEq for Rational {
+	fn eq(&self, other: &Rational) -> bool {
+		if self.0 == other.0 && self.1 == other.1 {
+			return true;
+		}
+
+		let a = self.reduce();
+		let b = other.reduce();
+
+		if a.0 == b.0 && a.1 == b.1 {
+			return true;
+		}
+
+		false
+	}
+}
+
+impl Eq for Rational { }
 
 impl PartialOrd for Rational {
 	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {

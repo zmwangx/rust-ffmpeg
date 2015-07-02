@@ -1,11 +1,8 @@
-use std::ffi::CString;
-use std::ptr;
-use std::path::Path;
 use std::marker::PhantomData;
 
-use libc::{c_char, c_uint};
+use libc::c_uint;
 use ffi::*;
-use ::{Error, Dictionary, Codec, Stream, Format, Packet};
+use ::{Error, Codec, Stream, Packet};
 
 pub struct Context {
 	ptr: *mut AVFormatContext,
@@ -42,6 +39,14 @@ impl Context {
 				_input: false,
 			}
 		}
+	}
+
+	pub fn is_input(&self) -> bool {
+		self._input
+	}
+
+	pub fn is_output(&self) -> bool {
+		!self._input
 	}
 
 	pub fn streams(&self) -> StreamIter {
@@ -208,129 +213,6 @@ impl<'a> Iterator for PacketIter<'a> {
 				Err(..) =>
 					()
 			}
-		}
-	}
-}
-
-// XXX: use to_cstring when stable
-fn from_path<T: AsRef<Path>>(path: &T) -> *const c_char {
-	CString::new(path.as_ref().as_os_str().to_str().unwrap()).unwrap().as_ptr()
-}
-
-pub fn open<T: AsRef<Path>>(path: &T) -> Result<Context, Error> {
-	unsafe {
-		let mut ps     = ptr::null_mut();
-		let     path   = from_path(path);
-		let     status = avformat_open_input(&mut ps, path, ptr::null_mut(), ptr::null_mut());
-
-		match status {
-			0 => {
-				let ctx = Context::input(ps);
-
-				match avformat_find_stream_info(ps, ptr::null_mut()) {
-					0 => Ok(ctx),
-					e => Err(Error::from(e))
-				}
-			},
-
-			e => Err(Error::from(e))
-		}
-	}
-}
-
-pub fn open_with<T: AsRef<Path>>(path: &T, options: Dictionary) -> Result<Context, Error> {
-	unsafe {
-		let mut ps     = ptr::null_mut();
-		let     path   = from_path(path);
-		let mut opts   = options.take();
-		let     status = avformat_open_input(&mut ps, path, ptr::null_mut(), &mut opts);
-
-		Dictionary::own(opts);
-
-		match status {
-			0 => {
-				let ctx = Context::input(ps);
-
-				match avformat_find_stream_info(ps, ptr::null_mut()) {
-					0 => Ok(ctx),
-					e => Err(Error::from(e))
-				}
-			},
-
-			e => Err(Error::from(e))
-		}
-	}
-}
-
-pub fn open_as<T: AsRef<Path>>(path: &T, format: &Format) -> Result<Context, Error> {
-	if let &Format::Input(ref format) = format {
-		unsafe {
-			let mut ps     = ptr::null_mut();
-			let     path   = from_path(path);
-			let     status = avformat_open_input(&mut ps, path, format.as_ptr(), ptr::null_mut());
-
-			match status {
-				0 => {
-					let ctx = Context::input(ps);
-
-					match avformat_find_stream_info(ps, ptr::null_mut()) {
-						0 => Ok(ctx),
-						e => Err(Error::from(e))
-					}
-				},
-
-				e => Err(Error::from(e))
-			}
-		}
-	}
-	else {
-		Err(Error::Bug)
-	}
-}
-
-pub fn open_as_with<T: AsRef<Path>>(path: &T, format: &Format, options: Dictionary) -> Result<Context, Error> {
-	if let &Format::Input(ref format) = format {
-		unsafe {
-			let mut ps     = ptr::null_mut();
-			let     path   = from_path(path);
-			let mut opts   = options.take();
-			let     status = avformat_open_input(&mut ps, path, format.as_ptr(), &mut opts);
-
-			Dictionary::own(opts);
-
-			match status {
-				0 => {
-					let ctx = Context::input(ps);
-
-					match avformat_find_stream_info(ps, ptr::null_mut()) {
-						0 => Ok(ctx),
-						e => Err(Error::from(e))
-					}
-				},
-
-				e => Err(Error::from(e))
-			}
-		}
-	}
-	else {
-		Err(Error::Bug)
-	}
-}
-
-pub fn dump(ctx: &Context, index: i32, url: Option<&str>) {
-	let url = if let Some(url) = url {
-		CString::new(url).unwrap().as_ptr()
-	}
-	else {
-		ptr::null()
-	};
-
-	unsafe {
-		if ctx._input {
-			av_dump_format(ctx.ptr, index, url, 0);
-		}
-		else {
-			av_dump_format(ctx.ptr, index, url, 1);
 		}
 	}
 }

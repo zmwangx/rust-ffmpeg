@@ -204,6 +204,17 @@ impl DerefMut for Audio {
 	}
 }
 
+impl ::std::fmt::Debug for Audio {
+	fn fmt(&self, f: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
+		try!(f.write_str("ffmpeg::frame::Audio { "));
+		try!(f.write_str(&format!("format: {:?}, ", self.format())));
+		try!(f.write_str(&format!("channels: {:?}, ", self.channels())));
+		try!(f.write_str(&format!("rate: {:?}, ", self.rate())));
+		try!(f.write_str(&format!("samples: {:?} ", self.samples())));
+		f.write_str("}")
+	}
+}
+
 impl Clone for Audio {
 	fn clone(&self) -> Self {
 		let mut cloned = Audio::new(self.format(), self.samples(), self.channel_layout());

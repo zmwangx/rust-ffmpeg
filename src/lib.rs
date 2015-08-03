@@ -3,6 +3,7 @@
 extern crate libc;
 extern crate ffmpeg_sys as ffi;
 #[macro_use] extern crate bitflags;
+#[cfg(feature = "image")] extern crate image;
 
 pub mod util;
 pub use util::error::Error;

@@ -26,6 +26,10 @@ software-scaling    = ["ffmpeg-sys/swscale", "codec"]
 libc     = "0.1"
 bitflags = "0.1"
 
+[dependencies.image]
+version  = "*"
+optional = true
+
 [dependencies.ffmpeg-sys]
 version = "2.7.0"
 

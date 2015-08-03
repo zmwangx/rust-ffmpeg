@@ -293,3 +293,24 @@ impl Clone for Video {
 pub trait Component {
 	fn is_valid(format: format::Pixel) -> bool;
 }
+
+#[cfg(feature = "image")]
+impl Component for ::image::Luma<u8> {
+	fn is_valid(format: format::Pixel) -> bool {
+		format == format::Pixel::GRAY8
+	}
+}
+
+#[cfg(feature = "image")]
+impl Component for ::image::Rgb<u8> {
+	fn is_valid(format: format::Pixel) -> bool {
+		format == format::Pixel::RGB24
+	}
+}
+
+#[cfg(feature = "image")]
+impl Component for ::image::Rgba<u8> {
+	fn is_valid(format: format::Pixel) -> bool {
+		format == format::Pixel::RGBA
+	}
+}

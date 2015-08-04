@@ -314,3 +314,33 @@ impl Component for ::image::Rgba<u8> {
 		format == format::Pixel::RGBA
 	}
 }
+
+impl Component for [u8; 3] {
+	fn is_valid(format: format::Pixel) -> bool {
+		format == format::Pixel::RGB24 || format == format::Pixel::BGR24
+	}
+}
+
+impl Component for (u8, u8, u8) {
+	fn is_valid(format: format::Pixel) -> bool {
+		format == format::Pixel::RGB24 || format == format::Pixel::BGR24
+	}
+}
+
+impl Component for [u8; 4] {
+	fn is_valid(format: format::Pixel) -> bool {
+		format == format::Pixel::RGBA || format == format::Pixel::BGRA ||
+		format == format::Pixel::ARGB || format == format::Pixel::ABGR ||
+		format == format::Pixel::RGBZ || format == format::Pixel::BGRZ ||
+		format == format::Pixel::ZRGB || format == format::Pixel::ZBGR
+	}
+}
+
+impl Component for (u8, u8, u8, u8) {
+	fn is_valid(format: format::Pixel) -> bool {
+		format == format::Pixel::RGBA || format == format::Pixel::BGRA ||
+		format == format::Pixel::ARGB || format == format::Pixel::ABGR ||
+		format == format::Pixel::RGBZ || format == format::Pixel::BGRZ ||
+		format == format::Pixel::ZRGB || format == format::Pixel::ZBGR
+	}
+}

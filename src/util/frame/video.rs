@@ -290,44 +290,44 @@ impl Clone for Video {
 	}
 }
 
-pub trait Component {
+pub unsafe trait Component {
 	fn is_valid(format: format::Pixel) -> bool;
 }
 
 #[cfg(feature = "image")]
-impl Component for ::image::Luma<u8> {
+unsafe impl Component for ::image::Luma<u8> {
 	fn is_valid(format: format::Pixel) -> bool {
 		format == format::Pixel::GRAY8
 	}
 }
 
 #[cfg(feature = "image")]
-impl Component for ::image::Rgb<u8> {
+unsafe impl Component for ::image::Rgb<u8> {
 	fn is_valid(format: format::Pixel) -> bool {
 		format == format::Pixel::RGB24
 	}
 }
 
 #[cfg(feature = "image")]
-impl Component for ::image::Rgba<u8> {
+unsafe impl Component for ::image::Rgba<u8> {
 	fn is_valid(format: format::Pixel) -> bool {
 		format == format::Pixel::RGBA
 	}
 }
 
-impl Component for [u8; 3] {
+unsafe impl Component for [u8; 3] {
 	fn is_valid(format: format::Pixel) -> bool {
 		format == format::Pixel::RGB24 || format == format::Pixel::BGR24
 	}
 }
 
-impl Component for (u8, u8, u8) {
+unsafe impl Component for (u8, u8, u8) {
 	fn is_valid(format: format::Pixel) -> bool {
 		format == format::Pixel::RGB24 || format == format::Pixel::BGR24
 	}
 }
 
-impl Component for [u8; 4] {
+unsafe impl Component for [u8; 4] {
 	fn is_valid(format: format::Pixel) -> bool {
 		format == format::Pixel::RGBA || format == format::Pixel::BGRA ||
 		format == format::Pixel::ARGB || format == format::Pixel::ABGR ||
@@ -336,7 +336,7 @@ impl Component for [u8; 4] {
 	}
 }
 
-impl Component for (u8, u8, u8, u8) {
+unsafe impl Component for (u8, u8, u8, u8) {
 	fn is_valid(format: format::Pixel) -> bool {
 		format == format::Pixel::RGBA || format == format::Pixel::BGRA ||
 		format == format::Pixel::ARGB || format == format::Pixel::ABGR ||

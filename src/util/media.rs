@@ -11,6 +11,7 @@ pub enum Type {
 }
 
 impl From<AVMediaType> for Type {
+	#[inline(always)]
 	fn from(value: AVMediaType) -> Self {
 		match value {
 			AVMEDIA_TYPE_UNKNOWN    => Type::Unknown,
@@ -25,6 +26,7 @@ impl From<AVMediaType> for Type {
 }
 
 impl Into<AVMediaType> for Type {
+	#[inline(always)]
 	fn into(self) -> AVMediaType {
 		match self {
 			Type::Unknown    => AVMEDIA_TYPE_UNKNOWN,

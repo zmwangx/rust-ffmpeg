@@ -13,6 +13,7 @@ pub enum Type {
 }
 
 impl From<AVPictureType> for Type {
+	#[inline(always)]
 	fn from(value: AVPictureType) -> Type {
 		match value {
 			AV_PICTURE_TYPE_NONE => Type::None,
@@ -28,6 +29,7 @@ impl From<AVPictureType> for Type {
 }
 
 impl Into<AVPictureType> for Type {
+	#[inline(always)]
 	fn into(self) -> AVPictureType {
 		match self {
 			Type::None => AV_PICTURE_TYPE_NONE,

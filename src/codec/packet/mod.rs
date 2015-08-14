@@ -67,6 +67,14 @@ impl Packet {
 		self.0.flags = value.bits();
 	}
 
+	pub fn is_key(&self) -> bool {
+		self.flags().contains(flag::KEY)
+	}
+
+	pub fn is_corrupt(&self) -> bool {
+		self.flags().contains(flag::CORRUPT)
+	}
+
 	pub fn stream(&self) -> usize {
 		self.0.stream_index as usize
 	}

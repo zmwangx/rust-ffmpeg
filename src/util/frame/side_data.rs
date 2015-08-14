@@ -23,6 +23,7 @@ pub enum Type {
 }
 
 impl Type {
+	#[inline]
 	pub fn name(&self) -> &'static str {
 		unsafe {
 			from_utf8_unchecked(CStr::from_ptr(av_frame_side_data_name((*self).into())).to_bytes())
@@ -31,6 +32,7 @@ impl Type {
 }
 
 impl From<AVFrameSideDataType> for Type {
+	#[inline(always)]
 	fn from(value: AVFrameSideDataType) -> Self {
 		match value {
 			AV_FRAME_DATA_PANSCAN            => Type::PanScan,
@@ -49,6 +51,7 @@ impl From<AVFrameSideDataType> for Type {
 }
 
 impl Into<AVFrameSideDataType> for Type {
+	#[inline(always)]
 	fn into(self) -> AVFrameSideDataType {
 		match self {
 			Type::PanScan          => AV_FRAME_DATA_PANSCAN,
@@ -73,32 +76,38 @@ pub struct SideData<'a> {
 }
 
 impl<'a> SideData<'a> {
+	#[inline(always)]
 	pub unsafe fn wrap(ptr: *mut AVFrameSideData) -> Self {
 		SideData { ptr: ptr, _marker: PhantomData }
 	}
 
+	#[inline(always)]
 	pub unsafe fn as_ptr(&self) -> *const AVFrameSideData {
 		self.ptr as *const _
 	}
 
+	#[inline(always)]
 	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVFrameSideData {
 		self.ptr
 	}
 }
 
 impl<'a> SideData<'a> {
+	#[inline]
 	pub fn kind(&self) -> Type {
 		unsafe {
 			Type::from((*self.as_ptr()).kind)
 		}
 	}
 
+	#[inline]
 	pub fn data(&self) -> &[u8] {
 		unsafe {
 			slice::from_raw_parts((*self.as_ptr()).data, (*self.as_ptr()).size as usize)
 		}
 	}
 
+	#[inline]
 	pub fn metadata(&self) -> Dictionary {
 		unsafe {
 			Dictionary::wrap((*self.as_ptr()).metadata)

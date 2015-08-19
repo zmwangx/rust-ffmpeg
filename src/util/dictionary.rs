@@ -1,5 +1,7 @@
 use std::marker::PhantomData;
 use std::ptr;
+use std::ffi::{CStr, CString};
+use std::str::from_utf8_unchecked;
 
 use ffi::*;
 
@@ -37,6 +39,12 @@ impl<'a> Dictionary<'a> {
 	pub fn new() -> Self {
 		Dictionary { ptr: ptr::null_mut(), _own: true, _marker: PhantomData }
 	}
+
+	pub fn iter(&self) -> DictionaryIter {
+		unsafe {
+			DictionaryIter::new(self.as_ptr())
+		}
+	}
 }
 
 impl<'a> Drop for Dictionary<'a> {
@@ -46,5 +54,55 @@ impl<'a> Drop for Dictionary<'a> {
 				av_dict_free(&mut self.as_mut_ptr());
 			}
 		}
+	}
+}
+
+pub struct DictionaryIter<'a> {
+	ptr: *const AVDictionary,
+	cur: *mut AVDictionaryEntry,
+
+	_marker: PhantomData<&'a Dictionary<'a>>,
+}
+
+impl<'a> DictionaryIter<'a> {
+	pub fn new(dictionary: *const AVDictionary) -> Self {
+		DictionaryIter {
+			ptr: dictionary,
+			cur: ptr::null_mut(),
+			
+			_marker: PhantomData
+		}
+	}
+}
+
+impl<'a> Iterator for DictionaryIter<'a> {
+	type Item = (&'a str, &'a str);
+
+	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+		unsafe {
+			let empty = CString::new("").unwrap();
+			let entry = av_dict_get(self.ptr, empty.as_ptr(), self.cur, AV_DICT_IGNORE_SUFFIX);
+
+			if !entry.is_null() {
+				let key = from_utf8_unchecked(CStr::from_ptr((*entry).key).to_bytes());
+				let val = from_utf8_unchecked(CStr::from_ptr((*entry).value).to_bytes());
+
+				self.cur = entry;
+
+				Some((key, val))
+			}
+			else {
+				None
+			}
+		}
+	}
+}
+
+impl<'a> IntoIterator for &'a Dictionary<'a> {
+	type Item     = (&'a str, &'a str);
+	type IntoIter = DictionaryIter<'a>;
+
+	fn into_iter(self) -> Self::IntoIter {
+		self.iter()
 	}
 }

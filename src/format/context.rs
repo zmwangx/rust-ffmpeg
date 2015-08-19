@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use libc::c_uint;
 use ffi::*;
-use ::{Error, Codec, Stream, Packet};
+use ::{Error, Codec, Stream, Packet, Dictionary};
 
 pub struct Context {
 	ptr: *mut AVFormatContext,
@@ -52,6 +52,12 @@ impl Context {
 	pub fn streams(&self) -> StreamIter {
 		unsafe {
 			StreamIter::new(self.as_ptr())
+		}
+	}
+
+	pub fn metadata(&self) -> Dictionary {
+		unsafe {
+			Dictionary::wrap((*self.as_ptr()).metadata)
 		}
 	}
 

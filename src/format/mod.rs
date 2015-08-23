@@ -60,7 +60,7 @@ fn from_path<T: AsRef<Path>>(path: &T) -> CString {
 	CString::new(path.as_ref().as_os_str().to_str().unwrap()).unwrap()
 }
 
-pub fn open<T: AsRef<Path>>(path: &T) -> Result<Context, Error> {
+pub fn open_input<T: AsRef<Path>>(path: &T) -> Result<Context, Error> {
 	unsafe {
 		let mut ps     = ptr::null_mut();
 		let     path   = from_path(path);
@@ -81,7 +81,7 @@ pub fn open<T: AsRef<Path>>(path: &T) -> Result<Context, Error> {
 	}
 }
 
-pub fn open_with<T: AsRef<Path>>(path: &T, options: Dictionary) -> Result<Context, Error> {
+pub fn open_input_with<T: AsRef<Path>>(path: &T, options: Dictionary) -> Result<Context, Error> {
 	unsafe {
 		let mut ps     = ptr::null_mut();
 		let     path   = from_path(path);
@@ -105,7 +105,7 @@ pub fn open_with<T: AsRef<Path>>(path: &T, options: Dictionary) -> Result<Contex
 	}
 }
 
-pub fn open_as<T: AsRef<Path>>(path: &T, format: &Format) -> Result<Context, Error> {
+pub fn open_input_as<T: AsRef<Path>>(path: &T, format: &Format) -> Result<Context, Error> {
 	if let &Format::Input(ref format) = format {
 		unsafe {
 			let mut ps     = ptr::null_mut();
@@ -131,7 +131,7 @@ pub fn open_as<T: AsRef<Path>>(path: &T, format: &Format) -> Result<Context, Err
 	}
 }
 
-pub fn open_as_with<T: AsRef<Path>>(path: &T, format: &Format, options: Dictionary) -> Result<Context, Error> {
+pub fn open_input_as_with<T: AsRef<Path>>(path: &T, format: &Format, options: Dictionary) -> Result<Context, Error> {
 	if let &Format::Input(ref format) = format {
 		unsafe {
 			let mut ps     = ptr::null_mut();

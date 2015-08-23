@@ -75,7 +75,7 @@ fn main() {
 	if let Some(file) = env::args().nth(1) {
 		let path = Path::new(&file);
 
-		match ffmpeg::format::open(&path) {
+		match ffmpeg::format::open_input(&path) {
 			Ok(context) => print_metadata(&context),
 			Err(error)  => println!("error: {}", error),
 		}

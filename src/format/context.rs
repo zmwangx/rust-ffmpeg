@@ -22,6 +22,14 @@ impl Context {
 		}
 	}
 
+	pub unsafe fn output(ptr: *mut AVFormatContext) -> Self {
+		Context {
+			ptr: ptr,
+
+			_input: false,
+		}
+	}
+
 	pub unsafe fn as_ptr(&self) -> *const AVFormatContext {
 		self.ptr as *const _
 	}

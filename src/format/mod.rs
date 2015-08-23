@@ -160,6 +160,66 @@ pub fn open_input_as_with<T: AsRef<Path>>(path: &T, format: &Format, options: Di
 	}
 }
 
+pub fn open_output<T: AsRef<Path>>(path: &T) -> Result<Context, Error> {
+	unsafe {
+		let mut ps     = ptr::null_mut();
+		let     path   = from_path(path);
+		let     status = avformat_alloc_output_context2(&mut ps, ptr::null_mut(), ptr::null(), path.as_ptr());
+
+		match status {
+			0 => {
+				match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
+					0 => Ok(Context::output(ps)),
+					e => Err(Error::from(e)),
+				}
+			},
+			e => Err(Error::from(e))
+		}
+	}
+}
+
+pub fn open_output_as<T: AsRef<Path>>(path: &T, format: &Format) -> Result<Context, Error> {
+    if let &Format::Output(ref format) = format {
+	    unsafe {
+		    let mut ps     = ptr::null_mut();
+		    let     path   = from_path(path);
+		    let     status = avformat_alloc_output_context2(&mut ps, format.as_ptr(), ptr::null(), path.as_ptr());
+
+		    match status {
+				0 => {
+					match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
+						0 => Ok(Context::output(ps)),
+						e => Err(Error::from(e)),
+					}
+				},
+			    e => Err(Error::from(e))
+		    }
+	    }
+    }
+    else {
+        Err(Error::Bug)
+    }
+}
+
+pub fn open_output_as_string<T: AsRef<Path>>(path: &T, format: &str) -> Result<Context, Error> {
+	unsafe {
+		let mut ps     = ptr::null_mut();
+		let     path   = from_path(path);
+		let     format = CString::new(format).unwrap();
+		let     status = avformat_alloc_output_context2(&mut ps, ptr::null_mut(), format.as_ptr(), path.as_ptr());
+
+		match status {
+				0 => {
+					match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
+						0 => Ok(Context::output(ps)),
+						e => Err(Error::from(e)),
+					}
+				},
+			e => Err(Error::from(e))
+		}
+	}
+}
+
 pub fn dump(ctx: &Context, index: i32, url: Option<&str>) {
 	let url = url.map(|u| CString::new(u).unwrap());
 

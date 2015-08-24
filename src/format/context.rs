@@ -92,6 +92,19 @@ impl Context {
 		}
 	}
 
+	pub fn new_stream(&mut self, codec: &Codec) -> Option<StreamMut> {
+		unsafe {
+			let ptr = avformat_new_stream(self.as_mut_ptr(), codec.as_ptr());
+
+			if ptr.is_null() {
+				None
+			}
+			else {
+				Some(StreamMut::wrap(ptr))
+			}
+		}
+	}
+
 	pub fn metadata(&self) -> Dictionary {
 		unsafe {
 			Dictionary::wrap((*self.as_ptr()).metadata)

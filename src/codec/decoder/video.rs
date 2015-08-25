@@ -3,14 +3,14 @@ use std::ops::{Deref, DerefMut};
 use libc::c_int;
 use ffi::*;
 
-use super::{Decoder, slice};
+use super::{Opened, slice};
 use ::{Packet, Error, Rational, FieldOrder};
 use ::frame;
 use ::util::format;
 use ::util::chroma;
 use ::color;
 
-pub struct Video(pub Decoder);
+pub struct Video(pub Opened);
 
 impl Video {
 	pub fn decode(&mut self, packet: &Packet, out: &mut frame::Video) -> Result<bool, Error> {
@@ -137,7 +137,7 @@ impl Video {
 }
 
 impl Deref for Video {
-	type Target = Decoder;
+	type Target = Opened;
 
 	fn deref(&self) -> &<Self as Deref>::Target {
 		&self.0

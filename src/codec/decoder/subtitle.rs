@@ -3,10 +3,10 @@ use std::ops::{Deref, DerefMut};
 use libc::c_int;
 use ffi::*;
 
-use super::Decoder;
+use super::Opened;
 use ::{Packet, Error};
 
-pub struct Subtitle(pub Decoder);
+pub struct Subtitle(pub Opened);
 
 impl Subtitle {
 	pub fn decode(&mut self, packet: &Packet, out: &mut ::Subtitle) -> Result<bool, Error> {
@@ -22,7 +22,7 @@ impl Subtitle {
 }
 
 impl Deref for Subtitle {
-	type Target = Decoder;
+	type Target = Opened;
 
 	fn deref(&self) -> &<Self as Deref>::Target {
 		&self.0

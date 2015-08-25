@@ -3,12 +3,12 @@ use std::ops::{Deref, DerefMut};
 use libc::c_int;
 use ffi::*;
 
-use super::Decoder;
+use super::Opened;
 use ::{Packet, Error, AudioService, ChannelLayout};
 use ::frame;
 use ::util::format;
 
-pub struct Audio(pub Decoder);
+pub struct Audio(pub Opened);
 
 impl Audio {
 	pub fn decode(&mut self, packet: &Packet, out: &mut frame::Audio) -> Result<bool, Error> {
@@ -99,7 +99,7 @@ impl Audio {
 }
 
 impl Deref for Audio {
-	type Target = Decoder;
+	type Target = Opened;
 
 	fn deref(&self) -> &<Self as Deref>::Target {
 		&self.0

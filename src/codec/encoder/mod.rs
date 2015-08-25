@@ -24,12 +24,11 @@ use std::ops::{Deref, DerefMut};
 
 use libc::c_int;
 use ffi::*;
-use super::Id;
-use super::context::Opened;
+use super::{Id, Context};
 use ::{Codec, Error, Rational};
 use ::media;
 
-pub struct Encoder(pub Opened);
+pub struct Encoder(pub Context);
 
 impl Encoder {
 	pub fn video(self) -> Result<Video, Error> {
@@ -108,7 +107,7 @@ impl Encoder {
 }
 
 impl Deref for Encoder {
-	type Target = Opened;
+	type Target = Context;
 
 	fn deref(&self) -> &<Self as Deref>::Target {
 		&self.0

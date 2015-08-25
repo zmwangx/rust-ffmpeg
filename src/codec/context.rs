@@ -1,10 +1,9 @@
-use std::ops::{Deref, DerefMut};
 use std::ptr;
 
 use libc::c_int;
 use ffi::*;
 use ::media;
-use ::{Error, Codec, Dictionary};
+use ::Codec;
 use super::{Id, Debug, Compliance, threading};
 use super::decoder::Decoder;
 use super::encoder::Encoder;
@@ -38,40 +37,12 @@ impl Context {
 		}
 	}
 
-	pub fn open(mut self, codec: &Codec) -> Result<Opened, Error> {
-		unsafe {
-			match avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), ptr::null_mut()) {
-				0 => Ok(Opened(self)),
-				e => Err(Error::from(e))
-			}
-		}
+	pub fn decoder(self) -> Decoder {
+		Decoder(self)
 	}
 
-	pub fn open_with(mut self, codec: &Codec, options: Dictionary) -> Result<Opened, Error> {
-		unsafe {
-			match avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), &mut options.take()) {
-				0 => Ok(Opened(self)),
-				e => Err(Error::from(e))
-			}
-		}
-	}
-
-	pub fn decoder(&self) -> Result<Decoder, Error> {
-		if let Some(ref codec) = super::decoder::find(self.id()) {
-			self.clone().open(codec).and_then(|c| c.decoder())
-		}
-		else {
-			Err(Error::DecoderNotFound)
-		}
-	}
-
-	pub fn encoder(&self) -> Result<Encoder, Error> {
-		if let Some(ref codec) = super::encoder::find(self.id()) {
-			self.clone().open(codec).and_then(|c| c.encoder())
-		}
-		else {
-			Err(Error::EncoderNotFound)
-		}
+	pub fn encoder(self) -> Encoder {
+		Encoder(self)
 	}
 
 	pub fn codec(&self) -> Option<Codec> {
@@ -162,61 +133,5 @@ impl Clone for Context {
 		unsafe {
 			avcodec_copy_context(self.as_mut_ptr(), source.as_ptr());
 		}
-	}
-}
-
-pub struct Opened(pub Context);
-
-impl Opened {
-	pub fn decoder(self) -> Result<Decoder, Error> {
-		let mut valid = false;
-
-		if let Some(codec) = self.codec() {
-			valid = codec.is_decoder();
-		}
-
-		if valid {
-			Ok(Decoder(self))
-		}
-		else {
-			Err(Error::InvalidData)
-		}
-	}
-
-	pub fn encoder(self) -> Result<Encoder, Error> {
-		let mut valid = false;
-
-		if let Some(codec) = self.codec() {
-			valid = codec.is_encoder();
-		}
-
-		if valid {
-			Ok(Encoder(self))
-		}
-		else {
-			Err(Error::InvalidData)
-		}
-	}
-}
-
-impl Drop for Opened {
-	fn drop(&mut self) {
-		unsafe {
-			avcodec_close(self.as_mut_ptr());
-		}
-	}
-}
-
-impl Deref for Opened {
-	type Target = Context;
-
-	fn deref(&self) -> &<Self as Deref>::Target {
-		&self.0
-	}
-}
-
-impl DerefMut for Opened {
-	fn deref_mut(&mut self) -> &mut<Self as Deref>::Target {
-		&mut self.0
 	}
 }

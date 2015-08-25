@@ -3,9 +3,8 @@ use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
 use ffi::*;
-use super::{Id, Context, Video, Audio, Capabilities, Profile};
+use super::{Id, Video, Audio, Capabilities, Profile};
 use ::{Error, media};
-use ::codec::context::Opened;
 
 pub struct Codec<'a> {
 	ptr: *mut AVCodec,
@@ -28,10 +27,6 @@ impl<'a> Codec<'a> {
 }
 
 impl<'a> Codec<'a> {
-	pub fn open(&self) -> Result<Opened, Error> {
-		Context::new().open(self)
-	}
-
 	pub fn is_encoder(&self) -> bool {
 		unsafe {
 			av_codec_is_encoder(self.as_ptr()) != 0

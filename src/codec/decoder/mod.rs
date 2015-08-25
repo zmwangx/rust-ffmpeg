@@ -29,7 +29,16 @@ use ::{Codec, Error, Discard, Dictionary};
 pub struct Decoder(pub Context);
 
 impl Decoder {
-	pub fn open(mut self, codec: &Codec) -> Result<Opened, Error> {
+	pub fn open(mut self) -> Result<Opened, Error> {
+		unsafe {
+			match avcodec_open2(self.as_mut_ptr(), ptr::null(), ptr::null_mut()) {
+				0 => Ok(Opened(self)),
+				e => Err(Error::from(e))
+			}
+		}
+	}
+
+	pub fn open_as(mut self, codec: &Codec) -> Result<Opened, Error> {
 		unsafe {
 			if codec.is_decoder() {
 				match avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), ptr::null_mut()) {
@@ -43,13 +52,13 @@ impl Decoder {
 		}
 	}
 
-	pub fn open_with(mut self, codec: &Codec, options: Dictionary) -> Result<Opened, Error> {
+	pub fn open_as_with(mut self, codec: &Codec, options: Dictionary) -> Result<Opened, Error> {
 		unsafe {
 			if codec.is_decoder() {
-					match avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), &mut options.take()) {
-						0 => Ok(Opened(self)),
-						e => Err(Error::from(e))
-					}
+				match avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), &mut options.take()) {
+					0 => Ok(Opened(self)),
+					e => Err(Error::from(e))
+				}
 			}
 			else {
 				Err(Error::InvalidData)
@@ -59,7 +68,7 @@ impl Decoder {
 
 	pub fn video(self) -> Result<Video, Error> {
 		if let Some(ref codec) = find(self.id()) {
-			self.open(codec).and_then(|o| o.video())
+			self.open_as(codec).and_then(|o| o.video())
 		}
 		else {
 			Err(Error::DecoderNotFound)
@@ -68,7 +77,7 @@ impl Decoder {
 
 	pub fn audio(self) -> Result<Audio, Error> {
 		if let Some(ref codec) = find(self.id()) {
-			self.open(codec).and_then(|o| o.audio())
+			self.open_as(codec).and_then(|o| o.audio())
 		}
 		else {
 			Err(Error::DecoderNotFound)
@@ -77,7 +86,7 @@ impl Decoder {
 
 	pub fn subtitle(self) -> Result<Subtitle, Error> {
 		if let Some(ref codec) = find(self.id()) {
-			self.open(codec).and_then(|o| o.subtitle())
+			self.open_as(codec).and_then(|o| o.subtitle())
 		}
 		else {
 			Err(Error::DecoderNotFound)

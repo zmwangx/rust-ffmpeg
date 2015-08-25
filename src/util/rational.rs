@@ -73,18 +73,6 @@ impl Into<AVRational> for Rational {
 	}
 }
 
-impl fmt::Display for Rational {
-	fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-		f.write_str(&format!("{}/{}", self.numerator(), self.denominator()))
-	}
-}
-
-impl fmt::Debug for Rational {
-	fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-		f.write_str(&format!("Rational({}/{})", self.numerator(), self.denominator()))
-	}
-}
-
 impl From<f64> for Rational {
 	#[inline]
 	fn from(value: f64) -> Rational {
@@ -109,6 +97,12 @@ impl From<Rational> for u32 {
 		unsafe {
 			av_q2intfloat(value.into())
 		}
+	}
+}
+
+impl From<(i32, i32)> for Rational {
+	fn from((num, den): (i32, i32)) -> Rational {
+		Rational::new(num, den)
 	}
 }
 
@@ -187,6 +181,18 @@ impl Div for Rational {
 		unsafe {
 			Rational::from(av_div_q(self.into(), other.into()))
 		}
+	}
+}
+
+impl fmt::Display for Rational {
+	fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+		f.write_str(&format!("{}/{}", self.numerator(), self.denominator()))
+	}
+}
+
+impl fmt::Debug for Rational {
+	fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+		f.write_str(&format!("Rational({}/{})", self.numerator(), self.denominator()))
 	}
 }
 

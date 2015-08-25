@@ -113,4 +113,12 @@ impl<'a> Iterator for SideDataIter<'a> {
 			}
 		}
 	}
+
+	fn size_hint(&self) -> (usize, Option<usize>) {
+		unsafe {
+			((*self.ptr).nb_side_data as usize, Some((*self.ptr).nb_side_data as usize))
+		}
+	}
 }
+
+impl<'a> ExactSizeIterator for SideDataIter<'a> { }

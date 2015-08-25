@@ -118,7 +118,15 @@ impl<'a> Iterator for RectIter<'a> {
 			}
 		}
 	}
+
+	fn size_hint(&self) -> (usize, Option<usize>) {
+		unsafe {
+			((*self.ptr).num_rects as usize, Some((*self.ptr).num_rects as usize))
+		}
+	}
 }
+
+impl<'a> ExactSizeIterator for RectIter<'a> { }
 
 pub enum Rect<'a> {
 	None,

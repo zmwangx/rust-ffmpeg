@@ -66,4 +66,12 @@ impl<'a> Iterator for DeviceIter<'a> {
 			}
 		}
 	}
+
+	fn size_hint(&self) -> (usize, Option<usize>) {
+		unsafe {
+			((*self.ptr).nb_devices as usize, Some((*self.ptr).nb_devices as usize))
+		}
+	}
 }
+
+impl<'a> ExactSizeIterator for DeviceIter<'a> { }

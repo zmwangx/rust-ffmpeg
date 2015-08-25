@@ -216,7 +216,15 @@ impl<'a> Iterator for StreamIter<'a> {
 			}
 		}
 	}
+
+	fn size_hint(&self) -> (usize, Option<usize>) {
+		unsafe {
+			((*self.ptr).nb_streams as usize, Some((*self.ptr).nb_streams as usize))
+		}
+	}
 }
+
+impl<'a> ExactSizeIterator for StreamIter<'a> { }
 
 pub struct StreamIterMut<'a> {
 	ptr: *const AVFormatContext,
@@ -245,7 +253,15 @@ impl<'a> Iterator for StreamIterMut<'a> {
 			}
 		}
 	}
+
+	fn size_hint(&self) -> (usize, Option<usize>) {
+		unsafe {
+			((*self.ptr).nb_streams as usize, Some((*self.ptr).nb_streams as usize))
+		}
+	}
 }
+
+impl<'a> ExactSizeIterator for StreamIterMut<'a> { }
 
 pub struct PacketIter<'a> {
 	context: &'a mut Context,

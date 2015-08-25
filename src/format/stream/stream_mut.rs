@@ -25,9 +25,9 @@ impl<'a> StreamMut<'a> {
 }
 
 impl<'a> StreamMut<'a> {
-	pub fn set_frame_rate(&mut self, value: Rational) {
+	pub fn set_frame_rate<R: Into<Rational>>(&mut self, value: R) {
 		unsafe {
-			av_stream_set_r_frame_rate(self.as_mut_ptr(), value.into());
+			av_stream_set_r_frame_rate(self.as_mut_ptr(), value.into().into());
 		}
 	}
 }

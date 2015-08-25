@@ -118,9 +118,9 @@ impl Video {
 		}
 	}
 
-	pub fn set_aspect_ratio(&mut self, value: Rational) {
+	pub fn set_aspect_ratio<R: Into<Rational>>(&mut self, value: R) {
 		unsafe {
-			(*self.as_mut_ptr()).sample_aspect_ratio = value.into();
+			(*self.as_mut_ptr()).sample_aspect_ratio = value.into().into();
 		}
 	}
 

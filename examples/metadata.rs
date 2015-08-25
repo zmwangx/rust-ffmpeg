@@ -33,11 +33,11 @@ fn print_metadata(context: &ffmpeg::format::Context) {
 		let codec = stream.codec();
 		println!("\tmedium: {:?}", codec.medium());
 		println!("\tid: {:?}", codec.id());
-		println!("\tbit_rate: {}", codec.bit_rate());
-		println!("\tdelay: {}", codec.delay());
 
-		if let Ok(decoder) = codec.decoder() {
-			if let Ok(video) = decoder.video() {
+		if codec.medium() == ffmpeg::media::Type::Video {
+			if let Ok(video) = codec.decoder().video() {
+				println!("\tbit_rate: {}", video.bit_rate());
+				println!("\tdelay: {}", video.delay());
 				println!("\tvideo.width: {}", video.width());
 				println!("\tvideo.height: {}", video.height());
 				println!("\tvideo.format: {:?}", video.format());
@@ -52,9 +52,10 @@ fn print_metadata(context: &ffmpeg::format::Context) {
 				println!("\tvideo.intra_dc_precision: {}", video.intra_dc_precision());
 			}
 		}
-
-		if let Ok(decoder) = codec.decoder() {
-			if let Ok(audio) = decoder.audio() {
+		else if codec.medium() == ffmpeg::media::Type::Audio {
+			if let Ok(audio) = codec.decoder().audio() {
+				println!("\tbit_rate: {}", audio.bit_rate());
+				println!("\tdelay: {}", audio.delay());
 				println!("\taudio.rate: {}", audio.rate());
 				println!("\taudio.channels: {}", audio.channels());
 				println!("\taudio.format: {:?}", audio.format());

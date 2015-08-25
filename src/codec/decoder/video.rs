@@ -42,12 +42,6 @@ impl Video {
 		}
 	}
 
-	pub fn set_format(&mut self, value: format::Pixel) {
-		unsafe {
-			(*self.as_mut_ptr()).pix_fmt = value.into();
-		}
-	}
-
 	pub fn has_b_frames(&self) -> bool {
 		unsafe {
 			(*self.as_ptr()).has_b_frames != 0

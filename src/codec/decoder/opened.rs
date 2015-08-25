@@ -1,10 +1,9 @@
 use std::ops::{Deref, DerefMut};
-use std::slice::from_raw_parts;
 
 use ffi::*;
-use super::{Conceal, Check, Video, Audio, Subtitle, Decoder};
+use super::{Video, Audio, Subtitle, Decoder};
 use ::codec::Profile;
-use ::{Error, Discard, Rational};
+use ::{Error, Rational};
 use ::media;
 
 pub struct Opened(pub Decoder);
@@ -37,45 +36,21 @@ impl Opened {
 		}
 	}
 
-	pub fn conceal(&mut self, value: Conceal) {
+	pub fn bit_rate(&self) -> usize {
 		unsafe {
-			(*self.as_mut_ptr()).error_concealment = value.bits();
+			(*self.as_ptr()).bit_rate as usize
 		}
 	}
 
-	pub fn check(&mut self, value: Check) {
+	pub fn delay(&self) -> usize {
 		unsafe {
-			(*self.as_mut_ptr()).err_recognition = value.bits();
+			(*self.as_ptr()).delay as usize
 		}
 	}
 
 	pub fn profile(&self) -> Profile {
 		unsafe {
 			Profile::from((self.id(), (*self.as_ptr()).profile))
-		}
-	}
-
-	pub fn skip_loop_filter(&mut self, value: Discard) {
-		unsafe {
-			(*self.as_mut_ptr()).skip_loop_filter = value.into();
-		}
-	}
-
-	pub fn skip_idct(&mut self, value: Discard) {
-		unsafe {
-			(*self.as_mut_ptr()).skip_idct = value.into();
-		}
-	}
-
-	pub fn skip_frame(&mut self, value: Discard) {
-		unsafe {
-			(*self.as_mut_ptr()).skip_frame = value.into();
-		}
-	}
-
-	pub fn subtitle_header(&self) -> &[u8] {
-		unsafe {
-			from_raw_parts((*self.as_ptr()).subtitle_header, (*self.as_ptr()).subtitle_header_size as usize)
 		}
 	}
 
@@ -89,12 +64,6 @@ impl Opened {
 			else {
 				Some(Rational::from(value))
 			}
-		}
-	}
-
-	pub fn time_base(&self) -> Rational {
-		unsafe {
-			Rational::from((*self.as_ptr()).time_base)
 		}
 	}
 }

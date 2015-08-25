@@ -24,7 +24,7 @@ use std::ops::{Deref, DerefMut};
 
 use ffi::*;
 use super::{Id, Context};
-use ::{Codec, Error, Dictionary};
+use ::{Codec, Error, Discard, Dictionary};
 
 pub struct Decoder(pub Context);
 
@@ -81,6 +81,36 @@ impl Decoder {
 		}
 		else {
 			Err(Error::DecoderNotFound)
+		}
+	}
+
+	pub fn conceal(&mut self, value: Conceal) {
+		unsafe {
+			(*self.as_mut_ptr()).error_concealment = value.bits();
+		}
+	}
+
+	pub fn check(&mut self, value: Check) {
+		unsafe {
+			(*self.as_mut_ptr()).err_recognition = value.bits();
+		}
+	}
+
+	pub fn skip_loop_filter(&mut self, value: Discard) {
+		unsafe {
+			(*self.as_mut_ptr()).skip_loop_filter = value.into();
+		}
+	}
+
+	pub fn skip_idct(&mut self, value: Discard) {
+		unsafe {
+			(*self.as_mut_ptr()).skip_idct = value.into();
+		}
+	}
+
+	pub fn skip_frame(&mut self, value: Discard) {
+		unsafe {
+			(*self.as_mut_ptr()).skip_frame = value.into();
 		}
 	}
 }

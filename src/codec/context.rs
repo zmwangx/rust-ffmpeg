@@ -68,18 +68,6 @@ impl Context {
 		}
 	}
 
-	pub fn bit_rate(&self) -> usize {
-		unsafe {
-			(*self.as_ptr()).bit_rate as usize
-		}
-	}
-
-	pub fn delay(&self) -> usize {
-		unsafe {
-			(*self.as_ptr()).delay as usize
-		}
-	}
-
 	pub fn compliance(&mut self, value: Compliance) {
 		unsafe {
 			(*self.as_mut_ptr()).strict_std_compliance = value.into();

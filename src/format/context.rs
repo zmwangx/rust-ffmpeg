@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use libc::c_uint;
 use ffi::*;
-use ::{Error, Codec, Stream, Packet, Dictionary};
+use ::{Error, Codec, Stream, StreamMut, Packet, Dictionary};
 
 pub struct Context {
 	ptr: *mut AVFormatContext,
@@ -49,9 +49,37 @@ impl Context {
 		!self._input
 	}
 
+	pub fn stream(&self, index: usize) -> Option<Stream> {
+		unsafe {
+			if index >= (*self.as_ptr()).nb_streams as usize {
+				None
+			}
+			else {
+				Some(Stream::wrap(*(*self.ptr).streams.offset(index as isize)))
+			}
+		}
+	}
+
+	pub fn stream_mut(&mut self, index: usize) -> Option<StreamMut> {
+		unsafe {
+			if index >= (*self.as_ptr()).nb_streams as usize {
+				None
+			}
+			else {
+				Some(StreamMut::wrap(*(*self.ptr).streams.offset(index as isize)))
+			}
+		}
+	}
+
 	pub fn streams(&self) -> StreamIter {
 		unsafe {
 			StreamIter::new(self.as_ptr())
+		}
+	}
+
+	pub fn streams_mut(&mut self) -> StreamIterMut {
+		unsafe {
+			StreamIterMut::new(self.as_mut_ptr())
 		}
 	}
 
@@ -185,6 +213,35 @@ impl<'a> Iterator for StreamIter<'a> {
 			else {
 				self.cur += 1;
 				Some(Stream::wrap(*(*self.ptr).streams.offset((self.cur - 1) as isize)))
+			}
+		}
+	}
+}
+
+pub struct StreamIterMut<'a> {
+	ptr: *const AVFormatContext,
+	cur: c_uint,
+
+	_marker: PhantomData<&'a Context>,
+}
+
+impl<'a> StreamIterMut<'a> {
+	pub fn new(ptr: *mut AVFormatContext) -> Self {
+		StreamIterMut { ptr: ptr, cur: 0, _marker: PhantomData }
+	}
+}
+
+impl<'a> Iterator for StreamIterMut<'a> {
+	type Item = StreamMut<'a>;
+
+	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+		unsafe {
+			if self.cur >= (*self.ptr).nb_streams {
+				None
+			}
+			else {
+				self.cur += 1;
+				Some(StreamMut::wrap(*(*self.ptr).streams.offset((self.cur - 1) as isize)))
 			}
 		}
 	}

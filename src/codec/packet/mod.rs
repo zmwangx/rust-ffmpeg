@@ -9,7 +9,7 @@ use std::mem;
 
 use libc::c_int;
 use ffi::*;
-use ::{Error, format};
+use ::{Error, Rational, format};
 
 pub struct Packet(AVPacket);
 
@@ -56,6 +56,15 @@ impl Packet {
 	pub fn grow(&mut self, size: usize) {
 		unsafe {
 			av_grow_packet(&mut self.0, size as c_int);
+		}
+	}
+
+	pub fn rescale_ts<S, D>(&mut self, source: S, destination: D)
+		where S: Into<Rational>,
+		      D: Into<Rational>
+	{
+		unsafe {
+			av_packet_rescale_ts(self.as_mut_ptr(), source.into().into(), destination.into().into());
 		}
 	}
 

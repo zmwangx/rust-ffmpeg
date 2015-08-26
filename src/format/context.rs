@@ -58,6 +58,29 @@ impl Context {
 		!self._input
 	}
 
+	pub fn write_header(&mut self) -> Result<(), Error> {
+		unsafe {
+			match avformat_write_header(self.as_mut_ptr(), ptr::null_mut()) {
+				0 => Ok(()),
+				e => Err(Error::from(e)),
+			}
+		}
+	}
+
+	pub fn write_header_with(&mut self, options: Dictionary) -> Result<(), Error> {
+		unsafe {
+			let mut opts   = options.take();
+			let     status = avformat_write_header(self.as_mut_ptr(), &mut opts);
+
+			Dictionary::own(opts);
+
+			match status {
+				0 => Ok(()),
+				e => Err(Error::from(e)),
+			}
+		}
+	}
+
 	pub fn stream(&self, index: usize) -> Option<Stream> {
 		unsafe {
 			if index >= (*self.as_ptr()).nb_streams as usize {

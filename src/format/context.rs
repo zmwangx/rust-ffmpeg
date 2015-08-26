@@ -81,6 +81,15 @@ impl Context {
 		}
 	}
 
+	pub fn write_trailer(&mut self) -> Result<(), Error> {
+		unsafe {
+			match av_write_trailer(self.as_mut_ptr()) {
+				0 => Ok(()),
+				e => Err(Error::from(e)),
+			}
+		}
+	}
+
 	pub fn stream(&self, index: usize) -> Option<Stream> {
 		unsafe {
 			if index >= (*self.as_ptr()).nb_streams as usize {

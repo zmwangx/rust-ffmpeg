@@ -63,10 +63,10 @@ impl<'a> Iterator for RateIter<'a> {
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
 		unsafe {
 			if !self.ptr.is_null() && (*self.ptr) != 0 {
-				let element = self.ptr;
-				self.ptr    = self.ptr.offset(1);
+				let rate = *self.ptr;
+				self.ptr = self.ptr.offset(1);
 
-				Some((*element))
+				Some(rate)
 			}
 			else {
 				None
@@ -93,10 +93,10 @@ impl<'a> Iterator for FormatIter<'a> {
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
 		unsafe {
 			if !self.ptr.is_null() && (*self.ptr) != AVSampleFormat::AV_SAMPLE_FMT_NONE {
-				let element = self.ptr;
-				self.ptr    = self.ptr.offset(1);
+				let format = (*self.ptr).into();
+				self.ptr   = self.ptr.offset(1);
 
-				Some((*element).into())
+				Some(format)
 			}
 			else {
 				None
@@ -123,10 +123,10 @@ impl<'a> Iterator for ChannelLayoutIter<'a> {
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
 		unsafe {
 			if !self.ptr.is_null() && (*self.ptr) != 0 {
-				let element = self.ptr;
-				self.ptr    = self.ptr.offset(1);
+				let chl  = ChannelLayout::from_bits_truncate(*self.ptr);
+				self.ptr = self.ptr.offset(1);
 
-				Some(ChannelLayout::from_bits_truncate(*element))
+				Some(chl)
 			}
 			else {
 				None

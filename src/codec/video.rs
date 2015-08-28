@@ -57,11 +57,12 @@ impl<'a> Iterator for RateIter<'a> {
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
 		unsafe {
 			if !self.ptr.is_null() && (*self.ptr) != (AVRational { num: 0, den: 0 }) {
-				let element = self.ptr;
-				self.ptr    = self.ptr.offset(1);
+				let rate = (*self.ptr).into();
+				self.ptr = self.ptr.offset(1);
 
-				Some(Rational::from(*element))
-			} else {
+				Some(rate)
+			}
+			else {
 				None
 			}
 		}
@@ -86,10 +87,10 @@ impl<'a> Iterator for FormatIter<'a> {
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
 		unsafe {
 			if !self.ptr.is_null() && (*self.ptr) != AVPixelFormat::AV_PIX_FMT_NONE {
-				let element = self.ptr;
-				self.ptr    = self.ptr.offset(1);
+				let format = (*self.ptr).into();
+				self.ptr   = self.ptr.offset(1);
 
-				Some((*element).into())
+				Some(format)
 			}
 			else {
 				None

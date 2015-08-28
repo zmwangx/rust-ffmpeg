@@ -1,8 +1,9 @@
 use std::marker::PhantomData;
+use std::ptr;
 
-use libc::c_uint;
+use libc::{c_int, c_uint};
 use ffi::*;
-use ::{Error, Codec, Stream, StreamMut, Packet, Dictionary};
+use ::{Error, Codec, Stream, StreamMut, Packet, Dictionary, media};
 
 pub struct Context {
 	ptr: *mut AVFormatContext,
@@ -189,6 +190,54 @@ impl Drop for Context {
 	}
 }
 
+pub struct Best<'a> {
+	ptr: *const AVFormatContext,
+
+	wanted:  i32,
+	related: i32,
+
+	_marker: PhantomData<&'a ()>,
+}
+
+impl<'a> Best<'a> {
+	pub unsafe fn new<'b>(ptr: *const AVFormatContext) -> Best<'b> {
+		Best {
+			ptr: ptr,
+
+			wanted:  -1,
+			related: -1,
+
+			_marker: PhantomData,
+		}
+	}
+
+	pub fn wanted<'b: 'a>(mut self, stream: &'b Stream) -> Best<'a> {
+		self.wanted = stream.index() as i32;
+		self
+	}
+
+	pub fn related<'b: 'a>(mut self, stream: &'b Stream) -> Best<'a> {
+		self.related = stream.index() as i32;
+		self
+	}
+
+	pub fn best(self, kind: media::Type) -> Option<Stream<'a>> {
+		unsafe {
+			let mut decoder = ptr::null_mut();
+			let     index   = av_find_best_stream(self.ptr,
+				kind.into(), self.wanted as c_int, self.related as c_int,
+				&mut decoder, 0);
+
+			if index >= 0 && !decoder.is_null() {
+				Some(Stream::wrap(*(*self.ptr).streams.offset(index as isize)))
+			}
+			else {
+				None
+			}
+		}
+	}
+}
+
 pub struct StreamIter<'a> {
 	ptr: *const AVFormatContext,
 	cur: c_uint,
@@ -199,6 +248,26 @@ pub struct StreamIter<'a> {
 impl<'a> StreamIter<'a> {
 	pub fn new(ptr: *const AVFormatContext) -> Self {
 		StreamIter { ptr: ptr, cur: 0, _marker: PhantomData }
+	}
+}
+
+impl<'a> StreamIter<'a> {
+	pub fn wanted<'b: 'a>(&'a self, stream: &'b Stream) -> Best<'a> {
+		unsafe {
+			Best::new(self.ptr).wanted(stream)
+		}
+	}
+
+	pub fn related<'b: 'a>(&'a self, stream: &'b Stream) -> Best<'a> {
+		unsafe {
+			Best::new(self.ptr).related(stream)
+		}
+	}
+
+	pub fn best(&'a self, kind: media::Type) -> Option<Stream<'a>> {
+		unsafe {
+			Best::new(self.ptr).best(kind)
+		}
 	}
 }
 

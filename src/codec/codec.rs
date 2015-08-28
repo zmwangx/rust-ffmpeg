@@ -3,7 +3,7 @@ use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
 use ffi::*;
-use super::{Id, Context, Video, Audio, Capabilities};
+use super::{Id, Context, Video, Audio, Capabilities, Profile};
 use ::{Error, media};
 use ::codec::context::Opened;
 
@@ -99,6 +99,48 @@ impl<'a> Codec<'a> {
 	pub fn capabilities(&self) -> Capabilities {
 		unsafe {
 			Capabilities::from_bits_truncate((*self.as_ptr()).capabilities as u32)
+		}
+	}
+
+	pub fn profiles(&self) -> Option<ProfileIter> {
+		unsafe {
+			if (*self.as_ptr()).profiles.is_null() {
+				return None;
+			}
+			else {
+				Some(ProfileIter::new(self.id(), (*self.as_ptr()).profiles))
+			}
+		}
+	}
+}
+
+pub struct ProfileIter<'a> {
+	id:  Id,
+	ptr: *const AVProfile,
+
+	_marker: PhantomData<&'a ()>,
+}
+
+impl<'a> ProfileIter<'a> {
+	pub fn new(id: Id, ptr: *const AVProfile) -> Self {
+		ProfileIter { id: id, ptr: ptr, _marker: PhantomData }
+	}
+}
+
+impl<'a> Iterator for ProfileIter<'a> {
+	type Item = Profile;
+
+	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+		unsafe {
+			if (*self.ptr).profile != FF_PROFILE_UNKNOWN && !(*self.ptr).name.is_null() {
+				let profile = Profile::from((self.id, (*self.ptr).profile));
+				self.ptr    = self.ptr.offset(1);
+
+				Some(profile)
+			}
+			else {
+				None
+			}
 		}
 	}
 }

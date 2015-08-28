@@ -14,6 +14,12 @@ pub use self::context::Context;
 
 pub mod codec;
 
+pub mod video;
+pub use self::video::Video;
+
+pub mod audio;
+pub use self::audio::Audio;
+
 pub mod field_order;
 pub mod audio_service;
 

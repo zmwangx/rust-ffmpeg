@@ -1,0 +1,25 @@
+use libc::c_uint;
+use ffi::*;
+
+bitflags! {
+	flags Capabilities: c_uint {
+		const DRAW_HORIZ_BAND     = CODEC_CAP_DRAW_HORIZ_BAND,
+		const DR1                 = CODEC_CAP_DR1,
+		const TRUNCATED           = CODEC_CAP_TRUNCATED,
+		const HWACCEL             = CODEC_CAP_HWACCEL,
+		const DELAY               = CODEC_CAP_DELAY,
+		const SMALL_LAST_FRAME    = CODEC_CAP_SMALL_LAST_FRAME,
+		const HWACCEL_VDPAU       = CODEC_CAP_HWACCEL_VDPAU,
+		const SUBFRAMES           = CODEC_CAP_SUBFRAMES,
+		const EXPERIMENTAL        = CODEC_CAP_EXPERIMENTAL,
+		const CHANNEL_CONF        = CODEC_CAP_CHANNEL_CONF,
+		const NEG_LINESIZES       = CODEC_CAP_NEG_LINESIZES,
+		const FRAME_THREADS       = CODEC_CAP_FRAME_THREADS,
+		const SLICE_THREADS       = CODEC_CAP_SLICE_THREADS,
+		const PARAM_CHANGE        = CODEC_CAP_PARAM_CHANGE,
+		const AUTO_THREADS        = CODEC_CAP_AUTO_THREADS,
+		const VARIABLE_FRAME_SIZE = CODEC_CAP_VARIABLE_FRAME_SIZE,
+		const INTRA_ONLY          = CODEC_CAP_INTRA_ONLY,
+		const LOSSLESS            = CODEC_CAP_LOSSLESS,
+	}
+}

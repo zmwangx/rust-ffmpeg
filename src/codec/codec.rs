@@ -3,7 +3,7 @@ use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
 use ffi::*;
-use super::{Id, Context, Video, Audio};
+use super::{Id, Context, Video, Audio, Capabilities};
 use ::{Error, media};
 use ::codec::context::Opened;
 
@@ -90,13 +90,15 @@ impl<'a> Codec<'a> {
 		}
 	}
 
-	// capabilities
-
 	pub fn max_lowres(&self) -> i32 {
 		unsafe {
 			av_codec_get_max_lowres(self.as_ptr())
 		}
 	}
 
-	// profiles
+	pub fn capabilities(&self) -> Capabilities {
+		unsafe {
+			Capabilities::from_bits_truncate((*self.as_ptr()).capabilities as u32)
+		}
+	}
 }

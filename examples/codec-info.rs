@@ -24,8 +24,8 @@ fn main() {
 			}
 
 			if let Ok(audio) = codec.audio() {
-				println!("\t samplerates: {:?}", audio.rates().collect::<Vec<_>>());
-				println!("\t sample_formats: {:?}", audio.formats().collect::<Vec<_>>());
+				println!("\t rates: {:?}", audio.rates().collect::<Vec<_>>());
+				println!("\t formats: {:?}", audio.formats().collect::<Vec<_>>());
 				println!("\t channel_layouts: {:?}", audio.channel_layouts().collect::<Vec<_>>());
 			}
 
@@ -51,8 +51,8 @@ fn main() {
 			}
 
 			if let Ok(audio) = codec.audio() {
-				println!("\t samplerates: {:?}", audio.rates().collect::<Vec<_>>());
-				println!("\t sample_formats: {:?}", audio.formats().collect::<Vec<_>>());
+				println!("\t rates: {:?}", audio.rates().collect::<Vec<_>>());
+				println!("\t formats: {:?}", audio.formats().collect::<Vec<_>>());
 				println!("\t channel_layouts: {:?}", audio.channel_layouts().collect::<Vec<_>>());
 			}
 

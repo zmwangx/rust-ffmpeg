@@ -18,15 +18,25 @@ impl<'a> Video<'a> {
 }
 
 impl<'a> Video<'a> {
-	pub fn rates(&self) -> RateIter {
+	pub fn rates(&self) -> Option<RateIter> {
 		unsafe {
-			RateIter::new((*self.codec.as_ptr()).supported_framerates)
+			if (*self.codec.as_ptr()).supported_framerates.is_null() {
+				None
+			}
+			else {
+				Some(RateIter::new((*self.codec.as_ptr()).supported_framerates))
+			}
 		}
 	}
 
-	pub fn formats(&self) -> FormatIter {
+	pub fn formats(&self) -> Option<FormatIter> {
 		unsafe {
-			FormatIter::new((*self.codec.as_ptr()).pix_fmts)
+			if (*self.codec.as_ptr()).pix_fmts.is_null() {
+				None
+			}
+			else {
+				Some(FormatIter::new((*self.codec.as_ptr()).pix_fmts))
+			}
 		}
 	}
 }
@@ -56,15 +66,14 @@ impl<'a> Iterator for RateIter<'a> {
 
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
 		unsafe {
-			if !self.ptr.is_null() && (*self.ptr) != (AVRational { num: 0, den: 0 }) {
-				let rate = (*self.ptr).into();
-				self.ptr = self.ptr.offset(1);
+			if (*self.ptr).num == 0 && (*self.ptr).den == 0 {
+				return None;
+			}
 
-				Some(rate)
-			}
-			else {
-				None
-			}
+			let rate = (*self.ptr).into();
+			self.ptr = self.ptr.offset(1);
+
+			Some(rate)
 		}
 	}
 }
@@ -86,15 +95,14 @@ impl<'a> Iterator for FormatIter<'a> {
 
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
 		unsafe {
-			if !self.ptr.is_null() && (*self.ptr) != AVPixelFormat::AV_PIX_FMT_NONE {
-				let format = (*self.ptr).into();
-				self.ptr   = self.ptr.offset(1);
+			if *self.ptr == AVPixelFormat::AV_PIX_FMT_NONE {
+				return None;
+			}
 
-				Some(format)
-			}
-			else {
-				None
-			}
+			let format = (*self.ptr).into();
+			self.ptr   = self.ptr.offset(1);
+
+			Some(format)
 		}
 	}
 }

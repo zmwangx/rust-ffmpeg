@@ -17,16 +17,47 @@ fn main() {
 			if let Some(profiles) = codec.profiles() {
 				println!("\t profiles: {:?}", profiles.collect::<Vec<_>>());
 			}
+			else {
+				println!("\t profiles: none");
+			}
 
 			if let Ok(video) = codec.video() {
-				println!("\t rates: {:?}", video.rates().collect::<Vec<_>>());
-				println!("\t formats: {:?}", video.formats().collect::<Vec<_>>());
+				if let Some(rates) = video.rates() {
+					println!("\t rates: {:?}", rates.collect::<Vec<_>>());
+				}
+				else {
+					println!("\t rates: any");
+				}
+
+				if let Some(formats) = video.formats() {
+					println!("\t formats: {:?}", formats.collect::<Vec<_>>());
+				}
+				else {
+					println!("\t formats: any");
+				}
 			}
 
 			if let Ok(audio) = codec.audio() {
-				println!("\t rates: {:?}", audio.rates().collect::<Vec<_>>());
-				println!("\t formats: {:?}", audio.formats().collect::<Vec<_>>());
-				println!("\t channel_layouts: {:?}", audio.channel_layouts().collect::<Vec<_>>());
+				if let Some(rates) = audio.rates() {
+					println!("\t rates: {:?}", rates.collect::<Vec<_>>());
+				}
+				else {
+					println!("\t rates: any");
+				}
+
+				if let Some(formats) = audio.formats() {
+					println!("\t formats: {:?}", formats.collect::<Vec<_>>());
+				}
+				else {
+					println!("\t formats: any");
+				}
+
+				if let Some(layouts) = audio.channel_layouts() {
+					println!("\t channel_layouts: {:?}", layouts.collect::<Vec<_>>());
+				}
+				else {
+					println!("\t channel_layouts: any");
+				}
 			}
 
 			println!("\t max_lowres: {:?}", codec.max_lowres());
@@ -46,14 +77,42 @@ fn main() {
 			}
 
 			if let Ok(video) = codec.video() {
-				println!("\t rates: {:?}", video.rates().collect::<Vec<_>>());
-				println!("\t formats: {:?}", video.formats().collect::<Vec<_>>());
+				if let Some(rates) = video.rates() {
+					println!("\t rates: {:?}", rates.collect::<Vec<_>>());
+				}
+				else {
+					println!("\t rates: any");
+				}
+
+				if let Some(formats) = video.formats() {
+					println!("\t formats: {:?}", formats.collect::<Vec<_>>());
+				}
+				else {
+					println!("\t formats: any");
+				}
 			}
 
 			if let Ok(audio) = codec.audio() {
-				println!("\t rates: {:?}", audio.rates().collect::<Vec<_>>());
-				println!("\t formats: {:?}", audio.formats().collect::<Vec<_>>());
-				println!("\t channel_layouts: {:?}", audio.channel_layouts().collect::<Vec<_>>());
+				if let Some(rates) = audio.rates() {
+					println!("\t rates: {:?}", rates.collect::<Vec<_>>());
+				}
+				else {
+					println!("\t rates: any");
+				}
+
+				if let Some(formats) = audio.formats() {
+					println!("\t formats: {:?}", formats.collect::<Vec<_>>());
+				}
+				else {
+					println!("\t formats: any");
+				}
+
+				if let Some(layouts) = audio.channel_layouts() {
+					println!("\t channel_layouts: {:?}", layouts.collect::<Vec<_>>());
+				}
+				else {
+					println!("\t channel_layouts: any");
+				}
 			}
 
 			println!("\t max_lowres: {:?}", codec.max_lowres());

@@ -18,21 +18,36 @@ impl<'a> Audio<'a> {
 }
 
 impl<'a> Audio<'a> {
-	pub fn rates(&self) -> RateIter {
+	pub fn rates(&self) -> Option<RateIter> {
 		unsafe {
-			RateIter::new((*self.codec.as_ptr()).supported_samplerates)
+			if (*self.as_ptr()).supported_samplerates.is_null() {
+				None
+			}
+			else {
+				Some(RateIter::new((*self.codec.as_ptr()).supported_samplerates))
+			}
 		}
 	}
 
-	pub fn formats(&self) -> FormatIter {
+	pub fn formats(&self) -> Option<FormatIter> {
 		unsafe {
-			FormatIter::new((*self.codec.as_ptr()).sample_fmts)
+			if (*self.codec.as_ptr()).sample_fmts.is_null() {
+				None
+			}
+			else {
+				Some(FormatIter::new((*self.codec.as_ptr()).sample_fmts))
+			}
 		}
 	}
 
-	pub fn channel_layouts(&self) -> ChannelLayoutIter {
+	pub fn channel_layouts(&self) -> Option<ChannelLayoutIter> {
 		unsafe {
-			ChannelLayoutIter::new((*self.codec.as_ptr()).channel_layouts)
+			if (*self.codec.as_ptr()).channel_layouts.is_null() {
+				None
+			}
+			else {
+				Some(ChannelLayoutIter::new((*self.codec.as_ptr()).channel_layouts))
+			}
 		}
 	}
 }
@@ -62,15 +77,14 @@ impl<'a> Iterator for RateIter<'a> {
 
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
 		unsafe {
-			if !self.ptr.is_null() && (*self.ptr) != 0 {
-				let rate = *self.ptr;
-				self.ptr = self.ptr.offset(1);
+			if *self.ptr == 0 {
+				return None;
+			}
 
-				Some(rate)
-			}
-			else {
-				None
-			}
+			let rate = *self.ptr;
+			self.ptr = self.ptr.offset(1);
+
+			Some(rate)
 		}
 	}
 }
@@ -92,15 +106,14 @@ impl<'a> Iterator for FormatIter<'a> {
 
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
 		unsafe {
-			if !self.ptr.is_null() && (*self.ptr) != AVSampleFormat::AV_SAMPLE_FMT_NONE {
-				let format = (*self.ptr).into();
-				self.ptr   = self.ptr.offset(1);
+			if *self.ptr == AVSampleFormat::AV_SAMPLE_FMT_NONE {
+				return None;
+			}
 
-				Some(format)
-			}
-			else {
-				None
-			}
+			let format = (*self.ptr).into();
+			self.ptr   = self.ptr.offset(1);
+
+			Some(format)
 		}
 	}
 }
@@ -122,15 +135,14 @@ impl<'a> Iterator for ChannelLayoutIter<'a> {
 
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
 		unsafe {
-			if !self.ptr.is_null() && (*self.ptr) != 0 {
-				let chl  = ChannelLayout::from_bits_truncate(*self.ptr);
-				self.ptr = self.ptr.offset(1);
+			if *self.ptr == 0 {
+				return None;
+			}
 
-				Some(chl)
-			}
-			else {
-				None
-			}
+			let layout = ChannelLayout::from_bits_truncate(*self.ptr);
+			self.ptr   = self.ptr.offset(1);
+
+			Some(layout)
 		}
 	}
 }

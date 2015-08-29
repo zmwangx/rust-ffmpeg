@@ -105,7 +105,7 @@ impl<'a> Codec<'a> {
 	pub fn profiles(&self) -> Option<ProfileIter> {
 		unsafe {
 			if (*self.as_ptr()).profiles.is_null() {
-				return None;
+				None
 			}
 			else {
 				Some(ProfileIter::new(self.id(), (*self.as_ptr()).profiles))
@@ -132,15 +132,14 @@ impl<'a> Iterator for ProfileIter<'a> {
 
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
 		unsafe {
-			if (*self.ptr).profile != FF_PROFILE_UNKNOWN && !(*self.ptr).name.is_null() {
-				let profile = Profile::from((self.id, (*self.ptr).profile));
-				self.ptr    = self.ptr.offset(1);
+			if (*self.ptr).profile == FF_PROFILE_UNKNOWN {
+				return None;
+			}
 
-				Some(profile)
-			}
-			else {
-				None
-			}
+			let profile = Profile::from((self.id, (*self.ptr).profile));
+			self.ptr    = self.ptr.offset(1);
+
+			Some(profile)
 		}
 	}
 }

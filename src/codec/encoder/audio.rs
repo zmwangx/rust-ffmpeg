@@ -5,7 +5,7 @@ use libc::c_int;
 use ffi::*;
 
 use super::Encoder as Super;
-use ::{Packet, Error, Dictionary, Codec};
+use ::{Packet, Error, Dictionary, Codec, ChannelLayout};
 use ::frame;
 use ::util::format;
 
@@ -58,6 +58,12 @@ impl Audio {
 	pub fn set_format(&mut self, value: format::Sample) {
 		unsafe {
 			(*self.as_mut_ptr()).sample_fmt = value.into();
+		}
+	}
+
+	pub fn set_channel_layout(&mut self, value: ChannelLayout) {
+		unsafe {
+			(*self.as_mut_ptr()).channel_layout = value.bits();
 		}
 	}
 }

@@ -47,6 +47,12 @@ impl Audio {
 			}
 		}
 	}
+
+	pub fn set_rate(&mut self, rate: i32) {
+		unsafe {
+			(*self.as_mut_ptr()).sample_rate = rate;
+		}
+	}
 }
 
 impl Deref for Audio {

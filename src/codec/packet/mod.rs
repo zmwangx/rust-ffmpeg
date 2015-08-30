@@ -92,8 +92,11 @@ impl Packet {
 		self.0.stream_index = index as c_int;
 	}
 
-	pub fn pts(&self) -> i64 {
-		self.0.pts as i64
+	pub fn pts(&self) -> Option<i64> {
+		match self.0.pts {
+			AV_NOPTS_VALUE => None,
+			pts => Some(pts as i64),
+		}
 	}
 
 	pub fn dts(&self) -> i64 {

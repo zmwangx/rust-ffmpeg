@@ -7,6 +7,7 @@ use ffi::*;
 use super::Encoder as Super;
 use ::{Packet, Error, Dictionary, Codec};
 use ::frame;
+use ::util::format;
 
 pub struct Audio(pub Super);
 
@@ -51,6 +52,12 @@ impl Audio {
 	pub fn set_rate(&mut self, rate: i32) {
 		unsafe {
 			(*self.as_mut_ptr()).sample_rate = rate;
+		}
+	}
+
+	pub fn set_format(&mut self, value: format::Sample) {
+		unsafe {
+			(*self.as_mut_ptr()).sample_fmt = value.into();
 		}
 	}
 }

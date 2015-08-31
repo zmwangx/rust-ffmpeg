@@ -59,3 +59,11 @@ bitflags! {
 		const STEREO_DOWNMIX     = STEREO_LEFT.bits | STEREO_RIGHT.bits,
 	}
 }
+
+impl ChannelLayout {
+	pub fn channels(&self) -> i32 {
+		unsafe {
+			av_get_channel_layout_nb_channels(self.bits())
+		}
+	}
+}

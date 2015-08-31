@@ -66,6 +66,12 @@ impl Audio {
 			(*self.as_mut_ptr()).channel_layout = value.bits();
 		}
 	}
+
+	pub fn set_channels(&mut self, value: i32) {
+		unsafe {
+			(*self.as_mut_ptr()).channels = value;
+		}
+	}
 }
 
 impl Deref for Audio {

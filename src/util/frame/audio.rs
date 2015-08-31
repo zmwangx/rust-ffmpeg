@@ -23,7 +23,7 @@ impl Audio {
 		self.set_samples(samples);
 		self.set_channel_layout(layout);
 
-		av_frame_get_buffer(self.as_mut_ptr(), 1);
+		av_frame_get_buffer(self.as_mut_ptr(), 0);
 	}
 }
 

@@ -55,9 +55,21 @@ impl Audio {
 		}
 	}
 
+	pub fn rate(&self) -> u32 {
+		unsafe {
+			(*self.as_ptr()).sample_rate as u32
+		}
+	}
+
 	pub fn set_format(&mut self, value: format::Sample) {
 		unsafe {
 			(*self.as_mut_ptr()).sample_fmt = value.into();
+		}
+	}
+
+	pub fn format(&self) -> format::Sample {
+		unsafe {
+			format::Sample::from((*self.as_ptr()).sample_fmt)
 		}
 	}
 
@@ -67,9 +79,21 @@ impl Audio {
 		}
 	}
 
+	pub fn channel_layout(&self) -> ChannelLayout {
+		unsafe {
+			ChannelLayout::from_bits_truncate((*self.as_ptr()).channel_layout)
+		}
+	}
+
 	pub fn set_channels(&mut self, value: i32) {
 		unsafe {
 			(*self.as_mut_ptr()).channels = value;
+		}
+	}
+
+	pub fn channels(&self) -> u16 {
+		unsafe {
+			(*self.as_ptr()).channels as u16
 		}
 	}
 }

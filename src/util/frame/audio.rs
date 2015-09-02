@@ -252,6 +252,12 @@ impl Clone for Audio {
 	}
 }
 
+impl From<Frame> for Audio {
+	fn from(frame: Frame) -> Self {
+		Audio(frame)
+	}
+}
+
 pub unsafe trait Sample {
 	fn is_valid(format: format::Sample, channels: u16) -> bool;
 }

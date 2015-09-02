@@ -319,6 +319,12 @@ impl Clone for Video {
 	}
 }
 
+impl From<Frame> for Video {
+	fn from(frame: Frame) -> Self {
+		Video(frame)
+	}
+}
+
 pub unsafe trait Component {
 	fn is_valid(format: format::Pixel) -> bool;
 }

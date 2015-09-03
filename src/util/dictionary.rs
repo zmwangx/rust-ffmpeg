@@ -40,6 +40,20 @@ impl<'a> Dictionary<'a> {
 		Dictionary { ptr: ptr::null_mut(), _own: true, _marker: PhantomData }
 	}
 
+	pub fn set(&mut self, key: &str, value: &str) {
+		unsafe {
+			let     key   = CString::new(key).unwrap();
+			let     value = CString::new(value).unwrap();
+			let mut ptr   = self.as_mut_ptr();
+
+			if av_dict_set(&mut ptr, key.as_ptr(), value.as_ptr(), 0) < 0 {
+				panic!("out of memory");
+			}
+
+			self.ptr = ptr;
+		}
+	}
+
 	pub fn iter(&self) -> DictionaryIter {
 		unsafe {
 			DictionaryIter::new(self.as_ptr())

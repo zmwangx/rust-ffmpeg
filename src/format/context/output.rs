@@ -71,6 +71,12 @@ impl Output {
 			StreamMut::wrap(ptr)
 		}
 	}
+
+	pub fn set_metadata(&mut self, dictionary: Dictionary) {
+		unsafe {
+			(*self.as_mut_ptr()).metadata = dictionary.take();
+		}
+	}
 }
 
 impl Deref for Output {

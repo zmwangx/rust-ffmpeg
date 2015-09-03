@@ -54,6 +54,20 @@ impl<'a> Dictionary<'a> {
 		}
 	}
 
+	pub fn get(&'a self, key: &str) -> Option<&'a str> {
+		unsafe {
+			let key   = CString::new(key).unwrap();
+			let entry = av_dict_get(self.as_ptr(), key.as_ptr(), ptr::null_mut(), 0);
+
+			if entry.is_null() {
+				None
+			}
+			else {
+				Some(from_utf8_unchecked(CStr::from_ptr((*entry).value).to_bytes()))
+			}
+		}
+	}
+
 	pub fn iter(&self) -> DictionaryIter {
 		unsafe {
 			DictionaryIter::new(self.as_ptr())

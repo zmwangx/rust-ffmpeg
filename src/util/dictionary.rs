@@ -75,6 +75,32 @@ impl<'a> Dictionary<'a> {
 	}
 }
 
+impl<'a> Clone for Dictionary<'a> {
+	fn clone(&self) -> Self {
+		let mut dictionary = Dictionary::new();
+		dictionary.clone_from(self);
+
+		dictionary
+	}
+
+	fn clone_from(&mut self, source: &Self) {
+		unsafe {
+			let mut ptr = self.as_mut_ptr();
+			av_dict_copy(&mut ptr, source.as_ptr(), 0);
+			self.ptr = ptr;
+		}
+	}
+}
+
+impl<'a> IntoIterator for &'a Dictionary<'a> {
+	type Item     = (&'a str, &'a str);
+	type IntoIter = DictionaryIter<'a>;
+
+	fn into_iter(self) -> Self::IntoIter {
+		self.iter()
+	}
+}
+
 impl<'a> Drop for Dictionary<'a> {
 	fn drop(&mut self) {
 		unsafe {
@@ -123,14 +149,5 @@ impl<'a> Iterator for DictionaryIter<'a> {
 				None
 			}
 		}
-	}
-}
-
-impl<'a> IntoIterator for &'a Dictionary<'a> {
-	type Item     = (&'a str, &'a str);
-	type IntoIter = DictionaryIter<'a>;
-
-	fn into_iter(self) -> Self::IntoIter {
-		self.iter()
 	}
 }

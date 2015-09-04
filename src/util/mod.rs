@@ -9,6 +9,7 @@ pub mod frame;
 pub mod chroma;
 pub mod time;
 pub mod channel_layout;
+pub mod option;
 
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;

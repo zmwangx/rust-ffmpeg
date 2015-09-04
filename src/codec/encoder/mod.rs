@@ -114,7 +114,7 @@ impl DerefMut for Encoder {
 	}
 }
 
-pub fn find(id: Id) -> Option<Codec<'static>> {
+pub fn find(id: Id) -> Option<Codec> {
 	unsafe {
 		let ptr = avcodec_find_encoder(id.into());
 
@@ -127,7 +127,7 @@ pub fn find(id: Id) -> Option<Codec<'static>> {
 	}
 }
 
-pub fn find_by_name(name: &str) -> Option<Codec<'static>> {
+pub fn find_by_name(name: &str) -> Option<Codec> {
 	unsafe {
 		let ptr = avcodec_find_encoder_by_name(CString::new(name).unwrap().as_ptr());
 

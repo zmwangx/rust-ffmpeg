@@ -1,23 +1,22 @@
-use std::marker::PhantomData;
 use std::ops::Deref;
 
 use {Rational, format};
 use super::codec::Codec;
 use ffi::*;
 
-pub struct Video<'a> {
-	codec: &'a Codec<'a>,
+pub struct Video {
+	codec: Codec,
 }
 
-impl<'a> Video<'a> {
-	pub unsafe fn new<'b>(codec: &'b Codec) -> Video<'b> {
+impl Video {
+	pub unsafe fn new(codec: Codec) -> Video {
 		Video {
 			codec: codec,
 		}
 	}
 }
 
-impl<'a> Video<'a> {
+impl Video {
 	pub fn rates(&self) -> Option<RateIter> {
 		unsafe {
 			if (*self.codec.as_ptr()).supported_framerates.is_null() {
@@ -41,27 +40,25 @@ impl<'a> Video<'a> {
 	}
 }
 
-impl<'a> Deref for Video<'a> {
-	type Target = Codec<'a>;
+impl Deref for Video {
+	type Target = Codec;
 
 	fn deref(&self) -> &Self::Target {
-		self.codec
+		&self.codec
 	}
 }
 
-pub struct RateIter<'a> {
+pub struct RateIter {
 	ptr: *const AVRational,
-
-	_marker: PhantomData<&'a ()>,
 }
 
-impl<'a> RateIter<'a> {
+impl RateIter {
 	pub fn new(ptr: *const AVRational) -> Self {
-		RateIter { ptr: ptr, _marker: PhantomData }
+		RateIter { ptr: ptr }
 	}
 }
 
-impl<'a> Iterator for RateIter<'a> {
+impl Iterator for RateIter {
 	type Item = Rational;
 
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
@@ -78,19 +75,17 @@ impl<'a> Iterator for RateIter<'a> {
 	}
 }
 
-pub struct FormatIter<'a> {
+pub struct FormatIter {
 	ptr: *const AVPixelFormat,
-
-	_marker: PhantomData<&'a ()>,
 }
 
-impl<'a> FormatIter<'a> {
+impl FormatIter {
 	pub fn new(ptr: *const AVPixelFormat) -> Self {
-		FormatIter { ptr: ptr, _marker: PhantomData }
+		FormatIter { ptr: ptr }
 	}
 }
 
-impl<'a> Iterator for FormatIter<'a> {
+impl Iterator for FormatIter {
 	type Item = format::Pixel;
 
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {

@@ -1,4 +1,3 @@
-use std::marker::PhantomData;
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
@@ -6,15 +5,17 @@ use ffi::*;
 use super::{Id, Video, Audio, Capabilities, Profile};
 use ::{Error, media};
 
-pub struct Codec<'a> {
+#[derive(PartialEq, Eq, Copy, Clone)]
+pub struct Codec {
 	ptr: *mut AVCodec,
-
-	_marker: PhantomData<&'a ()>,
 }
 
-impl<'a> Codec<'a> {
+unsafe impl Send for Codec { }
+unsafe impl Sync for Codec { }
+
+impl Codec {
 	pub unsafe fn wrap(ptr: *mut AVCodec) -> Self {
-		Codec { ptr: ptr, _marker: PhantomData }
+		Codec { ptr: ptr }
 	}
 
 	pub unsafe fn as_ptr(&self) -> *const AVCodec {
@@ -26,7 +27,7 @@ impl<'a> Codec<'a> {
 	}
 }
 
-impl<'a> Codec<'a> {
+impl Codec {
 	pub fn is_encoder(&self) -> bool {
 		unsafe {
 			av_codec_is_encoder(self.as_ptr()) != 0
@@ -63,7 +64,11 @@ impl<'a> Codec<'a> {
 		}
 	}
 
-	pub fn video(&self) -> Result<Video, Error> {
+	pub fn is_video(&self) -> bool {
+		self.medium() == media::Type::Video
+	}
+
+	pub fn video(self) -> Result<Video, Error> {
 		unsafe {
 			if self.medium() == media::Type::Video {
 				Ok(Video::new(self))
@@ -74,7 +79,11 @@ impl<'a> Codec<'a> {
 		}
 	}
 
-	pub fn audio(&self) -> Result<Audio, Error> {
+	pub fn is_audio(&self) -> bool {
+		self.medium() == media::Type::Audio
+	}
+
+	pub fn audio(self) -> Result<Audio, Error> {
 		unsafe {
 			if self.medium() == media::Type::Audio {
 				Ok(Audio::new(self))
@@ -109,20 +118,18 @@ impl<'a> Codec<'a> {
 	}
 }
 
-pub struct ProfileIter<'a> {
+pub struct ProfileIter {
 	id:  Id,
 	ptr: *const AVProfile,
-
-	_marker: PhantomData<&'a ()>,
 }
 
-impl<'a> ProfileIter<'a> {
+impl ProfileIter {
 	pub fn new(id: Id, ptr: *const AVProfile) -> Self {
-		ProfileIter { id: id, ptr: ptr, _marker: PhantomData }
+		ProfileIter { id: id, ptr: ptr }
 	}
 }
 
-impl<'a> Iterator for ProfileIter<'a> {
+impl Iterator for ProfileIter {
 	type Item = Profile;
 
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {

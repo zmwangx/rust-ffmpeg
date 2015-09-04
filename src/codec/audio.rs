@@ -1,23 +1,22 @@
 use std::ops::Deref;
-use std::marker::PhantomData;
 
 use {ChannelLayout, format};
 use super::codec::Codec;
 use ffi::*;
 
-pub struct Audio<'a> {
-	codec: &'a Codec<'a>,
+pub struct Audio {
+	codec: Codec,
 }
 
-impl<'a> Audio<'a> {
-	pub unsafe fn new<'b>(codec: &'b Codec) -> Audio<'b> {
+impl Audio {
+	pub unsafe fn new(codec: Codec) -> Audio {
 		Audio {
 			codec: codec,
 		}
 	}
 }
 
-impl<'a> Audio<'a> {
+impl Audio {
 	pub fn rates(&self) -> Option<RateIter> {
 		unsafe {
 			if (*self.as_ptr()).supported_samplerates.is_null() {
@@ -52,27 +51,25 @@ impl<'a> Audio<'a> {
 	}
 }
 
-impl<'a> Deref for Audio<'a> {
-	type Target = Codec<'a>;
+impl Deref for Audio {
+	type Target = Codec;
 
 	fn deref(&self) -> &Self::Target {
-		self.codec
+		&self.codec
 	}
 }
 
-pub struct RateIter<'a> {
+pub struct RateIter {
 	ptr: *const i32,
-
-	_marker: PhantomData<&'a ()>,
 }
 
-impl<'a> RateIter<'a> {
+impl RateIter {
 	pub fn new(ptr: *const i32) -> Self {
-		RateIter { ptr: ptr, _marker: PhantomData }
+		RateIter { ptr: ptr }
 	}
 }
 
-impl<'a> Iterator for RateIter<'a> {
+impl Iterator for RateIter {
 	type Item = i32;
 
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
@@ -89,19 +86,17 @@ impl<'a> Iterator for RateIter<'a> {
 	}
 }
 
-pub struct FormatIter<'a> {
+pub struct FormatIter {
 	ptr: *const AVSampleFormat,
-
-	_marker: PhantomData<&'a ()>,
 }
 
-impl<'a> FormatIter<'a> {
+impl FormatIter {
 	pub fn new(ptr: *const AVSampleFormat) -> Self {
-		FormatIter { ptr: ptr, _marker: PhantomData }
+		FormatIter { ptr: ptr }
 	}
 }
 
-impl<'a> Iterator for FormatIter<'a> {
+impl Iterator for FormatIter {
 	type Item = format::Sample;
 
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
@@ -118,19 +113,17 @@ impl<'a> Iterator for FormatIter<'a> {
 	}
 }
 
-pub struct ChannelLayoutIter<'a> {
+pub struct ChannelLayoutIter {
 	ptr: *const u64,
-
-	_marker: PhantomData<&'a ()>,
 }
 
-impl<'a> ChannelLayoutIter<'a> {
+impl ChannelLayoutIter {
 	pub fn new(ptr: *const u64) -> Self {
-		ChannelLayoutIter { ptr: ptr, _marker: PhantomData }
+		ChannelLayoutIter { ptr: ptr }
 	}
 }
 
-impl<'a> Iterator for ChannelLayoutIter<'a> {
+impl Iterator for ChannelLayoutIter {
 	type Item = ChannelLayout;
 
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {

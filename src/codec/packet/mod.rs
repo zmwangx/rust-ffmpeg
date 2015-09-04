@@ -123,7 +123,7 @@ impl Packet {
 		SideDataIter::new(&self.0)
 	}
 
-	pub fn read(&mut self, format: &mut format::Context) -> Result<(), Error> {
+	pub fn read(&mut self, format: &mut format::context::Input) -> Result<(), Error> {
 		unsafe {
 			match av_read_frame(format.as_mut_ptr(), self.as_mut_ptr()) {
 				0 => Ok(()),
@@ -132,7 +132,7 @@ impl Packet {
 		}
 	}
 
-	pub fn write(&self, format: &mut format::Context) -> Result<bool, Error> {
+	pub fn write(&self, format: &mut format::context::Output) -> Result<bool, Error> {
 		unsafe {
 			match av_write_frame(format.as_mut_ptr(), self.as_ptr()) {
 				1 => Ok(true),
@@ -142,7 +142,7 @@ impl Packet {
 		}
 	}
 
-	pub fn write_interleaved(&self, format: &mut format::Context) -> Result<bool, Error> {
+	pub fn write_interleaved(&self, format: &mut format::context::Output) -> Result<bool, Error> {
 		unsafe {
 			match av_interleaved_write_frame(format.as_mut_ptr(), self.as_ptr()) {
 				1 => Ok(true),

@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 
 use ffi::*;
 use ::Error;
-use ::format::Context;
+use ::format::context::common::Context;
 use ::device;
 use libc::c_int;
 

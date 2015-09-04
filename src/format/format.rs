@@ -162,12 +162,18 @@ pub fn list() -> FormatIter {
 pub struct FormatIter {
 	input:  *mut AVInputFormat,
 	output: *mut AVOutputFormat,
-	step:   usize,
+	step:   Step,
+}
+
+enum Step {
+	Input,
+	Output,
+	Done,
 }
 
 impl FormatIter {
 	pub fn new() -> Self {
-		FormatIter { input: ptr::null_mut(), output: ptr::null_mut(), step: 0 }
+		FormatIter { input: ptr::null_mut(), output: ptr::null_mut(), step: Step::Input }
 	}
 }
 
@@ -177,11 +183,11 @@ impl Iterator for FormatIter {
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
 		unsafe {
 			match self.step {
-				0 => {
+				Step::Input => {
 					let ptr = av_iformat_next(self.input);
 
 					if ptr.is_null() && !self.input.is_null() {
-						self.step = 1;
+						self.step = Step::Output;
 
 						self.next()
 					}
@@ -190,13 +196,13 @@ impl Iterator for FormatIter {
 
 						Some(Format::Input(Input::wrap(ptr)))
 					}
-				},
+				}
 
-				1 => {
+				Step::Output => {
 					let ptr = av_oformat_next(self.output);
 
 					if ptr.is_null() && !self.output.is_null() {
-						self.step = 2;
+						self.step = Step::Done;
 
 						self.next()
 					}
@@ -205,9 +211,10 @@ impl Iterator for FormatIter {
 
 						Some(Format::Output(Output::wrap(ptr)))
 					}
-				},
+				}
 
-				_ => None
+				Step::Done =>
+					None
 			}
 		}
 	}

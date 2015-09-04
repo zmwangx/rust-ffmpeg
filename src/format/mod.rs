@@ -56,176 +56,156 @@ pub fn license() -> &'static str {
 }
 
 // XXX: use to_cstring when stable
-fn from_path<T: AsRef<Path>>(path: &T) -> CString {
+fn from_path<P: AsRef<Path>>(path: &P) -> CString {
 	CString::new(path.as_ref().as_os_str().to_str().unwrap()).unwrap()
 }
 
-pub fn open_input<T: AsRef<Path>>(path: &T) -> Result<Context, Error> {
+// NOTE: this will be better with specialization or anonymous return types
+pub fn open<P: AsRef<Path>>(path: &P, format: &Format) -> Result<Context, Error> {
 	unsafe {
-		let mut ps     = ptr::null_mut();
-		let     path   = from_path(path);
-		let     status = avformat_open_input(&mut ps, path.as_ptr(), ptr::null_mut(), ptr::null_mut());
+		let mut ps   = ptr::null_mut();
+		let     path = from_path(path);
 
-		match status {
-			0 => {
-				let ctx = Context::input(ps);
+		match format {
+			&Format::Input(ref format) => {
+				match avformat_open_input(&mut ps, path.as_ptr(), format.as_ptr(), ptr::null_mut()) {
+					0 => {
+						match avformat_find_stream_info(ps, ptr::null_mut()) {
+							0 => Ok(Context::Input(context::Input::wrap(ps))),
+							e => Err(Error::from(e)),
+						}
+					}
 
-				match avformat_find_stream_info(ps, ptr::null_mut()) {
-					0 => Ok(ctx),
 					e => Err(Error::from(e))
 				}
-			},
+			}
+
+			&Format::Output(ref format) => {
+				match avformat_alloc_output_context2(&mut ps, format.as_ptr(), ptr::null(), path.as_ptr()) {
+					0 => {
+						match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
+							0 => Ok(Context::Output(context::Output::wrap(ps))),
+							e => Err(Error::from(e)),
+						}
+					}
+
+					e => Err(Error::from(e))
+				}
+			}
+		}
+	}
+}
+
+pub fn open_with<P: AsRef<Path>>(path: &P, format: &Format, options: Dictionary) -> Result<Context, Error> {
+	unsafe {
+		let mut ps   = ptr::null_mut();
+		let     path = from_path(path);
+		let mut opts = options.take();
+
+		match format {
+			&Format::Input(ref format) => {
+				match avformat_open_input(&mut ps, path.as_ptr(), format.as_ptr(), &mut opts) {
+					0 => {
+						Dictionary::own(opts);
+
+						match avformat_find_stream_info(ps, ptr::null_mut()) {
+							0 => Ok(Context::Input(context::Input::wrap(ps))),
+							e => Err(Error::from(e)),
+						}
+					}
+
+					e => Err(Error::from(e))
+				}
+			}
+
+			&Format::Output(ref format) => {
+				match avformat_alloc_output_context2(&mut ps, format.as_ptr(), ptr::null(), path.as_ptr()) {
+					0 => {
+						match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
+							0 => Ok(Context::Output(context::Output::wrap(ps))),
+							e => Err(Error::from(e)),
+						}
+					}
+
+					e => Err(Error::from(e))
+				}
+			}
+		}
+	}
+}
+
+pub fn input<P: AsRef<Path>>(path: &P) -> Result<context::Input, Error> {
+	unsafe {
+		let mut ps   = ptr::null_mut();
+		let     path = from_path(path);
+
+		match avformat_open_input(&mut ps, path.as_ptr(), ptr::null_mut(), ptr::null_mut()) {
+			0 => {
+				match avformat_find_stream_info(ps, ptr::null_mut()) {
+					0 => Ok(context::Input::wrap(ps)),
+					e => Err(Error::from(e))
+				}
+			}
 
 			e => Err(Error::from(e))
 		}
 	}
 }
 
-pub fn open_input_with<T: AsRef<Path>>(path: &T, options: Dictionary) -> Result<Context, Error> {
+pub fn input_with<P: AsRef<Path>>(path: &P, options: Dictionary) -> Result<context::Input, Error> {
 	unsafe {
-		let mut ps     = ptr::null_mut();
-		let     path   = from_path(path);
-		let mut opts   = options.take();
-		let     status = avformat_open_input(&mut ps, path.as_ptr(), ptr::null_mut(), &mut opts);
+		let mut ps   = ptr::null_mut();
+		let     path = from_path(path);
+		let mut opts = options.take();
 
-		Dictionary::own(opts);
-
-		match status {
+		match avformat_open_input(&mut ps, path.as_ptr(), ptr::null_mut(), &mut opts) {
 			0 => {
-				let ctx = Context::input(ps);
+				Dictionary::own(opts);
 
 				match avformat_find_stream_info(ps, ptr::null_mut()) {
-					0 => Ok(ctx),
+					0 => Ok(context::Input::wrap(ps)),
 					e => Err(Error::from(e))
 				}
-			},
-
+			}
+			
 			e => Err(Error::from(e))
 		}
 	}
 }
 
-pub fn open_input_as<T: AsRef<Path>>(path: &T, format: &Format) -> Result<Context, Error> {
-	if let &Format::Input(ref format) = format {
-		unsafe {
-			let mut ps     = ptr::null_mut();
-			let     path   = from_path(path);
-			let     status = avformat_open_input(&mut ps, path.as_ptr(), format.as_ptr(), ptr::null_mut());
-
-			match status {
-				0 => {
-					let ctx = Context::input(ps);
-
-					match avformat_find_stream_info(ps, ptr::null_mut()) {
-						0 => Ok(ctx),
-						e => Err(Error::from(e))
-					}
-				},
-
-				e => Err(Error::from(e))
-			}
-		}
-	}
-	else {
-		Err(Error::Bug)
-	}
-}
-
-pub fn open_input_as_with<T: AsRef<Path>>(path: &T, format: &Format, options: Dictionary) -> Result<Context, Error> {
-	if let &Format::Input(ref format) = format {
-		unsafe {
-			let mut ps     = ptr::null_mut();
-			let     path   = from_path(path);
-			let mut opts   = options.take();
-			let     status = avformat_open_input(&mut ps, path.as_ptr(), format.as_ptr(), &mut opts);
-
-			Dictionary::own(opts);
-
-			match status {
-				0 => {
-					let ctx = Context::input(ps);
-
-					match avformat_find_stream_info(ps, ptr::null_mut()) {
-						0 => Ok(ctx),
-						e => Err(Error::from(e))
-					}
-				},
-
-				e => Err(Error::from(e))
-			}
-		}
-	}
-	else {
-		Err(Error::Bug)
-	}
-}
-
-pub fn open_output<T: AsRef<Path>>(path: &T) -> Result<Context, Error> {
+pub fn output<P: AsRef<Path>>(path: &P) -> Result<context::Output, Error> {
 	unsafe {
 		let mut ps     = ptr::null_mut();
 		let     path   = from_path(path);
-		let     status = avformat_alloc_output_context2(&mut ps, ptr::null_mut(), ptr::null(), path.as_ptr());
 
-		match status {
+		match avformat_alloc_output_context2(&mut ps, ptr::null_mut(), ptr::null(), path.as_ptr()) {
 			0 => {
 				match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
-					0 => Ok(Context::output(ps)),
-					e => Err(Error::from(e)),
+					0 => Ok(context::Output::wrap(ps)),
+					e => Err(Error::from(e))
 				}
-			},
+			}
+
 			e => Err(Error::from(e))
 		}
 	}
 }
 
-pub fn open_output_as<T: AsRef<Path>>(path: &T, format: &Format) -> Result<Context, Error> {
-    if let &Format::Output(ref format) = format {
-	    unsafe {
-		    let mut ps     = ptr::null_mut();
-		    let     path   = from_path(path);
-		    let     status = avformat_alloc_output_context2(&mut ps, format.as_ptr(), ptr::null(), path.as_ptr());
-
-		    match status {
-				0 => {
-					match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
-						0 => Ok(Context::output(ps)),
-						e => Err(Error::from(e)),
-					}
-				},
-			    e => Err(Error::from(e))
-		    }
-	    }
-    }
-    else {
-        Err(Error::Bug)
-    }
-}
-
-pub fn open_output_as_string<T: AsRef<Path>>(path: &T, format: &str) -> Result<Context, Error> {
+pub fn output_as<P: AsRef<Path>>(path: &P, format: &str) -> Result<context::Output, Error> {
 	unsafe {
 		let mut ps     = ptr::null_mut();
 		let     path   = from_path(path);
 		let     format = CString::new(format).unwrap();
-		let     status = avformat_alloc_output_context2(&mut ps, ptr::null_mut(), format.as_ptr(), path.as_ptr());
 
-		match status {
-				0 => {
-					match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
-						0 => Ok(Context::output(ps)),
-						e => Err(Error::from(e)),
-					}
-				},
+		match avformat_alloc_output_context2(&mut ps, ptr::null_mut(), format.as_ptr(), path.as_ptr()) {
+			0 => {
+				match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
+					0 => Ok(context::Output::wrap(ps)),
+					e => Err(Error::from(e))
+				}
+			}
+
 			e => Err(Error::from(e))
 		}
-	}
-}
-
-pub fn dump(ctx: &Context, index: i32, url: Option<&str>) {
-	let url = url.map(|u| CString::new(u).unwrap());
-
-	unsafe {
-		av_dump_format(ctx.as_ptr(), index,
-			url.map(|u| u.as_ptr()).unwrap_or(ptr::null()),
-			if ctx.is_input() { 0 } else { 1 });
 	}
 }

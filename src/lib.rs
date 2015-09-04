@@ -1,9 +1,11 @@
 #![allow(raw_pointer_derive, non_camel_case_types)]
 
 extern crate libc;
-extern crate ffmpeg_sys as ffi;
+extern crate ffmpeg_sys as sys;
 #[macro_use] extern crate bitflags;
 #[cfg(feature = "image")] extern crate image;
+
+pub use sys as ffi;
 
 pub mod util;
 pub use util::error::Error;
@@ -49,6 +51,11 @@ pub use codec::threading;
 #[cfg(feature = "device")]
 pub mod device;
 
+#[cfg(feature = "filter")]
+pub mod filter;
+#[cfg(feature = "filter")]
+pub use filter::Filter;
+
 pub mod software;
 
 fn init_error() {
@@ -71,10 +78,19 @@ fn init_device() {
 #[cfg(not(feature = "device"))]
 fn init_device() { }
 
+#[cfg(feature = "filter")]
+fn init_filter() {
+	filter::register_all();
+}
+
+#[cfg(not(feature = "filter"))]
+fn init_filter() { }
+
 pub fn init() -> Result<(), Error> {
 	init_error();
 	init_format();
 	init_device();
+	init_filter();
 
 	Ok(())
 }

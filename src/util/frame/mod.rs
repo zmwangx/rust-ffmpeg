@@ -85,6 +85,12 @@ impl Frame {
 		}
 	}
 
+	pub fn set_pts(&mut self, value: i64) {
+		unsafe {
+			(*self.as_mut_ptr()).pts = value;
+		}
+	}
+
 	pub fn timestamp(&self) -> Option<i64> {
 		unsafe {
 			match av_frame_get_best_effort_timestamp(self.as_ptr()) {

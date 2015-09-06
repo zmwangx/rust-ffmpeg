@@ -3,7 +3,7 @@ use std::ptr;
 use std::ffi::CString;
 
 use ffi::*;
-use ::{Error, Codec, StreamMut, Dictionary};
+use ::{Error, Codec, StreamMut, Dictionary, format};
 use super::common::Context;
 
 pub struct Output {
@@ -28,6 +28,12 @@ impl Output {
 }
 
 impl Output {
+	pub fn format(&self) -> format::Output {
+		unsafe {
+			format::Output::wrap((*self.as_ptr()).oformat)
+		}
+	}
+
 	pub fn write_header(&mut self) -> Result<(), Error> {
 		unsafe {
 			match avformat_write_header(self.as_mut_ptr(), ptr::null_mut()) {
@@ -74,7 +80,7 @@ impl Output {
 
 	pub fn set_metadata(&mut self, dictionary: Dictionary) {
 		unsafe {
-			(*self.as_mut_ptr()).metadata = dictionary.take();
+			(*self.as_mut_ptr()).metadata = dictionary.disown();
 		}
 	}
 }

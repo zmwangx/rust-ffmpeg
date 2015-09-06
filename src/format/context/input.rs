@@ -3,7 +3,7 @@ use std::ptr;
 use std::ffi::CString;
 
 use ffi::*;
-use ::{Error, Codec, Stream, Packet};
+use ::{Error, Codec, Stream, Packet, format};
 use super::common::Context;
 
 pub struct Input {
@@ -28,6 +28,12 @@ impl Input {
 }
 
 impl Input {
+	pub fn format(&self) -> format::Input {
+		unsafe {
+			format::Input::wrap((*self.as_ptr()).iformat)
+		}
+	}
+
 	pub fn video_codec(&self) -> Option<Codec> {
 		unsafe {
 			let ptr = av_format_get_video_codec(self.as_ptr());

@@ -130,6 +130,12 @@ impl Encoder {
 			}
 		}
 	}
+
+	pub fn frame_size(&self) -> u32 {
+		unsafe {
+			(*self.as_ptr()).frame_size as u32
+		}
+	}
 }
 
 impl Deref for Encoder {

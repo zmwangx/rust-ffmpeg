@@ -9,7 +9,10 @@ pub use sys as ffi;
 
 pub mod util;
 pub use util::error::Error;
-pub use util::dictionary::Dictionary;
+pub use util::dictionary;
+pub use util::dictionary::Owned as Dictionary;
+pub use util::dictionary::Ref as DictionaryRef;
+pub use util::dictionary::Mut as DictionaryMut;
 pub use util::rational::{self, Rational};
 pub use util::media;
 pub use util::picture;

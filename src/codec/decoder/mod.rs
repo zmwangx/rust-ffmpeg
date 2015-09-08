@@ -55,7 +55,12 @@ impl Decoder {
 	pub fn open_as_with(mut self, codec: &Codec, options: Dictionary) -> Result<Opened, Error> {
 		unsafe {
 			if codec.is_decoder() {
-				match avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), &mut options.take()) {
+				let mut opts = options.disown();
+				let     res  = avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), &mut opts);
+
+				Dictionary::own(opts);
+
+				match res {
 					0 => Ok(Opened(self)),
 					e => Err(Error::from(e))
 				}

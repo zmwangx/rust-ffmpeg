@@ -3,7 +3,7 @@ use std::ptr;
 
 use ffi::*;
 use libc::{c_int, c_uint};
-use ::{media, Stream, StreamMut, Dictionary};
+use ::{media, Stream, StreamMut, DictionaryRef};
 
 pub struct Context {
 	ptr: *mut AVFormatContext,
@@ -60,9 +60,9 @@ impl Context {
 		}
 	}
 
-	pub fn metadata(&self) -> Dictionary {
+	pub fn metadata(&self) -> DictionaryRef {
 		unsafe {
-			Dictionary::wrap((*self.as_ptr()).metadata)
+			DictionaryRef::wrap((*self.as_ptr()).metadata)
 		}
 	}
 }

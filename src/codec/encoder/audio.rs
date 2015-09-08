@@ -38,7 +38,12 @@ impl Audio {
 	pub fn open_as_with(mut self, codec: &Codec, options: Dictionary) -> Result<Encoder, Error> {
 		unsafe {
 			if codec.is_encoder() {
-				match avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), &mut options.take()) {
+				let mut opts = options.disown();
+				let     res  = avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), &mut opts);
+
+				Dictionary::own(opts);
+
+				match res {
 					0 => Ok(Encoder(self)),
 					e => Err(Error::from(e))
 				}

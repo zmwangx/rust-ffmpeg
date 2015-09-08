@@ -39,12 +39,12 @@ impl Output {
 
 	pub fn write_header_with(&mut self, options: Dictionary) -> Result<(), Error> {
 		unsafe {
-			let mut opts   = options.take();
-			let     status = avformat_write_header(self.as_mut_ptr(), &mut opts);
+			let mut opts = options.disown();
+			let     res  = avformat_write_header(self.as_mut_ptr(), &mut opts);
 
 			Dictionary::own(opts);
 
-			match status {
+			match res {
 				0 => Ok(()),
 				e => Err(Error::from(e)),
 			}

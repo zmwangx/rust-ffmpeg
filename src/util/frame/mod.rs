@@ -12,7 +12,7 @@ pub use self::flag::Flags;
 
 use libc::c_int;
 use ffi::*;
-use ::Dictionary;
+use ::{Dictionary, DictionaryRef};
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub struct Packet {
@@ -106,15 +106,15 @@ impl Frame {
 		}
 	}
 
-	pub fn metadata(&self) -> Dictionary {
+	pub fn metadata(&self) -> DictionaryRef {
 		unsafe {
-			Dictionary::wrap(av_frame_get_metadata(self.as_ptr()))
+			DictionaryRef::wrap(av_frame_get_metadata(self.as_ptr()))
 		}
 	}
 
 	pub fn set_metadata(&mut self, value: Dictionary) {
 		unsafe {
-			av_frame_set_metadata(self.as_mut_ptr(), value.take());
+			av_frame_set_metadata(self.as_mut_ptr(), value.disown());
 		}
 	}
 

@@ -100,14 +100,16 @@ pub fn open_with<P: AsRef<Path>>(path: &P, format: &Format, options: Dictionary)
 	unsafe {
 		let mut ps   = ptr::null_mut();
 		let     path = from_path(path);
-		let mut opts = options.take();
+		let mut opts = options.disown();
 
 		match format {
 			&Format::Input(ref format) => {
-				match avformat_open_input(&mut ps, path.as_ptr(), format.as_ptr(), &mut opts) {
-					0 => {
-						Dictionary::own(opts);
+				let res = avformat_open_input(&mut ps, path.as_ptr(), format.as_ptr(), &mut opts);
 
+				Dictionary::own(opts);
+
+				match res {
+					0 => {
 						match avformat_find_stream_info(ps, ptr::null_mut()) {
 							0 => Ok(Context::Input(context::Input::wrap(ps))),
 							e => Err(Error::from(e)),
@@ -156,12 +158,13 @@ pub fn input_with<P: AsRef<Path>>(path: &P, options: Dictionary) -> Result<conte
 	unsafe {
 		let mut ps   = ptr::null_mut();
 		let     path = from_path(path);
-		let mut opts = options.take();
+		let mut opts = options.disown();
+		let     res  = avformat_open_input(&mut ps, path.as_ptr(), ptr::null_mut(), &mut opts);
 
-		match avformat_open_input(&mut ps, path.as_ptr(), ptr::null_mut(), &mut opts) {
+		Dictionary::own(opts);
+
+		match res {
 			0 => {
-				Dictionary::own(opts);
-
 				match avformat_find_stream_info(ps, ptr::null_mut()) {
 					0 => Ok(context::Input::wrap(ps)),
 					e => Err(Error::from(e))

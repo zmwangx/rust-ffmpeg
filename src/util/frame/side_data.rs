@@ -5,7 +5,7 @@ use std::str::from_utf8_unchecked;
 
 use ffi::*;
 use super::Frame;
-use ::Dictionary;
+use ::DictionaryRef;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Type {
@@ -108,9 +108,9 @@ impl<'a> SideData<'a> {
 	}
 
 	#[inline]
-	pub fn metadata(&self) -> Dictionary {
+	pub fn metadata(&self) -> DictionaryRef {
 		unsafe {
-			Dictionary::wrap((*self.as_ptr()).metadata)
+			DictionaryRef::wrap((*self.as_ptr()).metadata)
 		}
 	}
 }

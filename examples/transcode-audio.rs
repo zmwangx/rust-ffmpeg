@@ -104,8 +104,7 @@ fn main() {
 			packet.rescale_ts(stream.time_base(), time_base);
 
 			if transcoder.decoder.decode(&packet, &mut frame).unwrap() {
-				let pts = frame.timestamp().unwrap_or(ffmpeg::ffi::AV_NOPTS_VALUE);
-				frame.set_pts(pts);
+				frame.set_pts(frame.timestamp());
 				transcoder.filter.get("in").unwrap().source().add(&frame).unwrap();
 
 				while let Ok(..) = transcoder.filter.get("out").unwrap().sink().frame(&mut frame) {

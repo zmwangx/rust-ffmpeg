@@ -34,6 +34,7 @@ impl<'a> Ref<'a> {
 			}
 
 			self.ptr = ptr;
+			self.imm = immutable::Ref::wrap(ptr);
 		}
 	}
 }

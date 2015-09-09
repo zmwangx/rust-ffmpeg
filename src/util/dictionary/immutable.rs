@@ -43,7 +43,7 @@ impl<'a> Ref<'a> {
 		}
 	}
 
-	pub fn to_owned(&self) -> Owned {
+	pub fn to_owned<'b>(&self) -> Owned<'b> {
 		self.iter().collect()
 	}
 }

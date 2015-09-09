@@ -85,9 +85,9 @@ impl Frame {
 		}
 	}
 
-	pub fn set_pts(&mut self, value: i64) {
+	pub fn set_pts(&mut self, value: Option<i64>) {
 		unsafe {
-			(*self.as_mut_ptr()).pts = value;
+			(*self.as_mut_ptr()).pts = value.unwrap_or(AV_NOPTS_VALUE);
 		}
 	}
 

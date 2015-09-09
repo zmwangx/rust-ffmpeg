@@ -1,5 +1,6 @@
 use std::ptr;
-use std::ffi::CString;
+use std::ffi::{CString, CStr};
+use std::str::from_utf8_unchecked;
 
 use ffi::*;
 use libc::c_int;
@@ -73,6 +74,18 @@ impl Graph {
 			else {
 				Some(Context::wrap(ptr))
 			}
+		}
+	}
+
+	pub fn dump(&self) -> String {
+		unsafe {
+			let ptr    = avfilter_graph_dump(self.as_ptr(), ptr::null());
+			let cstr   = from_utf8_unchecked(CStr::from_ptr((ptr)).to_bytes());
+			let string = cstr.to_owned();
+
+			av_free(ptr as *mut _);
+
+			string
 		}
 	}
 

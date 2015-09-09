@@ -27,6 +27,8 @@ fn filter(spec: &str, decoder: &codec::decoder::Audio, encoder: &codec::encoder:
 	try!(try!(try!(filter.output("in", 0)).input("out", 0)).parse(spec));
 	try!(filter.validate());
 
+	println!("{}", filter.dump());
+
 	if let Some(codec) = encoder.codec() {
 		if !codec.capabilities().contains(ffmpeg::codec::capabilities::VARIABLE_FRAME_SIZE) {
 			filter.get("out").unwrap().sink().set_frame_size(encoder.frame_size());

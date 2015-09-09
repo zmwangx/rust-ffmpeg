@@ -61,9 +61,21 @@ impl Video {
 		}
 	}
 
+	pub fn width(&self) -> u32 {
+		unsafe {
+			(*self.as_ptr()).width as u32
+		}
+	}
+
 	pub fn set_height(&mut self, value: u32) {
 		unsafe {
 			(*self.as_mut_ptr()).height = value as c_int;
+		}
+	}
+
+	pub fn height(&self) -> u32 {
+		unsafe {
+			(*self.as_ptr()).height as u32
 		}
 	}
 
@@ -76,6 +88,12 @@ impl Video {
 	pub fn set_format(&mut self, value: format::Pixel) {
 		unsafe {
 			(*self.as_mut_ptr()).pix_fmt = value.into();
+		}
+	}
+
+	pub fn format(&self) -> format::Pixel {
+		unsafe {
+			format::Pixel::from((*self.as_ptr()).pix_fmt)
 		}
 	}
 
@@ -283,6 +301,12 @@ impl Encoder {
 				e if e < 0 => Err(Error::from(e)),
 				_          => Ok(got != 0)
 			}
+		}
+	}
+
+	pub fn frame_size(&self) -> u32 {
+		unsafe {
+			(*self.as_ptr()).frame_size as u32
 		}
 	}
 }

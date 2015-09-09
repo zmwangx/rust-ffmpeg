@@ -62,12 +62,15 @@ impl Subtitle {
 		}
 	}
 
-	pub fn pts(&self) -> i64 {
-		self.0.pts as i64
+	pub fn pts(&self) -> Option<i64> {
+		match self.0.pts {
+			AV_NOPTS_VALUE => None,
+			pts            => Some(pts)
+		}
 	}
 
-	pub fn set_pts(&mut self, value: i64) {
-		self.0.pts = value as int64_t;
+	pub fn set_pts(&mut self, value: Option<i64>) {
+		self.0.pts = value.unwrap_or(AV_NOPTS_VALUE);
 	}
 
 	pub fn start(&self) -> u32 {

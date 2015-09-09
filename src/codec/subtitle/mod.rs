@@ -8,7 +8,7 @@ use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 use std::ops::Deref;
 
-use libc::{c_uint, uint32_t, int64_t};
+use libc::{c_uint, uint32_t};
 use ffi::*;
 use ::format;
 use ::Picture;

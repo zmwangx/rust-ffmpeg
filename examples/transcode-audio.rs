@@ -53,9 +53,13 @@ fn transcoder<P: AsRef<Path>>(ictx: &mut format::context::Input, octx: &mut form
 	let mut output  = octx.add_stream(&codec);
 	let mut encoder = try!(output.codec().encoder().audio());
 
+	let channel_layout = codec.channel_layouts()
+		.map(|cls| cls.best(decoder.channel_layout().channels()))
+		.unwrap_or(ffmpeg::channel_layout::STEREO);
+
 	encoder.set_rate(decoder.rate() as i32);
-	encoder.set_channel_layout(decoder.channel_layout());
-	encoder.set_channels(decoder.channel_layout().channels());
+	encoder.set_channel_layout(channel_layout);
+	encoder.set_channels(channel_layout.channels());
 	encoder.set_format(codec.formats().expect("unknown supported formats").next().unwrap());
 
 	output.set_time_base((1, decoder.rate() as i32));

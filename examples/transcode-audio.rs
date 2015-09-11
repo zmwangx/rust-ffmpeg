@@ -100,13 +100,13 @@ fn main() {
 	let     time_base = (1, 1000000);
 	let mut frame     = frame::Audio::empty();
 
+	let (os_index, os_time_base) = {
+		let os = octx.stream(0).unwrap();
+		(os.index(), os.time_base())
+	};
+
 	for (stream, mut packet) in ictx.packets() {
 		if stream.index() == transcoder.stream {
-			let (os_index, os_time_base) = {
-				let os = octx.stream(stream.index()).unwrap();
-				(os.index(), os.time_base())
-			};
-
 			packet.rescale_ts(stream.time_base(), time_base);
 
 			if transcoder.decoder.decode(&packet, &mut frame).unwrap() {

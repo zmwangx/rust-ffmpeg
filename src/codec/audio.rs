@@ -121,6 +121,16 @@ impl ChannelLayoutIter {
 	pub fn new(ptr: *const u64) -> Self {
 		ChannelLayoutIter { ptr: ptr }
 	}
+
+	pub fn best(self, max: i32) -> ChannelLayout {
+		self.fold(::channel_layout::MONO, |acc, cur|
+			if cur.channels() > cur.channels() && cur.channels() <= max {
+				cur
+			}
+			else {
+				acc
+			})
+	}
 }
 
 impl Iterator for ChannelLayoutIter {

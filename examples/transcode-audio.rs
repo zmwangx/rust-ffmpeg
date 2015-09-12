@@ -107,7 +107,7 @@ fn main() {
 		if stream.index() == transcoder.stream {
 			packet.rescale_ts(stream.time_base(), in_time_base);
 
-			if transcoder.decoder.decode(&packet, &mut decoded).unwrap() {
+			if let Ok(true) = transcoder.decoder.decode(&packet, &mut decoded) {
 				let timestamp = decoded.timestamp();
 				decoded.set_pts(timestamp);
 

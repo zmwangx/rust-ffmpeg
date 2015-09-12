@@ -97,29 +97,26 @@ fn main() {
 	octx.set_metadata(ictx.metadata().to_owned());
 	octx.write_header().unwrap();
 
-	let     time_base = (1, 1000000);
-	let mut frame     = frame::Audio::empty();
+	let in_time_base  = (1, 1000000);
+	let out_time_base = octx.stream(0).unwrap().time_base();
 
-	let (os_index, os_time_base) = {
-		let os = octx.stream(0).unwrap();
-		(os.index(), os.time_base())
-	};
+	let mut decoded = frame::Audio::empty();
+	let mut encoded = ffmpeg::Packet::empty();
 
 	for (stream, mut packet) in ictx.packets() {
 		if stream.index() == transcoder.stream {
-			packet.rescale_ts(stream.time_base(), time_base);
+			packet.rescale_ts(stream.time_base(), in_time_base);
 
-			if transcoder.decoder.decode(&packet, &mut frame).unwrap() {
-				let timestamp = frame.timestamp();
-				frame.set_pts(timestamp);
-				transcoder.filter.get("in").unwrap().source().add(&frame).unwrap();
+			if transcoder.decoder.decode(&packet, &mut decoded).unwrap() {
+				let timestamp = decoded.timestamp();
+				decoded.set_pts(timestamp);
 
-				while let Ok(..) = transcoder.filter.get("out").unwrap().sink().frame(&mut frame) {
-					let mut encoded = ffmpeg::Packet::empty();
+				transcoder.filter.get("in").unwrap().source().add(&decoded).unwrap();
 
-					if let Ok(true) = transcoder.encoder.encode(&frame, &mut encoded) {
-						encoded.set_stream(os_index);
-						encoded.rescale_ts(time_base, os_time_base);
+				while let Ok(..) = transcoder.filter.get("out").unwrap().sink().frame(&mut decoded) {
+					if let Ok(true) = transcoder.encoder.encode(&decoded, &mut encoded) {
+						encoded.set_stream(0);
+						encoded.rescale_ts(in_time_base, out_time_base);
 						encoded.write_interleaved(&mut octx).unwrap();
 					}
 				}

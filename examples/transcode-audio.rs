@@ -62,6 +62,7 @@ fn transcoder<P: AsRef<Path>>(ictx: &mut format::context::Input, octx: &mut form
 	encoder.set_channels(channel_layout.channels());
 	encoder.set_format(codec.formats().expect("unknown supported formats").next().unwrap());
 
+	encoder.set_time_base((1, decoder.rate() as i32));
 	output.set_time_base((1, decoder.rate() as i32));
 
 	let encoder = try!(encoder.open_as(&codec));

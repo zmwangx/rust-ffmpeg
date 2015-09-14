@@ -4,7 +4,7 @@ use libc::c_int;
 use ffi::*;
 use ::media;
 use ::Codec;
-use super::{Id, Debug, Compliance, threading};
+use super::{Flags, Id, Debug, Compliance, threading};
 use super::decoder::Decoder;
 use super::encoder::Encoder;
 
@@ -59,6 +59,12 @@ impl Context {
 	pub fn medium(&self) -> media::Type {
 		unsafe {
 			media::Type::from((*self.as_ptr()).codec_type)
+		}
+	}
+
+	pub fn set_flags(&mut self, value: Flags) {
+		unsafe {
+			(*self.as_mut_ptr()).flags = value.bits() as c_int;
 		}
 	}
 

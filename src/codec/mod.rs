@@ -1,3 +1,6 @@
+pub mod flag;
+pub use self::flag::Flags;
+
 pub mod id;
 pub use self::id::Id;
 

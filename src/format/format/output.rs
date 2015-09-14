@@ -6,6 +6,7 @@ use std::str::from_utf8_unchecked;
 
 use ffi::*;
 use {codec, media};
+use super::Flags;
 
 pub struct Output {
 	ptr: *mut AVOutputFormat,
@@ -70,6 +71,12 @@ impl Output {
 
 		unsafe {
 			codec::Id::from(av_guess_codec(self.as_ptr(), ptr::null(), path.as_ptr(), ptr::null(), kind.into()))
+		}
+	}
+
+	pub fn flags(&self) -> Flags {
+		unsafe {
+			Flags::from_bits_truncate((*self.as_ptr()).flags)
 		}
 	}
 }

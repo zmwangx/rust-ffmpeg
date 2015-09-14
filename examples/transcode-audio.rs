@@ -49,13 +49,18 @@ fn transcoder<P: AsRef<Path>>(ictx: &mut format::context::Input, octx: &mut form
 	let input   = ictx.streams().best(media::Type::Audio).expect("could not find best audio stream");
 	let decoder = try!(input.codec().decoder().audio());
 	let codec   = try!(ffmpeg::encoder::find(octx.format().codec(path, media::Type::Audio)).expect("failed to find encoder").audio());
+	let global  = octx.format().flags().contains(ffmpeg::format::flag::GLOBAL_HEADER);
 
-	let mut output  = octx.add_stream(&codec);
-	let mut encoder = try!(output.codec().encoder().audio());
+	let mut output     = octx.add_stream(&codec);
+	let mut encoder    = try!(output.codec().encoder().audio());
 
 	let channel_layout = codec.channel_layouts()
 		.map(|cls| cls.best(decoder.channel_layout().channels()))
 		.unwrap_or(ffmpeg::channel_layout::STEREO);
+
+	if global {
+		encoder.set_flags(ffmpeg::codec::flag::GLOBAL_HEADER);
+	}
 
 	encoder.set_rate(decoder.rate() as i32);
 	encoder.set_channel_layout(channel_layout);

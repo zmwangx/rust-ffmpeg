@@ -1,3 +1,6 @@
+pub mod flag;
+pub use self::flag::Flags;
+
 mod input;
 pub use self::input::Input;
 

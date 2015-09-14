@@ -8,6 +8,7 @@ pub use self::context::Context;
 
 pub mod format;
 pub use self::format::{Input, Output, list};
+pub use self::format::{flag, Flags};
 
 pub mod network;
 

@@ -63,6 +63,7 @@ pub enum Pixel {
 	VAAPI_MOCO,
 	VAAPI_IDCT,
 	VAAPI_VLD,
+	VAAPI,
 
 	YUV420P16LE,
 	YUV420P16BE,
@@ -199,6 +200,10 @@ pub enum Pixel {
 	YUV440P10BE,
 	YUV440P12LE,
 	YUV440P12BE,
+	AYUV64LE,
+	AYUV64BE,
+
+	VIDEOTOOLBOX,
 
 	// --- defaults
 	XVMC,
@@ -266,6 +271,7 @@ pub enum Pixel {
 
 	XYZ12,
 	NV20,
+	AYUV64,
 }
 
 impl From<AVPixelFormat> for Pixel {
@@ -468,6 +474,10 @@ impl From<AVPixelFormat> for Pixel {
 			AV_PIX_FMT_YUV440P10BE => Pixel::YUV440P10BE,
 			AV_PIX_FMT_YUV440P12LE => Pixel::YUV440P12LE,
 			AV_PIX_FMT_YUV440P12BE => Pixel::YUV440P12BE,
+			AV_PIX_FMT_AYUV64LE    => Pixel::AYUV64LE,
+			AV_PIX_FMT_AYUV64BE    => Pixel::AYUV64BE,
+
+			AV_PIX_FMT_VIDEOTOOLBOX => Pixel::VIDEOTOOLBOX,
 
 			AV_PIX_FMT_NB => Pixel::None
 		}
@@ -538,6 +548,7 @@ impl Into<AVPixelFormat> for Pixel {
 			Pixel::VAAPI_MOCO => AV_PIX_FMT_VAAPI_MOCO,
 			Pixel::VAAPI_IDCT => AV_PIX_FMT_VAAPI_IDCT,
 			Pixel::VAAPI_VLD  => AV_PIX_FMT_VAAPI_VLD,
+			Pixel::VAAPI      => AV_PIX_FMT_VAAPI_VLD,
 
 			Pixel::YUV420P16LE => AV_PIX_FMT_YUV420P16LE,
 			Pixel::YUV420P16BE => AV_PIX_FMT_YUV420P16BE,
@@ -674,6 +685,10 @@ impl Into<AVPixelFormat> for Pixel {
 			Pixel::YUV440P10BE => AV_PIX_FMT_YUV440P10BE,
 			Pixel::YUV440P12LE => AV_PIX_FMT_YUV440P12LE,
 			Pixel::YUV440P12BE => AV_PIX_FMT_YUV440P12BE,
+			Pixel::AYUV64LE    => AV_PIX_FMT_AYUV64LE,
+			Pixel::AYUV64BE    => AV_PIX_FMT_AYUV64BE,
+
+			Pixel::VIDEOTOOLBOX => AV_PIX_FMT_VIDEOTOOLBOX,
 
 			// --- defaults
 			Pixel::XVMC   => AV_PIX_FMT_XVMC,
@@ -739,8 +754,9 @@ impl Into<AVPixelFormat> for Pixel {
 			Pixel::YUVA422P16 => AV_PIX_FMT_YUVA422P16,
 			Pixel::YUVA444P16 => AV_PIX_FMT_YUVA444P16,
 
-			Pixel::XYZ12 => AV_PIX_FMT_XYZ12,
-			Pixel::NV20  => AV_PIX_FMT_NV20,
+			Pixel::XYZ12  => AV_PIX_FMT_XYZ12,
+			Pixel::NV20   => AV_PIX_FMT_NV20,
+			Pixel::AYUV64 => AV_PIX_FMT_AYUV64,
 		}
 	}
 }

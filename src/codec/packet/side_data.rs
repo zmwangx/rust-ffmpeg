@@ -87,10 +87,6 @@ impl<'a> SideData<'a> {
 	pub unsafe fn as_ptr(&self) -> *const AVPacketSideData {
 		self.ptr as *const _
 	}
-	
-	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVPacketSideData {
-		self.ptr
-	}
 }
 
 impl<'a> SideData<'a> {

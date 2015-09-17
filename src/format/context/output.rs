@@ -5,6 +5,7 @@ use std::ffi::CString;
 use ffi::*;
 use ::{Error, Codec, StreamMut, Dictionary, format};
 use super::common::Context;
+use super::destructor;
 
 pub struct Output {
 	ptr: *mut AVFormatContext,
@@ -15,7 +16,7 @@ unsafe impl Send for Output { }
 
 impl Output {
 	pub unsafe fn wrap(ptr: *mut AVFormatContext) -> Self {
-		Output { ptr: ptr, ctx: Context::wrap(ptr) }
+		Output { ptr: ptr, ctx: Context::wrap(ptr, destructor::Mode::Output) }
 	}
 
 	pub unsafe fn as_ptr(&self) -> *const AVFormatContext {
@@ -74,7 +75,9 @@ impl Output {
 				panic!("out of memory");
 			}
 
-			StreamMut::wrap(ptr)
+			let index = (*self.ctx.as_ptr()).nb_streams - 1;
+
+			StreamMut::wrap(&mut self.ctx, index as usize)
 		}
 	}
 
@@ -96,14 +99,6 @@ impl Deref for Output {
 impl DerefMut for Output {
 	fn deref_mut(&mut self) -> &mut Self::Target {
 		&mut self.ctx
-	}
-}
-
-impl Drop for Output {
-	fn drop(&mut self) {
-		unsafe {
-			avformat_free_context(self.as_mut_ptr());
-		}
 	}
 }
 

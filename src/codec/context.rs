@@ -1,4 +1,5 @@
 use std::ptr;
+use std::rc::Rc;
 
 use libc::c_int;
 use ffi::*;
@@ -9,16 +10,15 @@ use super::decoder::Decoder;
 use super::encoder::Encoder;
 
 pub struct Context {
-	ptr: *mut AVCodecContext,
-
-	_own: bool,
+	ptr:   *mut AVCodecContext,
+	owner: Option<Rc<Drop>>,
 }
 
 unsafe impl Send for Context { }
 
 impl Context {
-	pub unsafe fn wrap(ptr: *mut AVCodecContext) -> Self {
-		Context { ptr: ptr, _own: false }
+	pub unsafe fn wrap(ptr: *mut AVCodecContext, owner: Option<Rc<Drop>>) -> Self {
+		Context { ptr: ptr, owner: owner }
 	}
 
 	pub unsafe fn as_ptr(&self) -> *const AVCodecContext {
@@ -33,7 +33,7 @@ impl Context {
 impl Context {
 	pub fn new() -> Self {
 		unsafe {
-			Context { ptr: avcodec_alloc_context3(ptr::null()), _own: true }
+			Context { ptr: avcodec_alloc_context3(ptr::null()), owner: None }
 		}
 	}
 
@@ -107,8 +107,8 @@ impl Context {
 
 impl Drop for Context {
 	fn drop(&mut self) {
-		if self._own {
-			unsafe {
+		unsafe {
+			if self.owner.is_none() {
 				avcodec_free_context(&mut self.as_mut_ptr());
 			}
 		}

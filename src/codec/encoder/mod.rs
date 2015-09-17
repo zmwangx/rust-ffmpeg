@@ -1,11 +1,11 @@
 pub mod video;
-pub use self::video::Video;
+pub use self::video::Encoder as Video;
 
 pub mod audio;
-pub use self::audio::Audio;
+pub use self::audio::Encoder as Audio;
 
 pub mod subtitle;
-pub use self::subtitle::Subtitle;
+pub use self::subtitle::Encoder as Subtitle;
 
 pub mod motion_estimation;
 pub use self::motion_estimation::MotionEstimation;
@@ -31,27 +31,27 @@ use ::media;
 pub struct Encoder(pub Context);
 
 impl Encoder {
-	pub fn video(self) -> Result<Video, Error> {
+	pub fn video(self) -> Result<video::Video, Error> {
 		if self.medium() == media::Type::Video {
-			Ok(Video(self))
+			Ok(video::Video(self))
 		}
 		else {
 			Err(Error::InvalidData)
 		}
 	}
 
-	pub fn audio(self) -> Result<Audio, Error> {
+	pub fn audio(self) -> Result<audio::Audio, Error> {
 		if self.medium() == media::Type::Audio {
-			Ok(Audio(self))
+			Ok(audio::Audio(self))
 		}
 		else {
 			Err(Error::InvalidData)
 		}
 	}
 
-	pub fn subtitle(self) -> Result<Subtitle, Error> {
+	pub fn subtitle(self) -> Result<subtitle::Subtitle, Error> {
 		if self.medium() == media::Type::Subtitle {
-			Ok(Subtitle(self))
+			Ok(subtitle::Subtitle(self))
 		}
 		else {
 			Err(Error::InvalidData)

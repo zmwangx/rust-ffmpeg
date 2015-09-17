@@ -1,10 +1,12 @@
 use std::ops::{Deref, DerefMut};
 use std::ptr;
+use std::mem;
 use std::ffi::CString;
 
 use ffi::*;
 use ::{Error, Codec, Stream, Packet, format};
 use super::common::Context;
+use super::destructor;
 
 pub struct Input {
 	ptr: *mut AVFormatContext,
@@ -15,7 +17,7 @@ unsafe impl Send for Input { }
 
 impl Input {
 	pub unsafe fn wrap(ptr: *mut AVFormatContext) -> Self {
-		Input { ptr: ptr, ctx: Context::wrap(ptr) }
+		Input { ptr: ptr, ctx: Context::wrap(ptr, destructor::Mode::Input) }
 	}
 
 	pub unsafe fn as_ptr(&self) -> *const AVFormatContext {
@@ -135,14 +137,6 @@ impl DerefMut for Input {
 	}
 }
 
-impl Drop for Input {
-	fn drop(&mut self) {
-		unsafe {
-			avformat_close_input(&mut self.as_mut_ptr());
-		}
-	}
-}
-
 pub struct PacketIter<'a> {
 	context: &'a mut Input,
 }
@@ -161,10 +155,11 @@ impl<'a> Iterator for PacketIter<'a> {
 
 		loop {
 			match packet.read(self.context) {
-				Ok(..) =>
-					return Some((unsafe {
-						Stream::wrap(*(*self.context.as_ptr()).streams.offset(packet.stream() as isize))
-					}, packet)),
+				Ok(..) => unsafe {
+					return Some((
+						Stream::wrap(mem::transmute_copy(&self.context), packet.stream()),
+						packet));
+				},
 
 				Err(Error::Eof) =>
 					return None,

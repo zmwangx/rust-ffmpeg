@@ -1,33 +1,29 @@
-use std::marker::PhantomData;
-
 use libc::c_int;
 use ffi::*;
-use ::format;
 use ::codec::{self, packet};
 use ::{Rational, Discard};
 use super::Disposition;
+use format::context::common::Context;
 
-#[derive(Eq, PartialEq)]
 pub struct Stream<'a> {
-	ptr: *mut AVStream,
-
-	_marker: PhantomData<&'a format::Context>,
+	context: &'a Context,
+	index:   usize,
 }
 
 impl<'a> Stream<'a> {
-	pub unsafe fn wrap(ptr: *mut AVStream) -> Self {
-		Stream { ptr: ptr, _marker: PhantomData }
+	pub unsafe fn wrap(context: &Context, index: usize) -> Stream {
+		Stream { context: context, index: index }
 	}
 
 	pub unsafe fn as_ptr(&self) -> *const AVStream {
-		self.ptr as *const _
+		*(*self.context.as_ptr()).streams.offset(self.index as isize)
 	}
 }
 
 impl<'a> Stream<'a> {
 	pub fn codec(&self) -> codec::Context {
 		unsafe {
-			codec::Context::wrap((*self.as_ptr()).codec)
+			codec::Context::wrap((*self.as_ptr()).codec, Some(self.context.destructor()))
 		}
 	}
 
@@ -74,9 +70,7 @@ impl<'a> Stream<'a> {
 	}
 
 	pub fn side_data(&self) -> SideDataIter {
-		unsafe {
-			SideDataIter::new(self.as_ptr())
-		}
+		SideDataIter::new(self)
 	}
 
 	pub fn frame_rate(&self) -> Rational {
@@ -86,16 +80,24 @@ impl<'a> Stream<'a> {
 	}
 }
 
-pub struct SideDataIter<'a> {
-	ptr: *const AVStream,
-	cur: c_int,
+impl<'a> PartialEq for Stream<'a> {
+	fn eq(&self, other: &Self) -> bool {
+		unsafe {
+			self.as_ptr() == other.as_ptr()
+		}
+	}
+}
 
-	_marker: PhantomData<&'a Stream<'a>>,
+impl<'a> Eq for Stream<'a> { }
+
+pub struct SideDataIter<'a> {
+	stream: &'a Stream<'a>,
+	current: c_int,
 }
 
 impl<'a> SideDataIter<'a> {
-	pub fn new(ptr: *const AVStream) -> Self {
-		SideDataIter { ptr: ptr, cur: 0, _marker: PhantomData }
+	pub fn new<'sd, 's: 'sd>(stream: &'s Stream) -> SideDataIter<'sd> {
+		SideDataIter { stream: stream, current: 0 }
 	}
 }
 
@@ -104,19 +106,22 @@ impl<'a> Iterator for SideDataIter<'a> {
 
 	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
 		unsafe {
-			if self.cur >= (*self.ptr).nb_side_data {
-				None
+			if self.current >= (*self.stream.as_ptr()).nb_side_data {
+				return None;
 			}
-			else {
-				self.cur += 1;
-				Some(packet::SideData::wrap((*self.ptr).side_data.offset((self.cur - 1) as isize)))
-			}
+
+			self.current += 1;
+
+			Some(packet::SideData::wrap(
+				(*self.stream.as_ptr()).side_data.offset((self.current - 1) as isize)))
 		}
 	}
 
 	fn size_hint(&self) -> (usize, Option<usize>) {
 		unsafe {
-			((*self.ptr).nb_side_data as usize, Some((*self.ptr).nb_side_data as usize))
+			let length = (*self.stream.as_ptr()).nb_side_data as usize;
+
+			(length - self.current as usize, Some(length - self.current as usize))
 		}
 	}
 }

@@ -1,26 +1,30 @@
 use std::ops::Deref;
+use std::mem;
 
 use ffi::*;
 use ::Rational;
 use super::Stream;
+use format::context::common::Context;
 
-#[derive(Eq, PartialEq)]
 pub struct StreamMut<'a> {
-	ptr: *mut AVStream,
-	imm: Stream<'a>,
+	context: &'a mut Context,
+	index:   usize,
+
+	immutable: Stream<'a>,
 }
 
 impl<'a> StreamMut<'a> {
-	pub unsafe fn wrap(ptr: *mut AVStream) -> Self {
-		StreamMut { ptr: ptr, imm: Stream::wrap(ptr) }
-	}
+	pub unsafe fn wrap(context: &mut Context, index: usize) -> StreamMut {
+		StreamMut {
+			context: mem::transmute_copy(&context),
+			index:   index,
 
-	pub unsafe fn as_ptr(&self) -> *const AVStream {
-		self.ptr as *const _
+			immutable: Stream::wrap(mem::transmute_copy(&context), index)
+		}
 	}
 
 	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVStream {
-		self.ptr
+		*(*self.context.as_mut_ptr()).streams.offset(self.index as isize)
 	}
 }
 
@@ -42,6 +46,6 @@ impl<'a> Deref for StreamMut<'a> {
 	type Target = Stream<'a>;
 
 	fn deref(&self) -> &Self::Target {
-		&self.imm
+		&self.immutable
 	}
 }

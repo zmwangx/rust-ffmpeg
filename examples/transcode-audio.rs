@@ -6,7 +6,7 @@ use std::path::Path;
 use ffmpeg::{format, codec, frame, media, filter};
 use ffmpeg::option::Settable;
 
-fn filter(spec: &str, decoder: &codec::decoder::Audio, encoder: &codec::encoder::audio::Encoder) -> Result<filter::Graph, ffmpeg::Error> {
+fn filter(spec: &str, decoder: &codec::decoder::Audio, encoder: &codec::encoder::Audio) -> Result<filter::Graph, ffmpeg::Error> {
 	let mut filter = filter::Graph::new();
 
 	let base = ffmpeg::Rational(1, 1000000);
@@ -42,7 +42,7 @@ struct Transcoder {
 	stream:  usize,
 	filter:  filter::Graph,
 	decoder: codec::decoder::Audio,
-	encoder: codec::encoder::audio::Encoder,
+	encoder: codec::encoder::Audio,
 }
 
 fn transcoder<P: AsRef<Path>>(ictx: &mut format::context::Input, octx: &mut format::context::Output, path: &P, filter_spec: &str) -> Result<Transcoder, ffmpeg::Error> {
@@ -51,8 +51,8 @@ fn transcoder<P: AsRef<Path>>(ictx: &mut format::context::Input, octx: &mut form
 	let codec   = try!(ffmpeg::encoder::find(octx.format().codec(path, media::Type::Audio)).expect("failed to find encoder").audio());
 	let global  = octx.format().flags().contains(ffmpeg::format::flag::GLOBAL_HEADER);
 
-	let mut output     = octx.add_stream(&codec);
-	let mut encoder    = try!(output.codec().encoder().audio());
+	let mut output  = octx.add_stream(&codec);
+	let mut encoder = try!(output.codec().encoder().audio());
 
 	let channel_layout = codec.channel_layouts()
 		.map(|cls| cls.best(decoder.channel_layout().channels()))

@@ -24,7 +24,7 @@ use std::ops::{Deref, DerefMut};
 
 use ffi::*;
 use super::{Id, Context};
-use ::{Codec, Error, Discard, Dictionary};
+use ::{Codec, Error, Discard, Rational, Dictionary};
 
 pub struct Decoder(pub Context);
 
@@ -125,6 +125,12 @@ impl Decoder {
 	pub fn skip_frame(&mut self, value: Discard) {
 		unsafe {
 			(*self.as_mut_ptr()).skip_frame = value.into();
+		}
+	}
+
+	pub fn time_base(&self) -> Rational {
+		unsafe {
+			Rational::from((*self.as_ptr()).time_base)
 		}
 	}
 }

@@ -65,6 +65,8 @@ fn transcoder<P: AsRef<Path>>(ictx: &mut format::context::Input, octx: &mut form
 	encoder.set_channel_layout(channel_layout);
 	encoder.set_channels(channel_layout.channels());
 	encoder.set_format(codec.formats().expect("unknown supported formats").next().unwrap());
+	encoder.set_bit_rate(decoder.bit_rate());
+	encoder.set_max_bit_rate(decoder.max_bit_rate());
 
 	encoder.set_time_base((1, decoder.rate() as i32));
 	output.set_time_base((1, decoder.rate() as i32));

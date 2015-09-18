@@ -40,6 +40,7 @@ fn main() {
 				if codec.medium() == ffmpeg::media::Type::Video {
 					if let Ok(video) = codec.decoder().video() {
 						println!("\tbit_rate: {}", video.bit_rate());
+						println!("\tmax_rate: {}", video.max_bit_rate());
 						println!("\tdelay: {}", video.delay());
 						println!("\tvideo.width: {}", video.width());
 						println!("\tvideo.height: {}", video.height());
@@ -58,6 +59,7 @@ fn main() {
 				else if codec.medium() == ffmpeg::media::Type::Audio {
 					if let Ok(audio) = codec.decoder().audio() {
 						println!("\tbit_rate: {}", audio.bit_rate());
+						println!("\tmax_rate: {}", audio.max_bit_rate());
 						println!("\tdelay: {}", audio.delay());
 						println!("\taudio.rate: {}", audio.rate());
 						println!("\taudio.channels: {}", audio.channels());
@@ -65,7 +67,6 @@ fn main() {
 						println!("\taudio.frames: {}", audio.frames());
 						println!("\taudio.align: {}", audio.align());
 						println!("\taudio.channel_layout: {:?}", audio.channel_layout());
-						println!("\taudio.max_rate: {}", audio.max_rate());
 						println!("\taudio.frame_start: {:?}", audio.frame_start());
 					}
 				}

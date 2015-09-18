@@ -9,9 +9,8 @@ use ffmpeg::option::Settable;
 fn filter(spec: &str, decoder: &codec::decoder::Audio, encoder: &codec::encoder::Audio) -> Result<filter::Graph, ffmpeg::Error> {
 	let mut filter = filter::Graph::new();
 
-	let base = ffmpeg::Rational(1, 1000000);
 	let args = format!("time_base={}:sample_rate={}:sample_fmt={}:channel_layout=0x{:x}",
-		base, decoder.rate(), decoder.format().name(), decoder.channel_layout().bits());
+		decoder.time_base(), decoder.rate(), decoder.format().name(), decoder.channel_layout().bits());
 
 	try!(filter.add(&filter::find("abuffer").unwrap(), "in", &args));
 	try!(filter.add(&filter::find("abuffersink").unwrap(), "out", ""));
@@ -103,7 +102,7 @@ fn main() {
 	octx.set_metadata(ictx.metadata().to_owned());
 	octx.write_header().unwrap();
 
-	let in_time_base  = (1, 1000000);
+	let in_time_base  = transcoder.decoder.time_base();
 	let out_time_base = octx.stream(0).unwrap().time_base();
 
 	let mut decoded = frame::Audio::empty();

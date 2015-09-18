@@ -82,7 +82,7 @@ impl Audio {
 		}
 	}
 
-	pub fn max_rate(&self) -> usize {
+	pub fn max_bit_rate(&self) -> usize {
 		unsafe {
 			(*self.as_ptr()).rc_max_rate as usize
 		}

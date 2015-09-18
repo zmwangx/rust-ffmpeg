@@ -128,6 +128,12 @@ impl Video {
 			(*self.as_ptr()).intra_dc_precision as u8
 		}
 	}
+
+	pub fn max_bit_rate(&self) -> usize {
+		unsafe {
+			(*self.as_ptr()).rc_max_rate as usize
+		}
+	}
 }
 
 impl Deref for Video {

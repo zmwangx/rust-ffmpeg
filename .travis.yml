@@ -1,0 +1,14 @@
+language: rust
+
+rust:
+  - stable
+  - beta
+  - nightly
+
+addons:
+  apt:
+    packages:
+      - nasm
+
+script:
+  - cargo test --verbose --features build

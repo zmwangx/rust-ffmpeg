@@ -10,9 +10,15 @@ repository  = "https://github.com/meh/rust-ffmpeg"
 keywords    = ["audio", "video"]
 
 [features]
-default = ["codec", "device", "filter", "format", "resampling", "postprocessing", "software-resampling", "software-scaling"]
+default = ["codec", "device", "filter", "format", "resampling", "software-resampling", "software-scaling"]
 
-static              = ["ffmpeg-sys/static"]
+static = ["ffmpeg-sys/static"]
+
+build          = ["static", "ffmpeg-sys/build"]
+build-gpl      = ["build", "ffmpeg-sys/build-gpl"]
+build-nonfree  = ["build", "ffmpeg-sys/build-nonfree"]
+build-version3 = ["build", "ffmpeg-sys/build-version3"]
+
 codec               = ["ffmpeg-sys/avcodec"]
 device              = ["ffmpeg-sys/avdevice", "format"]
 filter              = ["ffmpeg-sys/avfilter"]

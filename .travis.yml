@@ -11,4 +11,4 @@ addons:
       - nasm
 
 script:
-  - cargo test --verbose --features build
+  - travis_wait cargo test --verbose --features build

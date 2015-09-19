@@ -131,5 +131,21 @@ fn main() {
 		}
 	}
 
+	transcoder.filter.get("in").unwrap().source().flush().unwrap();
+
+	while let Ok(..) = transcoder.filter.get("out").unwrap().sink().frame(&mut decoded) {
+		if let Ok(true) = transcoder.encoder.encode(&decoded, &mut encoded) {
+			encoded.set_stream(0);
+			encoded.rescale_ts(in_time_base, out_time_base);
+			encoded.write_interleaved(&mut octx).unwrap();
+		}
+	}
+
+	if let Ok(true) = transcoder.encoder.flush(&mut encoded) {
+		encoded.set_stream(0);
+		encoded.rescale_ts(in_time_base, out_time_base);
+		encoded.write_interleaved(&mut octx).unwrap();
+	}
+
 	octx.write_trailer().unwrap();
 }

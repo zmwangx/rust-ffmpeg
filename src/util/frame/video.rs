@@ -75,6 +75,13 @@ impl Video {
 	}
 
 	#[inline]
+	pub fn set_kind(&mut self, value: picture::Type) {
+		unsafe {
+			(*self.as_mut_ptr()).pict_type = value.into();
+		}
+	}
+
+	#[inline]
 	pub fn is_interlaced(&self) -> bool {
 		unsafe {
 			(*self.as_ptr()).interlaced_frame != 0

@@ -131,6 +131,12 @@ impl Encoder {
 		}
 	}
 
+	pub fn flush(&mut self, out: &mut Packet) -> Result<bool, Error> {
+		unsafe {
+			self.encode(&frame::Audio::wrap(ptr::null_mut()), out)
+		}
+	}
+
 	pub fn frame_size(&self) -> u32 {
 		unsafe {
 			(*self.as_ptr()).frame_size as u32

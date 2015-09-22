@@ -49,12 +49,14 @@ impl Graph {
 
 	pub fn add<'a, 'b>(&'a mut self, filter: &Filter, name: &str, args: &str) -> Result<Context<'b>, Error> where 'a: 'b {
 		unsafe {
+			let     name    = CString::new(name).unwrap();
+			let     args    = CString::new(args).unwrap();
 			let mut context = ptr::null_mut();
 
 			match avfilter_graph_create_filter(&mut context as *mut *mut AVFilterContext,
 				filter.as_ptr(),
-				CString::new(name).unwrap().as_ptr(),
-				CString::new(args).unwrap().as_ptr(),
+				name.as_ptr(),
+				args.as_ptr(),
 				ptr::null_mut(),
 				self.as_mut_ptr())
 			{
@@ -66,7 +68,8 @@ impl Graph {
 
 	pub fn get<'a, 'b>(&'b mut self, name: &str) -> Option<Context<'b>> where 'a: 'b {
 		unsafe {
-			let ptr = avfilter_graph_get_filter(self.as_mut_ptr(), CString::new(name).unwrap().as_ptr());
+			let name = CString::new(name).unwrap();
+			let ptr  = avfilter_graph_get_filter(self.as_mut_ptr(), name.as_ptr());
 
 			if ptr.is_null() {
 				None
@@ -134,7 +137,9 @@ impl<'a> Parser<'a> {
 				panic!("out of memory");
 			}
 
-			(*input).name       = av_strdup(CString::new(name).unwrap().as_ptr());
+			let name = CString::new(name).unwrap();
+
+			(*input).name       = av_strdup(name.as_ptr());
 			(*input).filter_ctx = context.as_mut_ptr();
 			(*input).pad_idx    = pad as c_int;
 			(*input).next       = ptr::null_mut();
@@ -159,7 +164,9 @@ impl<'a> Parser<'a> {
 				panic!("out of memory");
 			}
 
-			(*output).name       = av_strdup(CString::new(name).unwrap().as_ptr());
+			let name = CString::new(name).unwrap();
+
+			(*output).name       = av_strdup(name.as_ptr());
 			(*output).filter_ctx = context.as_mut_ptr();
 			(*output).pad_idx    = pad as c_int;
 			(*output).next       = ptr::null_mut();
@@ -177,8 +184,10 @@ impl<'a> Parser<'a> {
 
 	pub fn parse(mut self, spec: &str) -> Result<(), Error> {
 		unsafe {
+			let spec = CString::new(spec).unwrap();
+
 			let result = avfilter_graph_parse_ptr(self.graph.as_mut_ptr(),
-				CString::new(spec).unwrap().as_ptr(), &mut self.inputs, &mut self.outputs,
+				spec.as_ptr(), &mut self.inputs, &mut self.outputs,
 				ptr::null_mut());
 
 			avfilter_inout_free(&mut self.inputs);

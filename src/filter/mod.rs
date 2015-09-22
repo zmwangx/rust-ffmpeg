@@ -54,7 +54,8 @@ pub fn license() -> &'static str {
 
 pub fn find(name: &str) -> Option<Filter> {
 	unsafe {
-		let ptr = avfilter_get_by_name(CString::new(name).unwrap().as_ptr());
+		let name = CString::new(name).unwrap();
+		let ptr  = avfilter_get_by_name(name.as_ptr());
 
 		if ptr.is_null() {
 			None

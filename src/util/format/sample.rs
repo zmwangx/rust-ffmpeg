@@ -90,7 +90,9 @@ impl From<AVSampleFormat> for Sample {
 impl From<&'static str> for Sample {
 	fn from(value: &'static str) -> Self {
 		unsafe {
-			Sample::from(av_get_sample_fmt(CString::new(value).unwrap().as_ptr()))
+			let value = CString::new(value).unwrap();
+
+			Sample::from(av_get_sample_fmt(value.as_ptr()))
 		}
 	}
 }

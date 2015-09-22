@@ -6,6 +6,7 @@ pub use self::flag::Flags;
 
 use std::marker::PhantomData;
 use std::mem;
+use std::slice;
 
 use libc::c_int;
 use ffi::*;
@@ -45,6 +46,15 @@ impl Packet {
 
 			Packet(pkt)
 		}
+	}
+
+	pub fn copy(data: &[u8]) -> Self {
+		use std::io::Write;
+
+		let mut packet = Packet::new(data.len());
+		packet.data_mut().unwrap().write(data).unwrap();
+
+		packet
 	}
 
 	pub fn shrink(&mut self, size: usize) {
@@ -121,6 +131,28 @@ impl Packet {
 
 	pub fn side_data(&self) -> SideDataIter {
 		SideDataIter::new(&self.0)
+	}
+
+	pub fn data(&self) -> Option<&[u8]> {
+		unsafe {
+			if self.0.data.is_null() {
+				None
+			}
+			else {
+				Some(slice::from_raw_parts(self.0.data, self.0.size as usize))
+			}
+		}
+	}
+
+	pub fn data_mut(&mut self) -> Option<&mut [u8]> {
+		unsafe {
+			if self.0.data.is_null() {
+				None
+			}
+			else {
+				Some(slice::from_raw_parts_mut(self.0.data, self.0.size as usize))
+			}
+		}
 	}
 
 	pub fn read(&mut self, format: &mut format::context::Input) -> Result<(), Error> {

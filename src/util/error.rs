@@ -1,4 +1,5 @@
 use std::error;
+use std::io;
 use std::fmt;
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
@@ -107,6 +108,12 @@ impl Into<c_int> for Error {
 			Error::HttpOther4xx     => AVERROR_HTTP_OTHER_4XX,
 			Error::HttpServerError  => AVERROR_HTTP_SERVER_ERROR,
 		}
+	}
+}
+
+impl From<Error> for io::Error {
+	fn from(value: Error) -> io::Error {
+		io::Error::new(io::ErrorKind::Other, value)
 	}
 }
 

@@ -42,6 +42,7 @@ pub mod threading;
 
 pub mod encoder;
 pub mod decoder;
+pub mod traits;
 
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;

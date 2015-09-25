@@ -5,9 +5,9 @@ use libc::c_int;
 use ffi::*;
 
 use super::Encoder as Super;
-use ::{Packet, Error, Dictionary, Codec, ChannelLayout};
-use ::frame;
+use ::{Packet, Error, Dictionary, ChannelLayout, frame};
 use ::util::format;
+use codec::traits;
 
 pub struct Audio(pub Super);
 
@@ -21,23 +21,23 @@ impl Audio {
 		}
 	}
 
-	pub fn open_as(mut self, codec: &Codec) -> Result<Encoder, Error> {
+	pub fn open_as<E: traits::Encoder>(mut self, codec: E) -> Result<Encoder, Error> {
 		unsafe {
-			if codec.is_encoder() {
+			if let Some(codec) = codec.encoder() {
 				match avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), ptr::null_mut()) {
 					0 => Ok(Encoder(self)),
 					e => Err(Error::from(e))
 				}
 			}
 			else {
-				Err(Error::InvalidData)
+				Err(Error::EncoderNotFound)
 			}
 		}
 	}
 
-	pub fn open_as_with(mut self, codec: &Codec, options: Dictionary) -> Result<Encoder, Error> {
+	pub fn open_as_with<E: traits::Encoder>(mut self, codec: E, options: Dictionary) -> Result<Encoder, Error> {
 		unsafe {
-			if codec.is_encoder() {
+			if let Some(codec) = codec.encoder() {
 				let mut opts = options.disown();
 				let     res  = avcodec_open2(self.as_mut_ptr(), codec.as_ptr(), &mut opts);
 
@@ -49,7 +49,7 @@ impl Audio {
 				}
 			}
 			else {
-				Err(Error::InvalidData)
+				Err(Error::EncoderNotFound)
 			}
 		}
 	}

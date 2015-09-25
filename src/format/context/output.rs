@@ -3,9 +3,10 @@ use std::ptr;
 use std::ffi::CString;
 
 use ffi::*;
-use ::{Error, Codec, StreamMut, Dictionary, format};
+use ::{Error, StreamMut, Dictionary, format};
 use super::common::Context;
 use super::destructor;
+use codec::traits;
 
 pub struct Output {
 	ptr: *mut AVFormatContext,
@@ -67,9 +68,10 @@ impl Output {
 		}
 	}
 
-	pub fn add_stream(&mut self, codec: &Codec) -> StreamMut {
+	pub fn add_stream<E: traits::Encoder>(&mut self, codec: E) -> Result<StreamMut, Error> {
 		unsafe {
-			let ptr = avformat_new_stream(self.as_mut_ptr(), codec.as_ptr());
+			let codec = try!(codec.encoder().ok_or(Error::EncoderNotFound));
+			let ptr   = avformat_new_stream(self.as_mut_ptr(), codec.as_ptr());
 
 			if ptr.is_null() {
 				panic!("out of memory");
@@ -77,7 +79,7 @@ impl Output {
 
 			let index = (*self.ctx.as_ptr()).nb_streams - 1;
 
-			StreamMut::wrap(&mut self.ctx, index as usize)
+			Ok(StreamMut::wrap(&mut self.ctx, index as usize))
 		}
 	}
 

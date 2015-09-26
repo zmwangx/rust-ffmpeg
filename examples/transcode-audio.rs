@@ -15,13 +15,10 @@ fn filter(spec: &str, decoder: &codec::decoder::Audio, encoder: &codec::encoder:
 	try!(filter.add(&filter::find("abuffer").unwrap(), "in", &args));
 	try!(filter.add(&filter::find("abuffersink").unwrap(), "out", ""));
 
-	{
-		let mut sink = filter.get("out").unwrap();
-
-		sink.set_sample_format(encoder.format()).unwrap();
-		sink.set_channel_layout(encoder.channel_layout()).unwrap();
-		sink.set_sample_rate(encoder.rate()).unwrap();
-	}
+	filter.get("out").unwrap()
+		.set_sample_format(encoder.format())
+		.set_channel_layout(encoder.channel_layout())
+		.set_sample_rate(encoder.rate());
 
 	try!(try!(try!(filter.output("in", 0)).input("out", 0)).parse(spec));
 	try!(filter.validate());
@@ -61,12 +58,12 @@ fn transcoder<P: AsRef<Path>>(ictx: &mut format::context::Input, octx: &mut form
 		encoder.set_flags(ffmpeg::codec::flag::GLOBAL_HEADER);
 	}
 
-	encoder.set_rate(decoder.rate() as i32);
-	encoder.set_channel_layout(channel_layout);
-	encoder.set_channels(channel_layout.channels());
-	encoder.set_format(codec.formats().expect("unknown supported formats").next().unwrap());
-	encoder.set_bit_rate(decoder.bit_rate());
-	encoder.set_max_bit_rate(decoder.max_bit_rate());
+	encoder.set_rate(decoder.rate() as i32)
+	       .set_channel_layout(channel_layout)
+	       .set_channels(channel_layout.channels())
+	       .set_format(codec.formats().expect("unknown supported formats").next().unwrap())
+	       .set_bit_rate(decoder.bit_rate())
+	       .set_max_bit_rate(decoder.max_bit_rate());
 
 	encoder.set_time_base((1, decoder.rate() as i32));
 	output.set_time_base((1, decoder.rate() as i32));
@@ -122,9 +119,9 @@ fn main() {
 
 				while let Ok(..) = transcoder.filter.get("out").unwrap().sink().frame(&mut decoded) {
 					if let Ok(true) = transcoder.encoder.encode(&decoded, &mut encoded) {
-						encoded.set_stream(0);
-						encoded.rescale_ts(in_time_base, out_time_base);
-						encoded.write_interleaved(&mut octx).unwrap();
+						encoded.set_stream(0)
+						       .rescale_ts(in_time_base, out_time_base)
+						       .write_interleaved(&mut octx).unwrap();
 					}
 				}
 			}
@@ -135,16 +132,16 @@ fn main() {
 
 	while let Ok(..) = transcoder.filter.get("out").unwrap().sink().frame(&mut decoded) {
 		if let Ok(true) = transcoder.encoder.encode(&decoded, &mut encoded) {
-			encoded.set_stream(0);
-			encoded.rescale_ts(in_time_base, out_time_base);
-			encoded.write_interleaved(&mut octx).unwrap();
+			encoded.set_stream(0)
+			       .rescale_ts(in_time_base, out_time_base)
+			       .write_interleaved(&mut octx).unwrap();
 		}
 	}
 
 	if let Ok(true) = transcoder.encoder.flush(&mut encoded) {
-		encoded.set_stream(0);
-		encoded.rescale_ts(in_time_base, out_time_base);
-		encoded.write_interleaved(&mut octx).unwrap();
+		encoded.set_stream(0)
+		       .rescale_ts(in_time_base, out_time_base)
+		       .write_interleaved(&mut octx).unwrap();
 	}
 
 	octx.write_trailer().unwrap();

@@ -105,7 +105,7 @@ impl Packet {
 	pub fn pts(&self) -> Option<i64> {
 		match self.0.pts {
 			AV_NOPTS_VALUE => None,
-			pts => Some(pts as i64),
+			pts            => Some(pts as i64),
 		}
 	}
 

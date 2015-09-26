@@ -32,9 +32,11 @@ impl<'a> Sink<'a> {
 		}
 	}
 
-	pub fn set_frame_size(&mut self, value: u32) {
+	pub fn set_frame_size(&mut self, value: u32) -> &mut Self {
 		unsafe {
 			av_buffersink_set_frame_size(self.ctx.as_mut_ptr(), value);
 		}
+
+		self
 	}
 }

@@ -85,10 +85,12 @@ impl Frame {
 		}
 	}
 
-	pub fn set_pts(&mut self, value: Option<i64>) {
+	pub fn set_pts(&mut self, value: Option<i64>) -> &mut Self {
 		unsafe {
 			(*self.as_mut_ptr()).pts = value.unwrap_or(AV_NOPTS_VALUE);
 		}
+
+		self
 	}
 
 	pub fn timestamp(&self) -> Option<i64> {
@@ -118,10 +120,12 @@ impl Frame {
 		}
 	}
 
-	pub fn set_metadata(&mut self, value: Dictionary) {
+	pub fn set_metadata(&mut self, value: Dictionary) -> &mut Self {
 		unsafe {
 			av_frame_set_metadata(self.as_mut_ptr(), value.disown());
 		}
+
+		self
 	}
 
 	pub fn side_data(&self, kind: side_data::Type) -> Option<SideData> {

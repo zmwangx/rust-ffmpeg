@@ -49,12 +49,6 @@ impl Input {
 		}
 	}
 
-	pub fn set_video_codec(&mut self, mut value: Codec) {
-		unsafe {
-			av_format_set_video_codec(self.as_mut_ptr(), value.as_mut_ptr());
-		}
-	}
-
 	pub fn audio_codec(&self) -> Option<Codec> {
 		unsafe {
 			let ptr = av_format_get_audio_codec(self.as_ptr());
@@ -65,12 +59,6 @@ impl Input {
 			else {
 				Some(Codec::wrap(ptr))
 			}
-		}
-	}
-
-	pub fn set_audio_codec(&mut self, mut value: Codec) {
-		unsafe {
-			av_format_set_audio_codec(self.as_mut_ptr(), value.as_mut_ptr());
 		}
 	}
 
@@ -87,12 +75,6 @@ impl Input {
 		}
 	}
 
-	pub fn set_subtitle_codec(&mut self, mut value: Codec) {
-		unsafe {
-			av_format_set_subtitle_codec(self.as_mut_ptr(), value.as_mut_ptr());
-		}
-	}
-
 	pub fn data_codec(&self) -> Option<Codec> {
 		unsafe {
 			let ptr = av_format_get_data_codec(self.as_ptr());
@@ -103,12 +85,6 @@ impl Input {
 			else {
 				Some(Codec::wrap(ptr))
 			}
-		}
-	}
-
-	pub fn set_data_codec(&mut self, mut value: Codec) {
-		unsafe {
-			av_format_set_data_codec(self.as_mut_ptr(), value.as_mut_ptr());
 		}
 	}
 

@@ -35,31 +35,39 @@ impl Encoder {
 		}
 	}
 
-	pub fn set_bit_rate(&mut self, value: usize) {
+	pub fn set_bit_rate(&mut self, value: usize) -> &mut Self {
 		unsafe {
 			(*self.as_mut_ptr()).bit_rate = value as c_int;
 		}
+
+		self
 	}
 
-	pub fn set_max_bit_rate(&mut self, value: usize) {
+	pub fn set_max_bit_rate(&mut self, value: usize) -> &mut Self {
 		unsafe {
 			(*self.as_mut_ptr()).rc_max_rate = value as c_int;
 		}
+
+		self
 	}
 
-	pub fn set_tolerance(&mut self, value: usize) {
+	pub fn set_tolerance(&mut self, value: usize) -> &mut Self {
 		unsafe {
 			(*self.as_mut_ptr()).bit_rate_tolerance = value as c_int;
 		}
+
+		self
 	}
 
-	pub fn set_quality(&mut self, value: usize) {
+	pub fn set_quality(&mut self, value: usize) -> &mut Self {
 		unsafe {
 			(*self.as_mut_ptr()).global_quality = value as c_int;
 		}
+
+		self
 	}
 
-	pub fn set_compression(&mut self, value: Option<usize>) {
+	pub fn set_compression(&mut self, value: Option<usize>) -> &mut Self {
 		unsafe {
 			if let Some(value) = value {
 				(*self.as_mut_ptr()).compression_level = value as c_int;
@@ -68,15 +76,19 @@ impl Encoder {
 				(*self.as_mut_ptr()).compression_level = -1;
 			}
 		}
+
+		self
 	}
 
-	pub fn set_time_base<R: Into<Rational>>(&mut self, value: R) {
+	pub fn set_time_base<R: Into<Rational>>(&mut self, value: R) -> &mut Self {
 		unsafe {
 			(*self.as_mut_ptr()).time_base = value.into().into();
 		}
+
+		self
 	}
 
-	pub fn set_frame_rate<R: Into<Rational>>(&mut self, value: Option<R>) {
+	pub fn set_frame_rate<R: Into<Rational>>(&mut self, value: Option<R>) -> &mut Self {
 		unsafe {
 			if let Some(value) = value {
 				(*self.as_mut_ptr()).framerate = value.into().into();
@@ -86,6 +98,8 @@ impl Encoder {
 				(*self.as_mut_ptr()).framerate.den = 1;
 			}
 		}
+
+		self
 	}
 }
 

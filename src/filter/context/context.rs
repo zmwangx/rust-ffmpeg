@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use ffi::*;
 use libc::c_void;
-use ::{option, format, Error, ChannelLayout};
+use ::{option, format, ChannelLayout};
 use super::{Source, Sink};
 
 pub struct Context<'a> {
@@ -38,20 +38,28 @@ impl<'a> Context<'a> {
 		}
 	}
 
-	pub fn set_pixel_format(&mut self, value: format::Pixel) -> Result<(), Error> {
-		option::Settable::set::<AVPixelFormat>(self, "pix_fmts", &value.into())
+	pub fn set_pixel_format(&mut self, value: format::Pixel) -> &mut Self {
+		let _ = option::Settable::set::<AVPixelFormat>(self, "pix_fmts", &value.into());
+
+		self
 	}
 
-	pub fn set_sample_format(&mut self, value: format::Sample) -> Result<(), Error> {
-		option::Settable::set::<AVSampleFormat>(self, "sample_fmts", &value.into())
+	pub fn set_sample_format(&mut self, value: format::Sample) -> &mut Self {
+		let _ = option::Settable::set::<AVSampleFormat>(self, "sample_fmts", &value.into());
+
+		self
 	}
 
-	pub fn set_sample_rate(&mut self, value: u32) -> Result<(), Error> {
-		option::Settable::set(self, "sample_rates", &(value as i64))
+	pub fn set_sample_rate(&mut self, value: u32) -> &mut Self {
+		let _ = option::Settable::set(self, "sample_rates", &(value as i64));
+
+		self
 	}
 
-	pub fn set_channel_layout(&mut self, value: ChannelLayout) -> Result<(), Error> {
-		option::Settable::set(self, "channel_layouts", &value.bits())
+	pub fn set_channel_layout(&mut self, value: ChannelLayout) -> &mut Self {
+		let _ = option::Settable::set(self, "channel_layouts", &value.bits());
+
+		self
 	}
 }
 

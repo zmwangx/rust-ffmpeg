@@ -69,21 +69,25 @@ impl Packet {
 		}
 	}
 
-	pub fn rescale_ts<S, D>(&mut self, source: S, destination: D)
+	pub fn rescale_ts<S, D>(&mut self, source: S, destination: D) -> &mut Self
 		where S: Into<Rational>,
 		      D: Into<Rational>
 	{
 		unsafe {
 			av_packet_rescale_ts(self.as_mut_ptr(), source.into().into(), destination.into().into());
 		}
+
+		self
 	}
 
 	pub fn flags(&self) -> Flags {
 		Flags::from_bits_truncate(self.0.flags)
 	}
 
-	pub fn set_flags(&mut self, value: Flags) {
+	pub fn set_flags(&mut self, value: Flags) -> &mut Self {
 		self.0.flags = value.bits();
+
+		self
 	}
 
 	pub fn is_key(&self) -> bool {
@@ -98,8 +102,10 @@ impl Packet {
 		self.0.stream_index as usize
 	}
 
-	pub fn set_stream(&mut self, index: usize) {
+	pub fn set_stream(&mut self, index: usize) -> &mut Self {
 		self.0.stream_index = index as c_int;
+
+		self
 	}
 
 	pub fn pts(&self) -> Option<i64> {

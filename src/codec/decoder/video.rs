@@ -84,28 +84,36 @@ impl Video {
 		}
 	}
 
-	pub fn set_slice_count(&mut self, value: usize) {
+	pub fn set_slice_count(&mut self, value: usize) -> &mut Self {
 		unsafe {
 			(*self.as_mut_ptr()).slice_count = value as c_int;
 		}
+
+		self
 	}
 
-	pub fn set_slice_flags(&mut self, value: slice::Flags) {
+	pub fn set_slice_flags(&mut self, value: slice::Flags) -> &mut Self {
 		unsafe {
 			(*self.as_mut_ptr()).slice_flags = value.bits();
 		}
+
+		self
 	}
 
-	pub fn skip_top(&mut self, value: usize) {
+	pub fn skip_top(&mut self, value: usize) -> &mut Self {
 		unsafe {
 			(*self.as_mut_ptr()).skip_top = value as c_int;
 		}
+
+		self
 	}
 
-	pub fn skip_bottom(&mut self, value: usize) {
+	pub fn skip_bottom(&mut self, value: usize) -> &mut Self {
 		unsafe {
 			(*self.as_mut_ptr()).skip_bottom = value as c_int;
 		}
+
+		self
 	}
 
 	pub fn references(&self) -> usize {
@@ -114,10 +122,12 @@ impl Video {
 		}
 	}
 
-	pub fn set_field_order(&mut self, value: FieldOrder) {
+	pub fn set_field_order(&mut self, value: FieldOrder) -> &mut Self {
 		unsafe {
 			(*self.as_mut_ptr()).field_order = value.into();
 		}
+
+		self
 	}
 
 	// intra_matrix

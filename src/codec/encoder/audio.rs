@@ -130,6 +130,10 @@ pub struct Encoder(pub Audio);
 impl Encoder {
 	pub fn encode(&mut self, frame: &frame::Audio, out: &mut Packet) -> Result<bool, Error> {
 		unsafe {
+			if self.format() != frame.format() {
+				return Err(Error::InvalidData);
+			}
+
 			let mut got: c_int = 0;
 
 			match avcodec_encode_audio2(self.0.as_mut_ptr(), out.as_mut_ptr(), frame.as_ptr(), &mut got) {
@@ -141,7 +145,12 @@ impl Encoder {
 
 	pub fn flush(&mut self, out: &mut Packet) -> Result<bool, Error> {
 		unsafe {
-			self.encode(&frame::Audio::wrap(ptr::null_mut()), out)
+			let mut got: c_int = 0;
+
+			match avcodec_encode_audio2(self.0.as_mut_ptr(), out.as_mut_ptr(), ptr::null(), &mut got) {
+				e if e < 0 => Err(Error::from(e)),
+				_          => Ok(got != 0)
+			}
 		}
 	}
 

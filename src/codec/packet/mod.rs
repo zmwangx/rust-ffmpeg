@@ -24,6 +24,10 @@ impl Packet {
 	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVPacket {
 		&mut self.0
 	}
+
+	pub unsafe fn is_empty(&self) -> bool {
+		self.0.buf.is_null()
+	}
 }
 
 impl Packet {
@@ -172,6 +176,10 @@ impl Packet {
 
 	pub fn write(&self, format: &mut format::context::Output) -> Result<bool, Error> {
 		unsafe {
+			if self.is_empty() {
+				return Err(Error::InvalidData);
+			}
+
 			match av_write_frame(format.as_mut_ptr(), self.as_ptr()) {
 				1 => Ok(true),
 				0 => Ok(false),
@@ -182,6 +190,10 @@ impl Packet {
 
 	pub fn write_interleaved(&self, format: &mut format::context::Output) -> Result<bool, Error> {
 		unsafe {
+			if self.is_empty() {
+				return Err(Error::InvalidData);
+			}
+
 			match av_interleaved_write_frame(format.as_mut_ptr(), self.as_ptr()) {
 				1 => Ok(true),
 				0 => Ok(false),

@@ -79,9 +79,12 @@ impl Frame {
 		}
 	}
 
-	pub fn pts(&self) -> i64 {
+	pub fn pts(&self) -> Option<i64> {
 		unsafe {
-			(*self.as_ptr()).pts as i64
+			match (*self.as_ptr()).pts {
+				AV_NOPTS_VALUE => None,
+				pts            => Some(pts as i64),
+			}
 		}
 	}
 

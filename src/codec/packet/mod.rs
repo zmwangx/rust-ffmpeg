@@ -15,6 +15,7 @@ use ::{Error, Rational, format};
 pub struct Packet(AVPacket);
 
 unsafe impl Send for Packet { }
+unsafe impl Sync for Packet { }
 
 impl Packet {
 	pub unsafe fn as_ptr(&self) -> *const AVPacket {

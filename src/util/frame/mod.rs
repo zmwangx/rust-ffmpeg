@@ -32,6 +32,7 @@ pub struct Frame {
 }
 
 unsafe impl Send for Frame { }
+unsafe impl Sync for Frame { }
 
 impl Frame {
 	pub unsafe fn wrap(ptr: *mut AVFrame) -> Self {

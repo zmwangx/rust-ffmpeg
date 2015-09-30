@@ -11,6 +11,9 @@ pub struct Graph {
 	ptr: *mut AVFilterGraph,
 }
 
+unsafe impl Send for Graph { }
+unsafe impl Sync for Graph { }
+
 impl Graph {
 	pub unsafe fn wrap(ptr: *mut AVFilterGraph) -> Self {
 		Graph { ptr: ptr }

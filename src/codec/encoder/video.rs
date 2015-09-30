@@ -358,7 +358,7 @@ pub struct Encoder(pub Video);
 impl Encoder {
 	pub fn encode(&mut self, frame: &frame::Video, out: &mut Packet) -> Result<bool, Error> {
 		unsafe {
-			if self.format() != frame.format() {
+			if self.format() != frame.format() || self.width() != frame.width() || self.height() != frame.height() {
 				return Err(Error::InvalidData);
 			}
 

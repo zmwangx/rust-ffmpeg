@@ -18,20 +18,24 @@ unsafe impl Send for Packet { }
 unsafe impl Sync for Packet { }
 
 impl Packet {
+	#[inline(always)]
 	pub unsafe fn as_ptr(&self) -> *const AVPacket {
 		&self.0
 	}
 
+	#[inline(always)]
 	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVPacket {
 		&mut self.0
 	}
 
+	#[inline(always)]
 	pub unsafe fn is_empty(&self) -> bool {
 		self.0.buf.is_null()
 	}
 }
 
 impl Packet {
+	#[inline]
 	pub fn empty() -> Self {
 		unsafe {
 			let mut pkt: AVPacket = mem::zeroed();
@@ -42,6 +46,7 @@ impl Packet {
 		}
 	}
 
+	#[inline]
 	pub fn new(size: usize) -> Self {
 		unsafe {
 			let mut pkt: AVPacket = mem::zeroed();
@@ -53,6 +58,7 @@ impl Packet {
 		}
 	}
 
+	#[inline]
 	pub fn copy(data: &[u8]) -> Self {
 		use std::io::Write;
 
@@ -62,18 +68,21 @@ impl Packet {
 		packet
 	}
 
+	#[inline]
 	pub fn shrink(&mut self, size: usize) {
 		unsafe {
 			av_shrink_packet(&mut self.0, size as c_int);
 		}
 	}
 
+	#[inline]
 	pub fn grow(&mut self, size: usize) {
 		unsafe {
 			av_grow_packet(&mut self.0, size as c_int);
 		}
 	}
 
+	#[inline]
 	pub fn rescale_ts<S, D>(&mut self, source: S, destination: D) -> &mut Self
 		where S: Into<Rational>,
 		      D: Into<Rational>
@@ -85,34 +94,41 @@ impl Packet {
 		self
 	}
 
+	#[inline]
 	pub fn flags(&self) -> Flags {
 		Flags::from_bits_truncate(self.0.flags)
 	}
 
+	#[inline]
 	pub fn set_flags(&mut self, value: Flags) -> &mut Self {
 		self.0.flags = value.bits();
 
 		self
 	}
 
+	#[inline]
 	pub fn is_key(&self) -> bool {
 		self.flags().contains(flag::KEY)
 	}
 
+	#[inline]
 	pub fn is_corrupt(&self) -> bool {
 		self.flags().contains(flag::CORRUPT)
 	}
 
+	#[inline]
 	pub fn stream(&self) -> usize {
 		self.0.stream_index as usize
 	}
 
+	#[inline]
 	pub fn set_stream(&mut self, index: usize) -> &mut Self {
 		self.0.stream_index = index as c_int;
 
 		self
 	}
 
+	#[inline]
 	pub fn pts(&self) -> Option<i64> {
 		match self.0.pts {
 			AV_NOPTS_VALUE => None,
@@ -120,30 +136,37 @@ impl Packet {
 		}
 	}
 
+	#[inline]
 	pub fn dts(&self) -> i64 {
 		self.0.dts as i64
 	}
 
+	#[inline]
 	pub fn size(&self) -> usize {
 		self.0.size as usize
 	}
 
+	#[inline]
 	pub fn duration(&self) -> usize {
 		self.0.duration as usize
 	}
 
+	#[inline]
 	pub fn position(&self) -> isize {
 		self.0.pos as isize
 	}
 
+	#[inline]
 	pub fn convergence(&self) -> isize {
 		self.0.convergence_duration as isize
 	}
 
+	#[inline]
 	pub fn side_data(&self) -> SideDataIter {
 		SideDataIter::new(&self.0)
 	}
 
+	#[inline]
 	pub fn data(&self) -> Option<&[u8]> {
 		unsafe {
 			if self.0.data.is_null() {
@@ -155,6 +178,7 @@ impl Packet {
 		}
 	}
 
+	#[inline]
 	pub fn data_mut(&mut self) -> Option<&mut [u8]> {
 		unsafe {
 			if self.0.data.is_null() {
@@ -166,6 +190,7 @@ impl Packet {
 		}
 	}
 
+	#[inline]
 	pub fn read(&mut self, format: &mut format::context::Input) -> Result<(), Error> {
 		unsafe {
 			match av_read_frame(format.as_mut_ptr(), self.as_mut_ptr()) {
@@ -175,6 +200,7 @@ impl Packet {
 		}
 	}
 
+	#[inline]
 	pub fn write(&self, format: &mut format::context::Output) -> Result<bool, Error> {
 		unsafe {
 			if self.is_empty() {
@@ -189,6 +215,7 @@ impl Packet {
 		}
 	}
 
+	#[inline]
 	pub fn write_interleaved(&self, format: &mut format::context::Output) -> Result<bool, Error> {
 		unsafe {
 			if self.is_empty() {
@@ -205,6 +232,7 @@ impl Packet {
 }
 
 impl Clone for Packet {
+	#[inline]
 	fn clone(&self) -> Self {
 		let mut pkt = Packet::empty();
 		pkt.clone_from(self);
@@ -212,6 +240,7 @@ impl Clone for Packet {
 		pkt
 	}
 
+	#[inline]
 	fn clone_from(&mut self, source: &Self) {
 		unsafe {
 			av_copy_packet(&mut self.0, &source.0);

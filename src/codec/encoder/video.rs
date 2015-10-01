@@ -337,6 +337,22 @@ impl Video {
 
 		self
 	}
+
+	pub fn set_mb_lmin(&mut self, value: i32) -> &mut Self {
+		unsafe {
+			(*self.as_mut_ptr()).mb_lmin = value as c_int;
+		}
+
+		self
+	}
+
+	pub fn set_mb_lmax(&mut self, value: i32) -> &mut Self {
+		unsafe {
+			(*self.as_mut_ptr()).mb_lmax = value as c_int;
+		}
+
+		self
+	}
 }
 
 impl Deref for Video {

@@ -8,30 +8,63 @@ use super::{video, audio, subtitle};
 pub struct Encoder(pub Context);
 
 impl Encoder {
-	pub fn video(self) -> Result<video::Video, Error> {
-		if self.medium() == media::Type::Video {
-			Ok(video::Video(self))
-		}
-		else {
-			Err(Error::InvalidData)
+	pub fn video(mut self) -> Result<video::Video, Error> {
+		match self.medium() {
+			media::Type::Unknown => {
+				unsafe {
+					(*self.as_mut_ptr()).codec_type = media::Type::Video.into();
+				}
+
+				Ok(video::Video(self))
+			}
+
+			media::Type::Video => {
+				Ok(video::Video(self))
+			}
+
+			_ => {
+				Err(Error::InvalidData)
+			}
 		}
 	}
 
-	pub fn audio(self) -> Result<audio::Audio, Error> {
-		if self.medium() == media::Type::Audio {
-			Ok(audio::Audio(self))
-		}
-		else {
-			Err(Error::InvalidData)
+	pub fn audio(mut self) -> Result<audio::Audio, Error> {
+		match self.medium() {
+			media::Type::Unknown => {
+				unsafe {
+					(*self.as_mut_ptr()).codec_type = media::Type::Audio.into();
+				}
+
+				Ok(audio::Audio(self))
+			}
+
+			media::Type::Audio => {
+				Ok(audio::Audio(self))
+			}
+
+			_ => {
+				Err(Error::InvalidData)
+			}
 		}
 	}
 
-	pub fn subtitle(self) -> Result<subtitle::Subtitle, Error> {
-		if self.medium() == media::Type::Subtitle {
-			Ok(subtitle::Subtitle(self))
-		}
-		else {
-			Err(Error::InvalidData)
+	pub fn subtitle(mut self) -> Result<subtitle::Subtitle, Error> {
+		match self.medium() {
+			media::Type::Unknown => {
+				unsafe {
+					(*self.as_mut_ptr()).codec_type = media::Type::Subtitle.into();
+				}
+
+				Ok(subtitle::Subtitle(self))
+			}
+
+			media::Type::Subtitle => {
+				Ok(subtitle::Subtitle(self))
+			}
+
+			_ => {
+				Err(Error::InvalidData)
+			}
 		}
 	}
 

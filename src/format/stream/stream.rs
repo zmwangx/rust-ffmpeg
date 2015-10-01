@@ -73,7 +73,7 @@ impl<'a> Stream<'a> {
 		SideDataIter::new(self)
 	}
 
-	pub fn frame_rate(&self) -> Rational {
+	pub fn rate(&self) -> Rational {
 		unsafe {
 			Rational::from(av_stream_get_r_frame_rate(self.as_ptr()))
 		}

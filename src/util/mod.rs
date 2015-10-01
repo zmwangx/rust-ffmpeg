@@ -16,18 +16,21 @@ use std::str::from_utf8_unchecked;
 
 use ffi::*;
 
+#[inline(always)]
 pub fn version() -> u32 {
 	unsafe {
 		avutil_version()
 	}
 }
 
+#[inline(always)]
 pub fn configuration() -> &'static str {
 	unsafe {
 		from_utf8_unchecked(CStr::from_ptr(avutil_configuration()).to_bytes())
 	}
 }
 
+#[inline(always)]
 pub fn license() -> &'static str {
 	unsafe {
 		from_utf8_unchecked(CStr::from_ptr(avutil_license()).to_bytes())

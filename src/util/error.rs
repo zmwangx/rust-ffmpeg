@@ -132,6 +132,7 @@ impl fmt::Debug for Error {
 	}
 }
 
+#[inline(always)]
 fn index(error: &Error) -> usize {
 	match error {
 		&Error::BsfNotFound      => 0,

@@ -97,6 +97,24 @@ impl Input {
 	pub fn packets(&mut self) -> PacketIter {
 		PacketIter::new(self)
 	}
+
+	pub fn pause(&mut self) -> Result<(), Error> {
+		unsafe {
+			match av_read_pause(self.as_mut_ptr()) {
+				0 => Ok(()),
+				e => Err(Error::from(e)),
+			}
+		}
+	}
+
+	pub fn play(&mut self) -> Result<(), Error> {
+		unsafe {
+			match av_read_play(self.as_mut_ptr()) {
+				0 => Ok(()),
+				e => Err(Error::from(e)),
+			}
+		}
+	}
 }
 
 impl Deref for Input {

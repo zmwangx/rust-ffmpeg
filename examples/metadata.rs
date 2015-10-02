@@ -31,7 +31,7 @@ fn main() {
 				println!("\tframes: {}", stream.frames());
 				println!("\tdisposition: {:?}", stream.disposition());
 				println!("\tdiscard: {:?}", stream.discard());
-				println!("\tframe_rate: {}", stream.frame_rate());
+				println!("\trate: {}", stream.rate());
 		
 				let codec = stream.codec();
 				println!("\tmedium: {:?}", codec.medium());

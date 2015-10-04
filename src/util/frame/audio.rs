@@ -19,9 +19,9 @@ impl Audio {
 
 	#[inline]
 	pub unsafe fn alloc(&mut self, format: format::Sample, samples: usize, layout: ChannelLayout) {
-		self.set_format(format)
-		    .set_samples(samples)
-		    .set_channel_layout(layout);
+		self.set_format(format);
+		self.set_samples(samples);
+		self.set_channel_layout(layout);
 
 		av_frame_get_buffer(self.as_mut_ptr(), 0);
 	}
@@ -58,12 +58,10 @@ impl Audio {
 	}
 
 	#[inline]
-	pub fn set_format(&mut self, value: format::Sample) -> &mut Self {
+	pub fn set_format(&mut self, value: format::Sample) {
 		unsafe {
 			(*self.as_mut_ptr()).format = mem::transmute::<AVSampleFormat, c_int>(value.into());
 		}
-
-		self
 	}
 
 	#[inline]
@@ -74,12 +72,10 @@ impl Audio {
 	}
 
 	#[inline]
-	pub fn set_channel_layout(&mut self, value: ChannelLayout) -> &mut Self {
+	pub fn set_channel_layout(&mut self, value: ChannelLayout) {
 		unsafe {
 			av_frame_set_channel_layout(self.as_mut_ptr(), value.bits() as int64_t);
 		}
-
-		self
 	}
 
 	#[inline]
@@ -90,12 +86,10 @@ impl Audio {
 	}
 
 	#[inline]
-	pub fn set_channels(&mut self, value: u16) -> &mut Self {
+	pub fn set_channels(&mut self, value: u16) {
 		unsafe {
 			av_frame_set_channels(self.as_mut_ptr(), value as c_int);
 		}
-
-		self
 	}
 
 	#[inline]
@@ -106,12 +100,10 @@ impl Audio {
 	}
 
 	#[inline]
-	pub fn set_rate(&mut self, value: u32) -> &mut Self {
+	pub fn set_rate(&mut self, value: u32) {
 		unsafe {
 			av_frame_set_sample_rate(self.as_mut_ptr(), value as c_int);
 		}
-
-		self
 	}
 
 	#[inline]
@@ -122,12 +114,10 @@ impl Audio {
 	}
 
 	#[inline]
-	pub fn set_samples(&mut self, value: usize) -> &mut Self {
+	pub fn set_samples(&mut self, value: usize) {
 		unsafe {
 			(*self.as_mut_ptr()).nb_samples = value as c_int;
 		}
-
-		self
 	}
 
 	#[inline]

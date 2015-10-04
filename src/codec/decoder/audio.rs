@@ -64,20 +64,16 @@ impl Audio {
 		}
 	}
 
-	pub fn set_channel_layout(&mut self, value: ChannelLayout) -> &mut Self {
+	pub fn set_channel_layout(&mut self, value: ChannelLayout) {
 		unsafe {
 			(*self.as_mut_ptr()).channel_layout = value.bits();
 		}
-
-		self
 	}
 
-	pub fn request_channel_layout(&mut self, value: ChannelLayout) -> &mut Self {
+	pub fn request_channel_layout(&mut self, value: ChannelLayout) {
 		unsafe {
 			(*self.as_mut_ptr()).request_channel_layout = value.bits();
 		}
-
-		self
 	}
 
 	pub fn audio_service(&mut self) -> AudioService {

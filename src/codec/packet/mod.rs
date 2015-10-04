@@ -83,15 +83,13 @@ impl Packet {
 	}
 
 	#[inline]
-	pub fn rescale_ts<S, D>(&mut self, source: S, destination: D) -> &mut Self
+	pub fn rescale_ts<S, D>(&mut self, source: S, destination: D)
 		where S: Into<Rational>,
 		      D: Into<Rational>
 	{
 		unsafe {
 			av_packet_rescale_ts(self.as_mut_ptr(), source.into().into(), destination.into().into());
 		}
-
-		self
 	}
 
 	#[inline]
@@ -100,10 +98,8 @@ impl Packet {
 	}
 
 	#[inline]
-	pub fn set_flags(&mut self, value: Flags) -> &mut Self {
+	pub fn set_flags(&mut self, value: Flags) {
 		self.0.flags = value.bits();
-
-		self
 	}
 
 	#[inline]
@@ -122,10 +118,8 @@ impl Packet {
 	}
 
 	#[inline]
-	pub fn set_stream(&mut self, index: usize) -> &mut Self {
+	pub fn set_stream(&mut self, index: usize) {
 		self.0.stream_index = index as c_int;
-
-		self
 	}
 
 	#[inline]

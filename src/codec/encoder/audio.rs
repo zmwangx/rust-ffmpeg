@@ -54,12 +54,10 @@ impl Audio {
 		}
 	}
 
-	pub fn set_rate(&mut self, rate: i32) -> &mut Self {
+	pub fn set_rate(&mut self, rate: i32) {
 		unsafe {
 			(*self.as_mut_ptr()).sample_rate = rate;
 		}
-
-		self
 	}
 
 	pub fn rate(&self) -> u32 {
@@ -68,12 +66,10 @@ impl Audio {
 		}
 	}
 
-	pub fn set_format(&mut self, value: format::Sample) -> &mut Self {
+	pub fn set_format(&mut self, value: format::Sample) {
 		unsafe {
 			(*self.as_mut_ptr()).sample_fmt = value.into();
 		}
-
-		self
 	}
 
 	pub fn format(&self) -> format::Sample {
@@ -82,12 +78,10 @@ impl Audio {
 		}
 	}
 
-	pub fn set_channel_layout(&mut self, value: ChannelLayout) -> &mut Self {
+	pub fn set_channel_layout(&mut self, value: ChannelLayout) {
 		unsafe {
 			(*self.as_mut_ptr()).channel_layout = value.bits();
 		}
-
-		self
 	}
 
 	pub fn channel_layout(&self) -> ChannelLayout {
@@ -96,12 +90,10 @@ impl Audio {
 		}
 	}
 
-	pub fn set_channels(&mut self, value: i32) -> &mut Self {
+	pub fn set_channels(&mut self, value: i32) {
 		unsafe {
 			(*self.as_mut_ptr()).channels = value;
 		}
-
-		self
 	}
 
 	pub fn channels(&self) -> u16 {

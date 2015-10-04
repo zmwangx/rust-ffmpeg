@@ -38,28 +38,20 @@ impl<'a> Context<'a> {
 		}
 	}
 
-	pub fn set_pixel_format(&mut self, value: format::Pixel) -> &mut Self {
+	pub fn set_pixel_format(&mut self, value: format::Pixel) {
 		let _ = option::Settable::set::<AVPixelFormat>(self, "pix_fmts", &value.into());
-
-		self
 	}
 
-	pub fn set_sample_format(&mut self, value: format::Sample) -> &mut Self {
+	pub fn set_sample_format(&mut self, value: format::Sample) {
 		let _ = option::Settable::set::<AVSampleFormat>(self, "sample_fmts", &value.into());
-
-		self
 	}
 
-	pub fn set_sample_rate(&mut self, value: u32) -> &mut Self {
+	pub fn set_sample_rate(&mut self, value: u32) {
 		let _ = option::Settable::set(self, "sample_rates", &(value as i64));
-
-		self
 	}
 
-	pub fn set_channel_layout(&mut self, value: ChannelLayout) -> &mut Self {
+	pub fn set_channel_layout(&mut self, value: ChannelLayout) {
 		let _ = option::Settable::set(self, "channel_layouts", &value.bits());
-
-		self
 	}
 }
 

@@ -89,14 +89,14 @@ impl Frame {
 		}
 	}
 
-	pub fn set_pts(&mut self, value: Option<i64>) -> &mut Self {
+	#[inline]
+	pub fn set_pts(&mut self, value: Option<i64>) {
 		unsafe {
 			(*self.as_mut_ptr()).pts = value.unwrap_or(AV_NOPTS_VALUE);
 		}
-
-		self
 	}
 
+	#[inline]
 	pub fn timestamp(&self) -> Option<i64> {
 		unsafe {
 			match av_frame_get_best_effort_timestamp(self.as_ptr()) {
@@ -106,32 +106,35 @@ impl Frame {
 		}
 	}
 
+	#[inline]
 	pub fn quality(&self) -> usize {
 		unsafe {
 			(*self.as_ptr()).quality as usize
 		}
 	}
 
+	#[inline]
 	pub fn flags(&self) -> Flags {
 		unsafe {
 			Flags::from_bits_truncate((*self.as_ptr()).flags)
 		}
 	}
 
+	#[inline]
 	pub fn metadata(&self) -> DictionaryRef {
 		unsafe {
 			DictionaryRef::wrap(av_frame_get_metadata(self.as_ptr()))
 		}
 	}
 
-	pub fn set_metadata(&mut self, value: Dictionary) -> &mut Self {
+	#[inline]
+	pub fn set_metadata(&mut self, value: Dictionary) {
 		unsafe {
 			av_frame_set_metadata(self.as_mut_ptr(), value.disown());
 		}
-
-		self
 	}
 
+	#[inline]
 	pub fn side_data(&self, kind: side_data::Type) -> Option<SideData> {
 		unsafe {
 			let ptr = av_frame_get_side_data(self.as_ptr(), kind.into());

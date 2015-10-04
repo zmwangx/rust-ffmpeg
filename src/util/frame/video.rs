@@ -22,9 +22,9 @@ impl Video {
 
 	#[inline]
 	pub unsafe fn alloc(&mut self, format: format::Pixel, width: u32, height: u32) {
-		self.set_format(format)
-		    .set_width(width)
-		    .set_height(height);
+		self.set_format(format);
+		self.set_width(width);
+		self.set_height(height);
 
 		av_frame_get_buffer(self.as_mut_ptr(), 32);
 	}
@@ -61,12 +61,10 @@ impl Video {
 	}
 
 	#[inline]
-	pub fn set_format(&mut self, value: format::Pixel) -> &mut Self {
+	pub fn set_format(&mut self, value: format::Pixel) {
 		unsafe {
 			(*self.as_mut_ptr()).format = mem::transmute::<AVPixelFormat, c_int>(value.into());
 		}
-
-		self
 	}
 
 	#[inline]
@@ -77,12 +75,10 @@ impl Video {
 	}
 
 	#[inline]
-	pub fn set_kind(&mut self, value: picture::Type) -> &mut Self {
+	pub fn set_kind(&mut self, value: picture::Type) {
 		unsafe {
 			(*self.as_mut_ptr()).pict_type = value.into();
 		}
-
-		self
 	}
 
 	#[inline]
@@ -114,12 +110,10 @@ impl Video {
 	}
 
 	#[inline]
-	pub fn set_width(&mut self, value: u32) -> &mut Self {
+	pub fn set_width(&mut self, value: u32) {
 		unsafe {
 			(*self.as_mut_ptr()).width = value as c_int;
 		}
-
-		self
 	}
 
 	#[inline]
@@ -130,12 +124,10 @@ impl Video {
 	}
 
 	#[inline]
-	pub fn set_height(&mut self, value: u32) -> &mut Self {
+	pub fn set_height(&mut self, value: u32) {
 		unsafe {
 			(*self.as_mut_ptr()).height = value as c_int;
 		}
-
-		self
 	}
 
 	#[inline]
@@ -146,12 +138,10 @@ impl Video {
 	}
 
 	#[inline]
-	pub fn set_color_space(&mut self, value: color::Space) -> &mut Self {
+	pub fn set_color_space(&mut self, value: color::Space) {
 		unsafe {
 			av_frame_set_colorspace(self.as_mut_ptr(), value.into());
 		}
-
-		self
 	}
 
 	#[inline]
@@ -162,12 +152,10 @@ impl Video {
 	}
 
 	#[inline]
-	pub fn set_color_range(&mut self, value: color::Range) -> &mut Self {
+	pub fn set_color_range(&mut self, value: color::Range) {
 		unsafe {
 			av_frame_set_color_range(self.as_mut_ptr(), value.into());
 		}
-
-		self
 	}
 
 	#[inline]
@@ -178,12 +166,10 @@ impl Video {
 	}
 
 	#[inline]
-	pub fn set_color_primaries(&mut self, value: color::Primaries) -> &mut Self {
+	pub fn set_color_primaries(&mut self, value: color::Primaries) {
 		unsafe {
 			(*self.as_mut_ptr()).color_primaries = value.into();
 		}
-
-		self
 	}
 
 	#[inline]
@@ -194,12 +180,10 @@ impl Video {
 	}
 
 	#[inline]
-	pub fn set_color_transfer_characteristic(&mut self, value: color::TransferCharacteristic) -> &mut Self {
+	pub fn set_color_transfer_characteristic(&mut self, value: color::TransferCharacteristic) {
 		unsafe {
 			(*self.as_mut_ptr()).color_trc = value.into();
 		}
-
-		self
 	}
 
 	#[inline]

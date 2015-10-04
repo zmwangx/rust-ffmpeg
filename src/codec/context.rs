@@ -62,12 +62,10 @@ impl Context {
 		}
 	}
 
-	pub fn set_flags(&mut self, value: Flags) -> &mut Self {
+	pub fn set_flags(&mut self, value: Flags) {
 		unsafe {
 			(*self.as_mut_ptr()).flags = value.bits() as c_int;
 		}
-
-		self
 	}
 
 	pub fn id(&self) -> Id {
@@ -88,14 +86,12 @@ impl Context {
 		}
 	}
 
-	pub fn set_threading(&mut self, config: threading::Config) -> &mut Self {
+	pub fn set_threading(&mut self, config: threading::Config) {
 		unsafe {
 			(*self.as_mut_ptr()).thread_type           = config.kind.into();
 			(*self.as_mut_ptr()).thread_count          = config.count as c_int;
 			(*self.as_mut_ptr()).thread_safe_callbacks = if config.safe { 1 } else { 0 };
 		}
-
-		self
 	}
 
 	pub fn threading(&self) -> threading::Config {

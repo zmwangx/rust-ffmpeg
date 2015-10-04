@@ -83,12 +83,10 @@ impl Output {
 		}
 	}
 
-	pub fn set_metadata(&mut self, dictionary: Dictionary) -> &mut Self {
+	pub fn set_metadata(&mut self, dictionary: Dictionary) {
 		unsafe {
 			(*self.as_mut_ptr()).metadata = dictionary.disown();
 		}
-
-		self
 	}
 }
 

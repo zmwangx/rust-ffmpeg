@@ -30,7 +30,7 @@ impl Packet {
 
 	#[inline(always)]
 	pub unsafe fn is_empty(&self) -> bool {
-		self.0.buf.is_null()
+		self.0.size == 0
 	}
 }
 

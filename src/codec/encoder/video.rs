@@ -6,7 +6,7 @@ use ffi::*;
 
 use super::Encoder as Super;
 use super::{MotionEstimation, Prediction, Comparison, Decision};
-use ::{Packet, Error, Rational, Dictionary, frame, format};
+use ::{packet, Error, Rational, Dictionary, frame, format};
 use codec::traits;
 
 pub struct Video(pub Super);
@@ -368,7 +368,7 @@ pub struct Encoder(pub Video);
 
 impl Encoder {
 	#[inline]
-	pub fn encode(&mut self, frame: &frame::Video, out: &mut Packet) -> Result<bool, Error> {
+	pub fn encode<P: packet::Mut>(&mut self, frame: &frame::Video, out: &mut P) -> Result<bool, Error> {
 		unsafe {
 			if self.format() != frame.format() || self.width() != frame.width() || self.height() != frame.height() {
 				return Err(Error::InvalidData);
@@ -384,7 +384,7 @@ impl Encoder {
 	}
 
 	#[inline]
-	pub fn flush(&mut self, out: &mut Packet) -> Result<bool, Error> {
+	pub fn flush<P: packet::Mut>(&mut self, out: &mut P) -> Result<bool, Error> {
 		unsafe {
 			let mut got: c_int = 0;
 

@@ -4,7 +4,7 @@ use libc::c_int;
 use ffi::*;
 
 use super::{Opened, slice};
-use ::{Packet, Error, Rational, FieldOrder};
+use ::{packet, Error, Rational, FieldOrder};
 use ::frame;
 use ::util::format;
 use ::util::chroma;
@@ -13,7 +13,7 @@ use ::color;
 pub struct Video(pub Opened);
 
 impl Video {
-	pub fn decode(&mut self, packet: &Packet, out: &mut frame::Video) -> Result<bool, Error> {
+	pub fn decode<P: packet::Ref>(&mut self, packet: &P, out: &mut frame::Video) -> Result<bool, Error> {
 		unsafe {
 			let mut got: c_int = 0;
 

@@ -5,7 +5,7 @@ use libc::c_int;
 use ffi::*;
 
 use super::Encoder as Super;
-use ::{Packet, Error, Dictionary, ChannelLayout, frame};
+use ::{packet, Error, Dictionary, ChannelLayout, frame};
 use ::util::format;
 use codec::traits;
 
@@ -120,7 +120,7 @@ impl DerefMut for Audio {
 pub struct Encoder(pub Audio);
 
 impl Encoder {
-	pub fn encode(&mut self, frame: &frame::Audio, out: &mut Packet) -> Result<bool, Error> {
+	pub fn encode<P: packet::Mut>(&mut self, frame: &frame::Audio, out: &mut P) -> Result<bool, Error> {
 		unsafe {
 			if self.format() != frame.format() {
 				return Err(Error::InvalidData);
@@ -135,7 +135,7 @@ impl Encoder {
 		}
 	}
 
-	pub fn flush(&mut self, out: &mut Packet) -> Result<bool, Error> {
+	pub fn flush<P: packet::Mut>(&mut self, out: &mut P) -> Result<bool, Error> {
 		unsafe {
 			let mut got: c_int = 0;
 

@@ -4,14 +4,14 @@ use libc::c_int;
 use ffi::*;
 
 use super::Opened;
-use ::{Packet, Error, AudioService, ChannelLayout};
+use ::{packet, Error, AudioService, ChannelLayout};
 use ::frame;
 use ::util::format;
 
 pub struct Audio(pub Opened);
 
 impl Audio {
-	pub fn decode(&mut self, packet: &Packet, out: &mut frame::Audio) -> Result<bool, Error> {
+	pub fn decode<P: packet::Ref>(&mut self, packet: &P, out: &mut frame::Audio) -> Result<bool, Error> {
 		unsafe {
 			let mut got: c_int = 0;
 

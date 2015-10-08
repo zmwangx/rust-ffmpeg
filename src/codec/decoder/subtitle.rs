@@ -4,12 +4,12 @@ use libc::c_int;
 use ffi::*;
 
 use super::Opened;
-use ::{Packet, Error};
+use ::{packet, Error};
 
 pub struct Subtitle(pub Opened);
 
 impl Subtitle {
-	pub fn decode(&mut self, packet: &Packet, out: &mut ::Subtitle) -> Result<bool, Error> {
+	pub fn decode<P: packet::Ref>(&mut self, packet: &P, out: &mut ::Subtitle) -> Result<bool, Error> {
 		unsafe {
 			let mut got: c_int = 0;
 

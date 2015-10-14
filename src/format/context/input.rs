@@ -7,6 +7,7 @@ use ffi::*;
 use ::{Error, Codec, Stream, Packet, format};
 use super::common::Context;
 use super::destructor;
+use util::range::Range;
 
 pub struct Input {
 	ptr: *mut AVFormatContext,
@@ -111,6 +112,18 @@ impl Input {
 		unsafe {
 			match av_read_play(self.as_mut_ptr()) {
 				0 => Ok(()),
+				e => Err(Error::from(e)),
+			}
+		}
+	}
+
+	pub fn seek<R: Range<i64>>(&mut self, ts: i64, range: R) -> Result<(), Error> {
+		unsafe {
+			match avformat_seek_file(self.as_mut_ptr(), -1,
+			                         range.start().map(|v| *v).unwrap_or(i64::min_value()), ts,
+			                         range.end().map(|v| *v).unwrap_or(i64::max_value()), 0)
+			{
+				s if s >= 0 => Ok(()),
 				e => Err(Error::from(e)),
 			}
 		}

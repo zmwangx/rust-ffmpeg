@@ -66,6 +66,12 @@ impl Opened {
 			}
 		}
 	}
+
+	pub fn flush(&mut self) {
+		unsafe {
+			avcodec_flush_buffers(self.as_mut_ptr());
+		}
+	}
 }
 
 impl Drop for Opened {

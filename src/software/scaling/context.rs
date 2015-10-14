@@ -21,10 +21,12 @@ pub struct Context {
 }
 
 impl Context {
+	#[inline(always)]
 	pub unsafe fn as_ptr(&self) -> *const SwsContext {
 		self.ptr as *const _
 	}
 
+	#[inline(always)]
 	pub unsafe fn as_mut_ptr(&mut self) -> *mut SwsContext {
 		self.ptr
 	}
@@ -88,10 +90,12 @@ impl Context {
 		}
 	}
 
+	#[inline]
 	pub fn input(&self) -> &Definition {
 		&self.input
 	}
 
+	#[inline]
 	pub fn output(&self) -> &Definition {
 		&self.output
 	}

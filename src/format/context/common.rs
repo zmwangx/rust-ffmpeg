@@ -63,6 +63,12 @@ impl Context {
 		StreamIterMut::new(self)
 	}
 
+	pub fn duration(&self) -> i64 {
+		unsafe {
+			(*self.as_ptr()).duration
+		}
+	}
+
 	pub fn metadata(&self) -> DictionaryRef {
 		unsafe {
 			DictionaryRef::wrap((*self.as_ptr()).metadata)

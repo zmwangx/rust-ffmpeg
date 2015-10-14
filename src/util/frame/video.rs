@@ -38,7 +38,7 @@ impl Video {
 		}
 	}
 
-	#[inline(always)]
+	#[inline]
 	pub fn new(format: format::Pixel, width: u32, height: u32) -> Self {
 		unsafe {
 			let mut frame = Video::empty();

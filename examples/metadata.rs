@@ -22,12 +22,15 @@ fn main() {
 			if let Some(stream) = context.streams().best(ffmpeg::media::Type::Subtitle) {
 				println!("Best subtitle stream index: {}", stream.index());
 			}
-		
+
+			println!("duration (seconds): {:.2}", context.duration() as f64 / ffmpeg::ffi::AV_TIME_BASE as f64);
+
 			for stream in context.streams() {
 				println!("stream index {}:", stream.index());
 				println!("\ttime_base: {}", stream.time_base());
 				println!("\tstart_time: {}", stream.start_time());
-				println!("\tduration: {}", stream.duration());
+				println!("\tduration (stream timebase): {}", stream.duration());
+				println!("\tduration (seconds): {:.2}", stream.duration() as f64 * f64::from(stream.time_base()));
 				println!("\tframes: {}", stream.frames());
 				println!("\tdisposition: {:?}", stream.disposition());
 				println!("\tdiscard: {:?}", stream.discard());

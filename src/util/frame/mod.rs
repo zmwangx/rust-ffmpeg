@@ -35,38 +35,46 @@ unsafe impl Send for Frame { }
 unsafe impl Sync for Frame { }
 
 impl Frame {
+	#[inline(always)]
 	pub unsafe fn wrap(ptr: *mut AVFrame) -> Self {
 		Frame { ptr: ptr, _own: false }
 	}
 
+	#[inline(always)]
 	pub unsafe fn empty() -> Self {
 		Frame { ptr: av_frame_alloc(), _own: true }
 	}
 
+	#[inline(always)]
 	pub unsafe fn as_ptr(&self) -> *const AVFrame {
 		self.ptr as *const _
 	}
 
+	#[inline(always)]
 	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVFrame {
 		self.ptr
 	}
 
+	#[inline(always)]
 	pub unsafe fn is_empty(&self) -> bool {
 		(*self.as_ptr()).data[0].is_null()
 	}
 }
 
 impl Frame {
+	#[inline]
 	pub fn is_key(&self) -> bool {
 		unsafe {
 			(*self.as_ptr()).key_frame == 1
 		}
 	}
 
+	#[inline]
 	pub fn is_corrupt(&self) -> bool {
 		self.flags().contains(flag::CORRUPT)
 	}
 
+	#[inline]
 	pub fn packet(&self) -> Packet {
 		unsafe {
 			Packet {
@@ -80,6 +88,7 @@ impl Frame {
 		}
 	}
 
+	#[inline]
 	pub fn pts(&self) -> Option<i64> {
 		unsafe {
 			match (*self.as_ptr()).pts {
@@ -148,6 +157,7 @@ impl Frame {
 		}
 	}
 
+	#[inline]
 	pub fn new_side_data(&mut self, kind: side_data::Type, size: usize) -> Option<SideData> {
 		unsafe {
 			let ptr = av_frame_new_side_data(self.as_mut_ptr(), kind.into(), size as c_int);
@@ -161,6 +171,7 @@ impl Frame {
 		}
 	}
 
+	#[inline]
 	pub fn remove_side_data(&mut self, kind: side_data::Type) {
 		unsafe {
 			av_frame_remove_side_data(self.as_mut_ptr(), kind.into());

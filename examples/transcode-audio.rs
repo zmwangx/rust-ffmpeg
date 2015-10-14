@@ -90,16 +90,27 @@ fn transcoder<P: AsRef<Path>>(ictx: &mut format::context::Input, octx: &mut form
 //
 // Example 2: Overlay an audio file
 // transcode-audio in.mp3 out.mp3 "amovie=overlay.mp3 [ov]; [in][ov] amerge [out]"
+//
+// Example 3: Seek to a specified position (in seconds)
+// transcode-audio in.mp3 out.mp3 anull 30
 fn main() {
 	ffmpeg::init().unwrap();
 
 	let input  = env::args().nth(1).expect("missing input");
 	let output = env::args().nth(2).expect("missing output");
 	let filter = env::args().nth(3).unwrap_or("anull".to_owned());
+	let seek   = env::args().nth(4).and_then(|s| s.parse::<i64>().ok());
 
 	let mut ictx       = format::input(&input).unwrap();
 	let mut octx       = format::output(&output).unwrap();
 	let mut transcoder = transcoder(&mut ictx, &mut octx, &output, &filter).unwrap();
+
+	if let Some(position) = seek {
+		// If this seek was embedded in the transcoding loop, a call of `flush()`
+		// for every opened buffer after the successful seek would be advisable.
+		let position = position * ffmpeg::ffi::AV_TIME_BASE;
+		ictx.seek(position, ..position).unwrap();
+	}
 
 	octx.set_metadata(ictx.metadata().to_owned());
 	octx.write_header().unwrap();

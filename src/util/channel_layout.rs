@@ -62,6 +62,7 @@ bitflags! {
 }
 
 impl ChannelLayout {
+	#[inline]
 	pub fn channels(&self) -> i32 {
 		unsafe {
 			av_get_channel_layout_nb_channels(self.bits())

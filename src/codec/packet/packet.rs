@@ -282,7 +282,9 @@ impl<'a> Iterator for SideDataIter<'a> {
 
 	fn size_hint(&self) -> (usize, Option<usize>) {
 		unsafe {
-			((*self.ptr).side_data_elems as usize, Some((*self.ptr).side_data_elems as usize))
+			let length = (*self.ptr).side_data_elems as usize;
+
+			(length - self.cur as usize, Some(length - self.cur as usize))
 		}
 	}
 }

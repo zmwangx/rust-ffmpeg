@@ -69,7 +69,9 @@ impl<'a> Iterator for DeviceIter<'a> {
 
 	fn size_hint(&self) -> (usize, Option<usize>) {
 		unsafe {
-			((*self.ptr).nb_devices as usize, Some((*self.ptr).nb_devices as usize))
+			let length = (*self.ptr).nb_devices as usize;
+
+			(length - self.cur as usize, Some(length - self.cur as usize))
 		}
 	}
 }

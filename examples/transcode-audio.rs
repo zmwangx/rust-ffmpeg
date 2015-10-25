@@ -5,6 +5,7 @@ use std::path::Path;
 
 use ffmpeg::{format, codec, frame, media, filter};
 use ffmpeg::option::Settable;
+use ffmpeg::{rescale, Rescale};
 
 fn filter(spec: &str, decoder: &codec::decoder::Audio, encoder: &codec::encoder::Audio) -> Result<filter::Graph, ffmpeg::Error> {
 	let mut filter = filter::Graph::new();
@@ -106,9 +107,10 @@ fn main() {
 	let mut transcoder = transcoder(&mut ictx, &mut octx, &output, &filter).unwrap();
 
 	if let Some(position) = seek {
+		// If the position was given in seconds, rescale it to ffmpegs base timebase.
+		let position = position.rescale((1, 1), rescale::TIME_BASE);
 		// If this seek was embedded in the transcoding loop, a call of `flush()`
 		// for every opened buffer after the successful seek would be advisable.
-		let position = position * ffmpeg::ffi::AV_TIME_BASE;
 		ictx.seek(position, ..position).unwrap();
 	}
 

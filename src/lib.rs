@@ -22,6 +22,7 @@ pub use util::time;
 pub use util::frame::{self, Frame};
 pub use util::channel_layout::{self, ChannelLayout};
 pub use util::option;
+pub use util::mathematics::{self, Rounding, Rescale, rescale};
 
 #[cfg(feature = "format")]
 pub mod format;

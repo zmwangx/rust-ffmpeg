@@ -1,17 +1,17 @@
 pub mod flag;
 pub use self::flag::Flags;
 
+mod rect;
+pub use self::rect::{Rect, Bitmap, Text, Ass};
+
+mod rect_mut;
+pub use self::rect_mut::{RectMut, BitmapMut, TextMut, AssMut};
+
 use std::marker::PhantomData;
 use std::mem;
-use std::ptr;
-use std::ffi::CStr;
-use std::str::from_utf8_unchecked;
-use std::ops::Deref;
 
-use libc::{c_uint, uint32_t};
+use libc::{c_uint, uint32_t, size_t};
 use ffi::*;
-use ::format;
-use ::Picture;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Type {
@@ -92,6 +92,26 @@ impl Subtitle {
 	pub fn rects(&self) -> RectIter {
 		RectIter::new(&self.0)
 	}
+
+	pub fn rects_mut(&mut self) -> RectMutIter {
+		RectMutIter::new(&mut self.0)
+	}
+
+	pub fn add_rect(&mut self, kind: Type) -> RectMut {
+		unsafe {
+			self.0.num_rects += 1;
+			self.0.rects     = av_realloc(self.0.rects as *mut _,
+				(mem::size_of::<*const AVSubtitleRect>() * self.0.num_rects as usize) as size_t)
+				as *mut _;
+
+			let mut rect = av_mallocz(mem::size_of::<AVSubtitleRect>() as size_t) as *mut AVSubtitleRect;
+			(*rect).kind = kind.into();
+
+			*self.0.rects.offset((self.0.num_rects - 1) as isize) = rect;
+
+			RectMut::wrap(rect)
+		}
+	}
 }
 
 pub struct RectIter<'a> {
@@ -124,177 +144,50 @@ impl<'a> Iterator for RectIter<'a> {
 
 	fn size_hint(&self) -> (usize, Option<usize>) {
 		unsafe {
-			((*self.ptr).num_rects as usize, Some((*self.ptr).num_rects as usize))
+			let length = (*self.ptr).num_rects as usize;
+
+			(length - self.cur as usize, Some(length - self.cur as usize))
 		}
 	}
 }
 
 impl<'a> ExactSizeIterator for RectIter<'a> { }
 
-pub enum Rect<'a> {
-	None,
-	Bitmap(Bitmap<'a>),
-	Text(Text<'a>),
-	Ass(Ass<'a>),
+pub struct RectMutIter<'a> {
+	ptr: *mut AVSubtitle,
+	cur: c_uint,
+
+	_marker: PhantomData<&'a Subtitle>,
 }
 
-impl<'a> Rect<'a> {
-	pub unsafe fn wrap(ptr: *mut AVSubtitleRect) -> Self {
-		match Type::from((*ptr).kind) {
-			Type::None   => Rect::None,
-			Type::Bitmap => Rect::Bitmap(Bitmap::wrap(ptr)),
-			Type::Text   => Rect::Text(Text::wrap(ptr)),
-			Type::Ass    => Rect::Ass(Ass::wrap(ptr))
-		}
-	}
-
-	pub unsafe fn as_ptr(&self) -> *const AVSubtitleRect {
-		match self {
-			&Rect::None          => ptr::null(),
-			&Rect::Bitmap(ref b) => b.as_ptr(),
-			&Rect::Text(ref t)   => t.as_ptr(),
-			&Rect::Ass(ref a)    => a.as_ptr()
-		}
-	}
-
-	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVSubtitleRect {
-		match self {
-			&mut Rect::None          => ptr::null_mut(),
-			&mut Rect::Bitmap(ref mut b) => b.as_mut_ptr(),
-			&mut Rect::Text(ref mut t)   => t.as_mut_ptr(),
-			&mut Rect::Ass(ref mut a)    => a.as_mut_ptr()
-		}
+impl<'a> RectMutIter<'a> {
+	pub fn new(ptr: *mut AVSubtitle) -> Self {
+		RectMutIter { ptr: ptr, cur: 0, _marker: PhantomData }
 	}
 }
 
-impl<'a> Rect<'a> {
-	pub fn flags(&self) -> Flags {
+impl<'a> Iterator for RectMutIter<'a> {
+	type Item = RectMut<'a>;
+
+	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
 		unsafe {
-			Flags::from_bits_truncate(match self {
-				&Rect::None          => 0,
-				&Rect::Bitmap(ref b) => (*b.as_ptr()).flags,
-				&Rect::Text(ref t)   => (*t.as_ptr()).flags,
-				&Rect::Ass(ref a)    => (*a.as_ptr()).flags
-			})
+			if self.cur >= (*self.ptr).num_rects {
+				None
+			}
+			else {
+				self.cur += 1;
+				Some(RectMut::wrap(*(*self.ptr).rects.offset((self.cur - 1) as isize)))
+			}
 		}
 	}
-}
 
-pub struct Bitmap<'a> {
-	ptr: *mut AVSubtitleRect,
-
-	_marker: PhantomData<&'a ()>,
-}
-
-impl<'a> Bitmap<'a> {
-	pub unsafe fn wrap(ptr: *mut AVSubtitleRect) -> Self {
-		Bitmap { ptr: ptr, _marker: PhantomData }
-	}
-
-	pub unsafe fn as_ptr(&self) -> *const AVSubtitleRect {
-		self.ptr as *const _
-	}
-
-	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVSubtitleRect {
-		self.ptr
-	}
-}
-
-impl<'a> Bitmap<'a> {
-	pub fn x(&self) -> usize {
+	fn size_hint(&self) -> (usize, Option<usize>) {
 		unsafe {
-			(*self.as_ptr()).x as usize
-		}
-	}
+			let length = (*self.ptr).num_rects as usize;
 
-	pub fn y(&self) -> usize {
-		unsafe {
-			(*self.as_ptr()).y as usize
-		}
-	}
-
-	pub fn width(&self) -> u32 {
-		unsafe {
-			(*self.as_ptr()).w as u32
-		}
-	}
-
-	pub fn height(&self) -> u32 {
-		unsafe {
-			(*self.as_ptr()).h as u32
-		}
-	}
-
-	pub fn colors(&self) -> usize {
-		unsafe {
-			(*self.as_ptr()).nb_colors as usize
-		}
-	}
-
-	// XXX: verify safety
-	pub fn picture(&self, format: format::Pixel) -> Picture<'a> {
-		unsafe {
-			Picture::wrap(&(*self.as_ptr()).pict as *const _ as *mut _, format, (*self.as_ptr()).w as u32, (*self.as_ptr()).h as u32)
+			(length - self.cur as usize, Some(length - self.cur as usize))
 		}
 	}
 }
 
-pub struct Text<'a> {
-	ptr: *mut AVSubtitleRect,
-
-	_marker: PhantomData<&'a ()>,
-}
-
-impl<'a> Text<'a> {
-	pub unsafe fn wrap(ptr: *mut AVSubtitleRect) -> Self {
-		Text { ptr: ptr, _marker: PhantomData }
-	}
-
-	pub unsafe fn as_ptr(&self) -> *const AVSubtitleRect {
-		self.ptr as *const _
-	}
-
-	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVSubtitleRect {
-		self.ptr
-	}
-}
-
-impl<'a> Deref for Text<'a> {
-	type Target = str;
-
-	fn deref<'b>(&'b self) -> &'b str {
-		unsafe {
-			from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).text).to_bytes())
-		}
-	}
-}
-
-pub struct Ass<'a> {
-	ptr: *mut AVSubtitleRect,
-
-	_marker: PhantomData<&'a ()>,
-}
-
-impl<'a> Ass<'a> {
-	pub unsafe fn wrap(ptr: *mut AVSubtitleRect) -> Self {
-		Ass { ptr: ptr, _marker: PhantomData }
-	}
-
-	pub unsafe fn as_ptr(&self) -> *const AVSubtitleRect {
-		self.ptr as *const _
-	}
-
-	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVSubtitleRect {
-		self.ptr
-	}
-}
-
-impl<'a> Deref for Ass<'a> {
-	type Target = str;
-
-	fn deref<'b>(&'b self) -> &'b str {
-		unsafe {
-			from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).ass).to_bytes())
-		}
-	}
-}
+impl<'a> ExactSizeIterator for RectMutIter<'a> { }

@@ -131,8 +131,8 @@ impl Packet {
 	}
 
 	#[inline]
-	pub fn duration(&self) -> usize {
-		self.0.duration as usize
+	pub fn duration(&self) -> i64 {
+		self.0.duration as i64
 	}
 
 	#[inline]

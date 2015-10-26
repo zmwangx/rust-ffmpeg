@@ -181,33 +181,27 @@ impl Audio {
 	}
 
 	#[inline]
-	pub fn data(&self) -> Vec<&[u8]> {
-		let mut result = Vec::new();
-
-		unsafe {
-			for i in 0 .. self.planes() {
-				result.push(slice::from_raw_parts(
-					(*self.as_ptr()).data[i],
-					(*self.as_ptr()).linesize[0] as usize));
-			}
+	pub fn data(&self, index: usize) -> &[u8] {
+		if index >= self.planes() {
+			panic!("out of bounds");
 		}
 
-		result
+		unsafe {
+			slice::from_raw_parts((*self.as_ptr()).data[index],
+				(*self.as_ptr()).linesize[index] as usize)
+		}
 	}
 
 	#[inline]
-	pub fn data_mut(&mut self) -> Vec<&mut [u8]> {
-		let mut result = Vec::new();
-
-		unsafe {
-			for i in 0 .. self.planes() {
-				result.push(slice::from_raw_parts_mut(
-					(*self.as_mut_ptr()).data[i],
-					(*self.as_ptr()).linesize[0] as usize));
-			}
+	pub fn data_mut(&mut self, index: usize) -> &mut [u8] {
+		if index >= self.planes() {
+			panic!("out of bounds");
 		}
 
-		result
+		unsafe {
+			slice::from_raw_parts_mut((*self.as_mut_ptr()).data[index],
+				(*self.as_ptr()).linesize[index] as usize)
+		}
 	}
 }
 

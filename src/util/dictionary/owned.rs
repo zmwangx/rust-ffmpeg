@@ -42,6 +42,42 @@ impl<'a, 'b> FromIterator<(&'b str, &'b str)> for Owned<'a> {
 	}
 }
 
+impl<'a, 'b> FromIterator<&'b (&'b str, &'b str)> for Owned<'a> {
+	fn from_iter<T: IntoIterator<Item=&'b (&'b str, &'b str)>>(iterator: T) -> Self {
+		let mut result = Owned::new();
+
+		for &(key, value) in iterator {
+			result.set(key, value);
+		}
+
+		result
+	}
+}
+
+impl<'a> FromIterator<(String, String)> for Owned<'a> {
+	fn from_iter<T: IntoIterator<Item=(String, String)>>(iterator: T) -> Self {
+		let mut result = Owned::new();
+
+		for (key, value) in iterator {
+			result.set(&key, &value);
+		}
+
+		result
+	}
+}
+
+impl<'a, 'b> FromIterator<&'b (String, String)> for Owned<'a> {
+	fn from_iter<T: IntoIterator<Item=&'b (String, String)>>(iterator: T) -> Self {
+		let mut result = Owned::new();
+
+		for &(ref key, ref value) in iterator {
+			result.set(key, value);
+		}
+
+		result
+	}
+}
+
 impl<'a> Deref for Owned<'a> {
 	type Target = mutable::Ref<'a>;
 

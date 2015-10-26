@@ -7,6 +7,7 @@ extern crate ffmpeg_sys as sys;
 
 pub use sys as ffi;
 
+#[macro_use]
 pub mod util;
 pub use util::error::Error;
 pub use util::dictionary;

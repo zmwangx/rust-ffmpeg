@@ -1,3 +1,4 @@
+#[macro_use]
 pub mod dictionary;
 pub mod error;
 pub mod rational;

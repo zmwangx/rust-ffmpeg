@@ -221,6 +221,7 @@ impl Video {
 		}
 	}
 
+	#[inline]
 	pub fn planes(&self) -> usize {
 		for i in 0 .. 8 {
 			unsafe {
@@ -267,6 +268,7 @@ impl Video {
 		}
 	}
 
+	#[inline]
 	pub fn data(&self, index: usize) -> &[u8] {
 		if index >= self.planes() {
 			panic!("out of bounds");
@@ -278,6 +280,7 @@ impl Video {
 		}
 	}
 
+	#[inline]
 	pub fn data_mut(&mut self, index: usize) -> &mut [u8] {
 		if index >= self.planes() {
 			panic!("out of bounds");
@@ -293,18 +296,21 @@ impl Video {
 impl Deref for Video {
 	type Target = Frame;
 
+	#[inline]
 	fn deref(&self) -> &Frame {
 		&self.0
 	}
 }
 
 impl DerefMut for Video {
+	#[inline]
 	fn deref_mut(&mut self) -> &mut Frame {
 		&mut self.0
 	}
 }
 
 impl Clone for Video {
+	#[inline]
 	fn clone(&self) -> Self {
 		let mut cloned = Video::new(self.format(), self.width(), self.height());
 		cloned.clone_from(self);
@@ -312,6 +318,7 @@ impl Clone for Video {
 		cloned
 	}
 
+	#[inline]
 	fn clone_from(&mut self, source: &Self) {
 		unsafe {
 			av_frame_copy(self.as_mut_ptr(), source.as_ptr());
@@ -321,6 +328,7 @@ impl Clone for Video {
 }
 
 impl From<Frame> for Video {
+	#[inline]
 	fn from(frame: Frame) -> Self {
 		Video(frame)
 	}

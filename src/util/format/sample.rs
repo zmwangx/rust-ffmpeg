@@ -26,46 +26,54 @@ pub enum Type {
 }
 
 impl Sample {
+	#[inline]
 	pub fn name(&self) -> &'static str {
 		unsafe {
 			from_utf8_unchecked(CStr::from_ptr(av_get_sample_fmt_name((*self).into())).to_bytes())
 		}
 	}
 
+	#[inline]
 	pub fn packed(&self) -> Self {
 		unsafe {
 			Sample::from(av_get_packed_sample_fmt((*self).into()))
 		}
 	}
 
+	#[inline]
 	pub fn planar(&self) -> Self {
 		unsafe {
 			Sample::from(av_get_planar_sample_fmt((*self).into()))
 		}
 	}
 
+	#[inline]
 	pub fn is_planar(&self) -> bool {
 		unsafe {
 			av_sample_fmt_is_planar((*self).into()) == 1
 		}
 	}
 
+	#[inline]
 	pub fn is_packed(&self) -> bool {
 		!self.is_planar()
 	}
 
+	#[inline]
 	pub fn bytes(&self) -> usize {
 		unsafe {
 			av_get_bytes_per_sample((*self).into()) as usize
 		}
 	}
 
+	#[inline]
 	pub fn buffer(&self, channels: u16, samples: usize, align: bool) -> Buffer {
 		Buffer::new(*self, channels, samples, align)
 	}
 }
 
 impl From<AVSampleFormat> for Sample {
+	#[inline]
 	fn from(value: AVSampleFormat) -> Self {
 		match value {
 			AV_SAMPLE_FMT_NONE => Sample::None,
@@ -88,6 +96,7 @@ impl From<AVSampleFormat> for Sample {
 }
 
 impl From<&'static str> for Sample {
+	#[inline]
 	fn from(value: &'static str) -> Self {
 		unsafe {
 			let value = CString::new(value).unwrap();
@@ -98,6 +107,7 @@ impl From<&'static str> for Sample {
 }
 
 impl Into<AVSampleFormat> for Sample {
+	#[inline]
 	fn into(self) -> AVSampleFormat {
 		match self {
 			Sample::None => AV_SAMPLE_FMT_NONE,
@@ -128,12 +138,14 @@ pub struct Buffer {
 }
 
 impl Buffer {
+	#[inline]
 	pub fn size(format: Sample, channels: u16, samples: usize, align: bool) -> usize {
 		unsafe {
 			av_samples_get_buffer_size(ptr::null_mut(), channels as c_int, samples as c_int, format.into(), !align as c_int) as usize
 		}
 	}
 
+	#[inline]
 	pub fn new(format: Sample, channels: u16, samples: usize, align: bool) -> Self {
 		unsafe {
 			let mut buf = Buffer {
@@ -158,6 +170,7 @@ impl Buffer {
 impl Index<usize> for Buffer {
 	type Output = [u8];
 
+	#[inline]
 	fn index(&self, index: usize) -> &[u8] {
 		if index >= self.samples {
 			panic!("out of bounds");
@@ -170,6 +183,7 @@ impl Index<usize> for Buffer {
 }
 
 impl Clone for Buffer {
+	#[inline]
 	fn clone(&self) -> Self {
 		let mut buf = Buffer::new(self.format, self.channels, self.samples, self.align);
 		buf.clone_from(self);
@@ -177,6 +191,7 @@ impl Clone for Buffer {
 		buf
 	}
 
+	#[inline]
 	fn clone_from(&mut self, source: &Self) {
 		unsafe {
 			av_samples_copy(self.buffer, mem::transmute(source.buffer), 0, 0, source.samples as c_int, source.channels as c_int, source.format.into());
@@ -185,6 +200,7 @@ impl Clone for Buffer {
 }
 
 impl Drop for Buffer {
+	#[inline]
 	fn drop(&mut self) {
 		unsafe {
 			av_freep(mem::transmute(self.buffer));

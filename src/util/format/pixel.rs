@@ -275,6 +275,7 @@ pub enum Pixel {
 }
 
 impl From<AVPixelFormat> for Pixel {
+	#[inline]
 	fn from(value: AVPixelFormat) -> Self {
 		match value {
 			AV_PIX_FMT_NONE => Pixel::None,
@@ -485,6 +486,7 @@ impl From<AVPixelFormat> for Pixel {
 }
 
 impl Into<AVPixelFormat> for Pixel {
+	#[inline]
 	fn into(self) -> AVPixelFormat {
 		match self {
 			Pixel::None => AV_PIX_FMT_NONE,

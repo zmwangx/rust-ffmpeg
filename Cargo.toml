@@ -1,6 +1,7 @@
 [package]
 name    = "ffmpeg"
 version = "0.2.0-alpha.1"
+build   = "build.rs"
 
 authors = ["meh. <meh@schizofreni.co>"]
 license = "WTFPL"
@@ -90,6 +91,6 @@ version  = "0.4"
 optional = true
 
 [dependencies.ffmpeg-sys]
-version = "2.8.0"
+version = "2.8.3"
 
 default-features = false

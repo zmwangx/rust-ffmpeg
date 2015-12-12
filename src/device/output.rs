@@ -17,6 +17,8 @@ impl Iterator for AudioIter {
 				None
 			}
 			else {
+				self.0 = ptr;
+
 				Some(Format::Output(format::Output::wrap(ptr)))
 			}
 		}
@@ -40,6 +42,8 @@ impl Iterator for VideoIter {
 				None
 			}
 			else {
+				self.0 = ptr;
+
 				Some(Format::Output(format::Output::wrap(ptr)))
 			}
 		}

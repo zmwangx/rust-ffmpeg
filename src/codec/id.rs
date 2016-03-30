@@ -355,7 +355,7 @@ pub enum Id {
 	MLP,
 	GSM_MS,
 	ATRAC3,
-	#[cfg(feature = "voxware")]
+	#[cfg(feature = "ff_api_voxware")]
 	VOXWARE,
 	APE,
 	NELLYMOSER,
@@ -815,7 +815,7 @@ impl From<AVCodecID> for Id {
 			AV_CODEC_ID_MLP                  => Id::MLP,
 			AV_CODEC_ID_GSM_MS               => Id::GSM_MS,
 			AV_CODEC_ID_ATRAC3               => Id::ATRAC3,
-			#[cfg(feature = "voxware")]
+			#[cfg(feature = "ff_api_voxware")]
 			AV_CODEC_ID_VOXWARE              => Id::VOXWARE,
 			AV_CODEC_ID_APE                  => Id::APE,
 			AV_CODEC_ID_NELLYMOSER           => Id::NELLYMOSER,
@@ -1263,7 +1263,7 @@ impl Into<AVCodecID> for Id {
 			Id::MLP                  => AV_CODEC_ID_MLP,
 			Id::GSM_MS               => AV_CODEC_ID_GSM_MS,
 			Id::ATRAC3               => AV_CODEC_ID_ATRAC3,
-			#[cfg(feature = "voxware")]
+			#[cfg(feature = "ff_api_voxware")]
 			Id::VOXWARE              => AV_CODEC_ID_VOXWARE,
 			Id::APE                  => AV_CODEC_ID_APE,
 			Id::NELLYMOSER           => AV_CODEC_ID_NELLYMOSER,

@@ -1,6 +1,6 @@
 [package]
 name    = "ffmpeg"
-version = "0.2.0-alpha.1"
+version = "0.2.0-alpha.2"
 build   = "build.rs"
 
 authors = ["meh. <meh@schizofreni.co>"]
@@ -20,6 +20,10 @@ build  = ["static", "ffmpeg-sys/build"]
 build-license-gpl      = ["ffmpeg-sys/build-license-gpl"]
 build-license-nonfree  = ["ffmpeg-sys/build-license-nonfree"]
 build-license-version3 = ["ffmpeg-sys/build-license-version3"]
+
+# misc
+build-pic  = ["ffmpeg-sys/build-pic"]
+build-zlib = ["ffmpeg-sys/build-zlib"]
 
 # ssl
 build-lib-gnutls  = ["ffmpeg-sys/build-lib-gnutls"]
@@ -91,6 +95,5 @@ version  = "0.4"
 optional = true
 
 [dependencies.ffmpeg-sys]
-version = "2.8.3"
-
+version = "2.8.7"
 default-features = false

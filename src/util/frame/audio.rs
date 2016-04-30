@@ -157,9 +157,8 @@ impl Audio {
 		}
 
 		unsafe {
-			slice::from_raw_parts(
-				mem::transmute((*self.as_ptr()).data[index]),
-				mem::size_of::<T>() * self.samples())
+			slice::from_raw_parts(mem::transmute((*self.as_ptr()).data[index]),
+				self.samples())
 		}
 	}
 
@@ -174,9 +173,8 @@ impl Audio {
 		}
 
 		unsafe {
-			slice::from_raw_parts_mut(
-				mem::transmute((*self.as_mut_ptr()).data[index]),
-				mem::size_of::<T>() * self.samples())
+			slice::from_raw_parts_mut(mem::transmute((*self.as_mut_ptr()).data[index]),
+				self.samples())
 		}
 	}
 

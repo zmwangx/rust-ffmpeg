@@ -252,7 +252,7 @@ impl Video {
 	}
 
 	#[inline]
-	pub fn plane_mut<T: Component>(&mut self, index: usize) -> &mut[T] {
+	pub fn plane_mut<T: Component>(&mut self, index: usize) -> &mut [T] {
 		if index >= self.planes() {
 			panic!("out of bounds");
 		}

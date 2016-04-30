@@ -88,13 +88,15 @@ impl<'a> Vector<'a> {
 
 	pub fn coefficients(&self) -> &[f64] {
 		unsafe {
-			slice::from_raw_parts((*self.as_ptr()).coeff, (*self.as_ptr()).length as usize)
+			slice::from_raw_parts((*self.as_ptr()).coeff,
+				(*self.as_ptr()).length as usize)
 		}
 	}
 
 	pub fn coefficients_mut(&self) -> &[f64] {
 		unsafe {
-			slice::from_raw_parts_mut((*self.as_ptr()).coeff, (*self.as_ptr()).length as usize)
+			slice::from_raw_parts_mut((*self.as_ptr()).coeff,
+				(*self.as_ptr()).length as usize)
 		}
 	}
 }

@@ -177,7 +177,8 @@ impl Index<usize> for Buffer {
 		}
 
 		unsafe {
-			slice::from_raw_parts(*self.buffer.offset(index as isize), self.size as usize)
+			slice::from_raw_parts(*self.buffer.offset(index as isize),
+				self.size as usize)
 		}
 	}
 }

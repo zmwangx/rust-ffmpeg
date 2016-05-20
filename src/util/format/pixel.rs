@@ -218,6 +218,7 @@ pub enum Pixel {
 	VIDEOTOOLBOX,
 
 	// --- defaults
+	#[cfg(feature = "ff_api_xvmc")]
 	XVMC,
 	Y400A,
 	GRAY8A,
@@ -532,7 +533,9 @@ impl Into<AVPixelFormat> for Pixel {
 			Pixel::YUVJ420P        => AV_PIX_FMT_YUVJ420P,
 			Pixel::YUVJ422P        => AV_PIX_FMT_YUVJ422P,
 			Pixel::YUVJ444P        => AV_PIX_FMT_YUVJ444P,
+			#[cfg(feature = "ff_api_xvmc")]
 			Pixel::XVMC_MPEG2_MC   => AV_PIX_FMT_XVMC_MPEG2_MC,
+			#[cfg(feature = "ff_api_xvmc")]
 			Pixel::XVMC_MPEG2_IDCT => AV_PIX_FMT_XVMC_MPEG2_IDCT,
 			Pixel::UYVY422         => AV_PIX_FMT_UYVY422,
 			Pixel::UYYVYY411       => AV_PIX_FMT_UYYVYY411,
@@ -585,7 +588,7 @@ impl Into<AVPixelFormat> for Pixel {
 			#[cfg(feature = "ff_api_vaapi")]
 			Pixel::VAAPI_VLD  => AV_PIX_FMT_VAAPI_VLD,
 			#[cfg(not(feature = "ff_api_vaapi"))]
-			Pixel::VAAPI      => AV_PIX_FMT_VAAPI_VLD,
+			Pixel::VAAPI      => AV_PIX_FMT_VAAPI,
 
 			Pixel::YUV420P16LE => AV_PIX_FMT_YUV420P16LE,
 			Pixel::YUV420P16BE => AV_PIX_FMT_YUV420P16BE,
@@ -729,6 +732,7 @@ impl Into<AVPixelFormat> for Pixel {
 			Pixel::VIDEOTOOLBOX => AV_PIX_FMT_VIDEOTOOLBOX,
 
 			// --- defaults
+			#[cfg(feature = "ff_api_xvmc")]
 			Pixel::XVMC   => AV_PIX_FMT_XVMC,
 			Pixel::Y400A  => AV_PIX_FMT_Y400A,
 			Pixel::GRAY8A => AV_PIX_FMT_GRAY8A,

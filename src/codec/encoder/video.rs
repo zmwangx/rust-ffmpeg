@@ -291,6 +291,7 @@ impl Video {
 	}
 	
 	#[inline]
+	#[cfg(feature = "ff_api_quant_bias")]
 	pub fn set_intra_quant_bias(&mut self, value: Option<usize>) {
 		unsafe {
 			if let Some(value) = value {
@@ -303,6 +304,7 @@ impl Video {
 	}
 
 	#[inline]
+	#[cfg(feature = "ff_api_quant_bias")]
 	pub fn set_inter_quant_bias(&mut self, value: Option<usize>) {
 		unsafe {
 			if let Some(value) = value {

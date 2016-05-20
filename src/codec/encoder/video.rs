@@ -122,6 +122,7 @@ impl Video {
 	}
 
 	#[inline]
+	#[cfg(feature = "ff_api_motion_est")]
 	pub fn set_motion_estimation(&mut self, value: MotionEstimation) {
 		unsafe {
 			(*self.as_mut_ptr()).me_method = value.into();

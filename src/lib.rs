@@ -1,7 +1,7 @@
-#![allow(raw_pointer_derive, non_camel_case_types)]
+#![allow(non_camel_case_types)]
 
 extern crate libc;
-extern crate ffmpeg_sys as sys;
+pub extern crate ffmpeg_sys as sys;
 #[macro_use] extern crate bitflags;
 #[cfg(feature = "image")] extern crate image;
 

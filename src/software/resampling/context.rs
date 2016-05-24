@@ -103,7 +103,7 @@ impl Context {
 		}
 	}
 
-	pub fn next(&mut self, output: &mut frame::Audio) -> Result<Option<Delay>, Error> {
+	pub fn flush(&mut self, output: &mut frame::Audio) -> Result<Option<Delay>, Error> {
 		output.set_rate(self.output.rate);
 
 		unsafe {

@@ -21,16 +21,19 @@ pub struct Context {
 }
 
 impl Context {
+	#[doc(hidden)]
 	pub unsafe fn as_ptr(&self) -> *const SwrContext {
 		self.ptr as *const _
 	}
 
+	#[doc(hidden)]
 	pub unsafe fn as_mut_ptr(&mut self) -> *mut SwrContext {
 		self.ptr
 	}
 }
 
 impl Context {
+	/// Create a resampler with the given definitions.
 	pub fn get(src_format: format::Sample, src_channel_layout: ChannelLayout, src_rate: u32,
 	           dst_format: format::Sample, dst_channel_layout: ChannelLayout, dst_rate: u32) -> Result<Self, Error> {
 		unsafe {
@@ -68,14 +71,17 @@ impl Context {
 		}
 	}
 
+	/// Get the input definition.
 	pub fn input(&self) -> &Definition {
 		&self.input
 	}
 
+	/// Get the output definition.
 	pub fn output(&self) -> &Definition {
 		&self.output
 	}
 
+	/// Get the remaining delay.
 	pub fn delay(&self) -> Option<Delay> {
 		unsafe {
 			match swr_get_delay(self.as_ptr(), 1) {
@@ -85,6 +91,9 @@ impl Context {
 		}
 	}
 
+	/// Run the resampler from the given input to the given output.
+	///
+	/// When there are internal frames to process it will return `Ok(Some(Delay { .. }))`.
 	pub fn run(&mut self, input: &frame::Audio, output: &mut frame::Audio) -> Result<Option<Delay>, Error> {
 		output.set_rate(self.output.rate);
 
@@ -103,6 +112,9 @@ impl Context {
 		}
 	}
 
+	/// Convert one of the remaining internal frames.
+	///
+	/// When there are no more internal frames `Ok(None)` will be returned.
 	pub fn flush(&mut self, output: &mut frame::Audio) -> Result<Option<Delay>, Error> {
 		output.set_rate(self.output.rate);
 

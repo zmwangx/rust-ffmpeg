@@ -20,6 +20,8 @@ pub enum Type {
 	MotionVectors,
 	SkipSamples,
 	AudioServiceType,
+	MasteringDisplayMetadata,
+	GOPTimecode,
 }
 
 impl Type {
@@ -45,7 +47,9 @@ impl From<AVFrameSideDataType> for Type {
 			AV_FRAME_DATA_AFD                => Type::AFD,
 			AV_FRAME_DATA_MOTION_VECTORS     => Type::MotionVectors,
 			AV_FRAME_DATA_SKIP_SAMPLES       => Type::SkipSamples,
-			AV_FRAME_DATA_AUDIO_SERVICE_TYPE => Type::AudioServiceType
+			AV_FRAME_DATA_AUDIO_SERVICE_TYPE => Type::AudioServiceType,
+			AV_FRAME_DATA_MASTERING_DISPLAY_METADATA => Type::MasteringDisplayMetadata,
+			AV_FRAME_DATA_GOP_TIMECODE       => Type::GOPTimecode,
 		}
 	}
 }
@@ -64,7 +68,9 @@ impl Into<AVFrameSideDataType> for Type {
 			Type::AFD              => AV_FRAME_DATA_AFD,
 			Type::MotionVectors    => AV_FRAME_DATA_MOTION_VECTORS,
 			Type::SkipSamples      => AV_FRAME_DATA_SKIP_SAMPLES,
-			Type::AudioServiceType => AV_FRAME_DATA_AUDIO_SERVICE_TYPE
+			Type::AudioServiceType => AV_FRAME_DATA_AUDIO_SERVICE_TYPE,
+			Type::MasteringDisplayMetadata => AV_FRAME_DATA_MASTERING_DISPLAY_METADATA,
+			Type::GOPTimecode      => AV_FRAME_DATA_GOP_TIMECODE,
 		}
 	}
 }

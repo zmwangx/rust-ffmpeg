@@ -15,6 +15,8 @@ pub enum Type {
 	Stereo3d,
 	AudioServiceType,
 	QualityStats,
+	FallbackTrack,
+	CBPProperties,
 	SkipSamples,
 	JpDualMono,
 	StringsMetadata,
@@ -23,28 +25,34 @@ pub enum Type {
 	WebVTTIdentifier,
 	WebVTTSettings,
 	MetadataUpdate,
+	MPEGTSStreamID,
+	MasteringDisplayMetadata
 }
 
 impl From<AVPacketSideDataType> for Type {
 	fn from(value: AVPacketSideDataType) -> Self {
 		match value {
-			AV_PKT_DATA_PALETTE                  => Type::Palette,
-			AV_PKT_DATA_NEW_EXTRADATA            => Type::NewExtraData,
-			AV_PKT_DATA_PARAM_CHANGE             => Type::ParamChange,
-			AV_PKT_DATA_H263_MB_INFO             => Type::H263MbInfo,
-			AV_PKT_DATA_REPLAYGAIN               => Type::ReplayGain,
-			AV_PKT_DATA_DISPLAYMATRIX            => Type::DisplayMatrix,
-			AV_PKT_DATA_STEREO3D                 => Type::Stereo3d,
-			AV_PKT_DATA_AUDIO_SERVICE_TYPE       => Type::AudioServiceType,
-			AV_PKT_DATA_QUALITY_STATS            => Type::QualityStats,
-			AV_PKT_DATA_SKIP_SAMPLES             => Type::SkipSamples,
-			AV_PKT_DATA_JP_DUALMONO              => Type::JpDualMono,
-			AV_PKT_DATA_STRINGS_METADATA         => Type::StringsMetadata,
-			AV_PKT_DATA_SUBTITLE_POSITION        => Type::SubtitlePosition,
-			AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL => Type::MatroskaBlockAdditional,
-			AV_PKT_DATA_WEBVTT_IDENTIFIER        => Type::WebVTTIdentifier,
-			AV_PKT_DATA_WEBVTT_SETTINGS          => Type::WebVTTSettings,
-			AV_PKT_DATA_METADATA_UPDATE          => Type::MetadataUpdate
+			AV_PKT_DATA_PALETTE                    => Type::Palette,
+			AV_PKT_DATA_NEW_EXTRADATA              => Type::NewExtraData,
+			AV_PKT_DATA_PARAM_CHANGE               => Type::ParamChange,
+			AV_PKT_DATA_H263_MB_INFO               => Type::H263MbInfo,
+			AV_PKT_DATA_REPLAYGAIN                 => Type::ReplayGain,
+			AV_PKT_DATA_DISPLAYMATRIX              => Type::DisplayMatrix,
+			AV_PKT_DATA_STEREO3D                   => Type::Stereo3d,
+			AV_PKT_DATA_AUDIO_SERVICE_TYPE         => Type::AudioServiceType,
+			AV_PKT_DATA_QUALITY_STATS              => Type::QualityStats,
+			AV_PKT_DATA_FALLBACK_TRACK             => Type::FallbackTrack,
+			AV_PKT_DATA_CPB_PROPERTIES             => Type::CBPProperties,
+			AV_PKT_DATA_SKIP_SAMPLES               => Type::SkipSamples,
+			AV_PKT_DATA_JP_DUALMONO                => Type::JpDualMono,
+			AV_PKT_DATA_STRINGS_METADATA           => Type::StringsMetadata,
+			AV_PKT_DATA_SUBTITLE_POSITION          => Type::SubtitlePosition,
+			AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL   => Type::MatroskaBlockAdditional,
+			AV_PKT_DATA_WEBVTT_IDENTIFIER          => Type::WebVTTIdentifier,
+			AV_PKT_DATA_WEBVTT_SETTINGS            => Type::WebVTTSettings,
+			AV_PKT_DATA_METADATA_UPDATE            => Type::MetadataUpdate,
+			AV_PKT_DATA_MPEGTS_STREAM_ID           => Type::MPEGTSStreamID,
+			AV_PKT_DATA_MASTERING_DISPLAY_METADATA => Type::MasteringDisplayMetadata
 		}
 	}
 }
@@ -52,23 +60,27 @@ impl From<AVPacketSideDataType> for Type {
 impl Into<AVPacketSideDataType> for Type {
 	fn into(self) -> AVPacketSideDataType {
 		match self {
-			Type::Palette                 => AV_PKT_DATA_PALETTE,
-			Type::NewExtraData            => AV_PKT_DATA_NEW_EXTRADATA,
-			Type::ParamChange             => AV_PKT_DATA_PARAM_CHANGE,
-			Type::H263MbInfo              => AV_PKT_DATA_H263_MB_INFO,
-			Type::ReplayGain              => AV_PKT_DATA_REPLAYGAIN,
-			Type::DisplayMatrix           => AV_PKT_DATA_DISPLAYMATRIX,
-			Type::Stereo3d                => AV_PKT_DATA_STEREO3D,
-			Type::AudioServiceType        => AV_PKT_DATA_AUDIO_SERVICE_TYPE,
-			Type::QualityStats            => AV_PKT_DATA_QUALITY_STATS,
-			Type::SkipSamples             => AV_PKT_DATA_SKIP_SAMPLES,
-			Type::JpDualMono              => AV_PKT_DATA_JP_DUALMONO,
-			Type::StringsMetadata         => AV_PKT_DATA_STRINGS_METADATA,
-			Type::SubtitlePosition        => AV_PKT_DATA_SUBTITLE_POSITION,
-			Type::MatroskaBlockAdditional => AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL,
-			Type::WebVTTIdentifier        => AV_PKT_DATA_WEBVTT_IDENTIFIER,
-			Type::WebVTTSettings          => AV_PKT_DATA_WEBVTT_SETTINGS,
-			Type::MetadataUpdate          => AV_PKT_DATA_METADATA_UPDATE
+			Type::Palette                  => AV_PKT_DATA_PALETTE,
+			Type::NewExtraData             => AV_PKT_DATA_NEW_EXTRADATA,
+			Type::ParamChange              => AV_PKT_DATA_PARAM_CHANGE,
+			Type::H263MbInfo               => AV_PKT_DATA_H263_MB_INFO,
+			Type::ReplayGain               => AV_PKT_DATA_REPLAYGAIN,
+			Type::DisplayMatrix            => AV_PKT_DATA_DISPLAYMATRIX,
+			Type::Stereo3d                 => AV_PKT_DATA_STEREO3D,
+			Type::AudioServiceType         => AV_PKT_DATA_AUDIO_SERVICE_TYPE,
+			Type::QualityStats             => AV_PKT_DATA_QUALITY_STATS,
+			Type::FallbackTrack            => AV_PKT_DATA_FALLBACK_TRACK,
+			Type::CBPProperties            => AV_PKT_DATA_CPB_PROPERTIES,
+			Type::SkipSamples              => AV_PKT_DATA_SKIP_SAMPLES,
+			Type::JpDualMono               => AV_PKT_DATA_JP_DUALMONO,
+			Type::StringsMetadata          => AV_PKT_DATA_STRINGS_METADATA,
+			Type::SubtitlePosition         => AV_PKT_DATA_SUBTITLE_POSITION,
+			Type::MatroskaBlockAdditional  => AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL,
+			Type::WebVTTIdentifier         => AV_PKT_DATA_WEBVTT_IDENTIFIER,
+			Type::WebVTTSettings           => AV_PKT_DATA_WEBVTT_SETTINGS,
+			Type::MetadataUpdate           => AV_PKT_DATA_METADATA_UPDATE,
+			Type::MPEGTSStreamID           => AV_PKT_DATA_MPEGTS_STREAM_ID,
+			Type::MasteringDisplayMetadata => AV_PKT_DATA_MASTERING_DISPLAY_METADATA
 		}
 	}
 }

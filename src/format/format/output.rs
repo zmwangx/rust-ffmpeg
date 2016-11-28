@@ -35,7 +35,7 @@ impl Output {
 
 	pub fn description(&self) -> &str {
 		unsafe {
-			from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).name).to_bytes())
+			from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).long_name).to_bytes())
 		}
 	}
 

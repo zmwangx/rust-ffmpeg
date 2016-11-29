@@ -121,8 +121,25 @@ impl Packet {
 	}
 
 	#[inline]
-	pub fn dts(&self) -> i64 {
-		self.0.dts as i64
+	pub fn set_pts(&mut self, value: Option<i64>) {
+		unsafe {
+			(*self.as_mut_ptr()).pts = value.unwrap_or(AV_NOPTS_VALUE);
+		}
+	}
+
+	#[inline]
+	pub fn dts(&self) -> Option<i64> {
+		match self.0.dts {
+			AV_NOPTS_VALUE => None,
+			dts            => Some(dts as i64),
+		}
+	}
+
+	#[inline]
+	pub fn set_dts(&mut self, value: Option<i64>) {
+		unsafe {
+			(*self.as_mut_ptr()).dts = value.unwrap_or(AV_NOPTS_VALUE);
+		}
 	}
 
 	#[inline]

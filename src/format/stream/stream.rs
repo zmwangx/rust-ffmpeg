@@ -27,6 +27,12 @@ impl<'a> Stream<'a> {
 		}
 	}
 
+	pub fn codec_parameters(&self) -> codec::Parameters {
+		unsafe {
+			codec::Parameters::wrap((*self.as_ptr()).codecpar, Some(self.context.destructor()))
+		}
+	}
+
 	pub fn index(&self) -> usize {
 		unsafe {
 			(*self.as_ptr()).index as usize

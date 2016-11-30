@@ -4,8 +4,8 @@ use std::rc::Rc;
 use libc::c_int;
 use ffi::*;
 use ::media;
-use ::Codec;
-use super::{Flags, Id, Debug, Compliance, threading};
+use ::{Codec, Error};
+use super::{Flags, Id, Debug, Compliance, threading, Parameters};
 use super::decoder::Decoder;
 use super::encoder::Encoder;
 
@@ -100,6 +100,15 @@ impl Context {
 				kind:  threading::Type::from((*self.as_ptr()).active_thread_type),
 				count: (*self.as_ptr()).thread_count as usize,
 				safe:  (*self.as_ptr()).thread_safe_callbacks != 0,
+			}
+		}
+	}
+
+	pub fn set_parameters(&mut self, params: &Parameters) -> Result<(), Error> {
+		unsafe {
+			match avcodec_parameters_to_context(self.as_mut_ptr(), params.as_ptr()) {
+				e if e < 0 => Err(Error::from(e)),
+				_          => Ok(()),
 			}
 		}
 	}

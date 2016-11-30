@@ -20,6 +20,9 @@ pub use self::capabilities::Capabilities;
 
 pub mod codec;
 
+pub mod parameters;
+pub use self::parameters::Parameters;
+
 pub mod video;
 pub use self::video::Video;
 

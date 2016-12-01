@@ -134,3 +134,9 @@ impl AsRef<Context> for Decoder {
 		&self
 	}
 }
+
+impl AsMut<Context> for Decoder {
+	fn as_mut(&mut self) -> &mut Context {
+		&mut self.0
+	}
+}

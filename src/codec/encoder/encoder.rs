@@ -141,3 +141,9 @@ impl AsRef<Context> for Encoder {
 		&self
 	}
 }
+
+impl AsMut<Context> for Encoder {
+	fn as_mut(&mut self) -> &mut Context {
+		&mut *self
+	}
+}

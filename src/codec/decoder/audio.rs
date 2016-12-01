@@ -124,3 +124,9 @@ impl AsRef<Context> for Audio {
 		&self
 	}
 }
+
+impl AsMut<Context> for Audio {
+	fn as_mut(&mut self) -> &mut Context {
+		&mut self.0
+	}
+}

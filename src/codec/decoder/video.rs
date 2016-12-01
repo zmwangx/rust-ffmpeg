@@ -156,3 +156,9 @@ impl AsRef<Context> for Video {
 		&self
 	}
 }
+
+impl AsMut<Context> for Video {
+	fn as_mut(&mut self) -> &mut Context {
+		&mut self.0
+	}
+}

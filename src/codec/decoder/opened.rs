@@ -101,3 +101,9 @@ impl AsRef<Context> for Opened {
 		&self
 	}
 }
+
+impl AsMut<Context> for Opened {
+	fn as_mut(&mut self) -> &mut Context {
+		&mut self.0
+	}
+}

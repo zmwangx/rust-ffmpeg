@@ -137,6 +137,12 @@ impl AsRef<Context> for Audio {
 	}
 }
 
+impl AsMut<Context> for Audio {
+	fn as_mut(&mut self) -> &mut Context {
+		&mut self.0
+	}
+}
+
 pub struct Encoder(pub Audio);
 
 impl Encoder {
@@ -184,5 +190,11 @@ impl Deref for Encoder {
 impl AsRef<Context> for Encoder {
 	fn as_ref(&self) -> &Context {
 		&self
+	}
+}
+
+impl AsMut<Context> for Encoder {
+	fn as_mut(&mut self) -> &mut Context {
+		&mut self.0
 	}
 }

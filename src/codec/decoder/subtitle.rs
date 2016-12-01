@@ -41,3 +41,9 @@ impl AsRef<Context> for Subtitle {
 		&self
 	}
 }
+
+impl AsMut<Context> for Subtitle {
+	fn as_mut(&mut self) -> &mut Context {
+		&mut self.0
+	}
+}

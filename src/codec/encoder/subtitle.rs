@@ -74,6 +74,12 @@ impl AsRef<Context> for Subtitle {
 	}
 }
 
+impl AsMut<Context> for Subtitle {
+	fn as_mut(&mut self) -> &mut Context {
+		&mut self.0
+	}
+}
+
 pub struct Encoder(pub Subtitle);
 
 impl Encoder {
@@ -98,5 +104,11 @@ impl Deref for Encoder {
 impl AsRef<Context> for Encoder {
 	fn as_ref(&self) -> &Context {
 		&self
+	}
+}
+
+impl AsMut<Context> for Encoder {
+	fn as_mut(&mut self) -> &mut Context {
+		&mut self.0
 	}
 }

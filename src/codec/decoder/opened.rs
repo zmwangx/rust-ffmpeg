@@ -2,7 +2,7 @@ use std::ops::{Deref, DerefMut};
 
 use ffi::*;
 use super::{Video, Audio, Subtitle, Decoder};
-use ::codec::Profile;
+use ::codec::{Profile, Context};
 use ::{Error, Rational};
 use ::media;
 
@@ -93,5 +93,11 @@ impl Deref for Opened {
 impl DerefMut for Opened {
 	fn deref_mut(&mut self) -> &mut<Self as Deref>::Target {
 		&mut self.0
+	}
+}
+
+impl AsRef<Context> for Opened {
+	fn as_ref(&self) -> &Context {
+		&self
 	}
 }

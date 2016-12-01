@@ -7,7 +7,7 @@ use ffi::*;
 use super::Encoder as Super;
 use ::{packet, Error, Dictionary, ChannelLayout, frame};
 use ::util::format;
-use codec::traits;
+use codec::{traits, Context};
 
 pub struct Audio(pub Super);
 
@@ -131,6 +131,12 @@ impl DerefMut for Audio {
 	}
 }
 
+impl AsRef<Context> for Audio {
+	fn as_ref(&self) -> &Context {
+		&self
+	}
+}
+
 pub struct Encoder(pub Audio);
 
 impl Encoder {
@@ -172,5 +178,11 @@ impl Deref for Encoder {
 
 	fn deref(&self) -> &<Self as Deref>::Target {
 		&self.0
+	}
+}
+
+impl AsRef<Context> for Encoder {
+	fn as_ref(&self) -> &Context {
+		&self
 	}
 }

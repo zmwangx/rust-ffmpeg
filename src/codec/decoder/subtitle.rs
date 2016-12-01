@@ -5,6 +5,7 @@ use ffi::*;
 
 use super::Opened;
 use ::{packet, Error};
+use ::codec::Context;
 
 pub struct Subtitle(pub Opened);
 
@@ -32,5 +33,11 @@ impl Deref for Subtitle {
 impl DerefMut for Subtitle {
 	fn deref_mut(&mut self) -> &mut<Self as Deref>::Target {
 		&mut self.0
+	}
+}
+
+impl AsRef<Context> for Subtitle {
+	fn as_ref(&self) -> &Context {
+		&self
 	}
 }

@@ -70,9 +70,10 @@ impl Clone for Parameters {
 	}
 }
 
-impl<'a> From<&'a Context> for Parameters {
-	fn from(context: &'a Context) -> Parameters {
+impl<C: AsRef<Context>> From<C> for Parameters {
+	fn from(context: C) -> Parameters {
 		let mut parameters = Parameters::new();
+		let context = context.as_ref();
 		unsafe {
 			avcodec_parameters_from_context(parameters.as_mut_ptr(), context.as_ptr());
 		}

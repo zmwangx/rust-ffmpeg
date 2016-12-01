@@ -75,7 +75,7 @@ fn transcoder<P: AsRef<Path>>(ictx: &mut format::context::Input, octx: &mut form
 	output.set_time_base((1, decoder.rate() as i32));
 
 	let encoder = try!(encoder.open_as(codec));
-	output.set_parameters(&***encoder);
+	output.set_parameters(&encoder);
 
 	let filter  = try!(filter(filter_spec, &decoder, &encoder));
 

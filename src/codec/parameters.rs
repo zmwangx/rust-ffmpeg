@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use ffi::*;
 use media;
-use super::Id;
+use super::{Id, Context};
 
 pub struct Parameters {
 	ptr:   *mut AVCodecParameters,
@@ -67,5 +67,15 @@ impl Clone for Parameters {
 		unsafe {
 			avcodec_parameters_copy(self.as_mut_ptr(), source.as_ptr());
 		}
+	}
+}
+
+impl<'a> From<&'a Context> for Parameters {
+	fn from(context: &'a Context) -> Parameters {
+		let mut parameters = Parameters::new();
+		unsafe {
+			avcodec_parameters_from_context(parameters.as_mut_ptr(), context.as_ptr());
+		}
+		parameters
 	}
 }

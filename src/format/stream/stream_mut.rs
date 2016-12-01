@@ -2,7 +2,7 @@ use std::ops::Deref;
 use std::mem;
 
 use ffi::*;
-use ::{Rational, Error};
+use ::{Rational, codec};
 use super::Stream;
 use format::context::common::Context;
 
@@ -41,12 +41,11 @@ impl<'a> StreamMut<'a> {
 		}
 	}
 
-	pub fn set_codec_parameters_from(&mut self, context: &::codec::Context) -> Result<(), Error> {
+	pub fn set_parameters<P: Into<codec::Parameters>>(&mut self, parameters: P) {
+		let parameters = parameters.into();
+
 		unsafe {
-			match avcodec_parameters_from_context((*self.as_mut_ptr()).codecpar, context.as_ptr()) {
-				e if e < 0 => Err(Error::from(e)),
-				_          => Ok(()),
-			}
+			avcodec_parameters_copy((*self.as_mut_ptr()).codecpar, parameters.as_ptr());
 		}
 	}
 }

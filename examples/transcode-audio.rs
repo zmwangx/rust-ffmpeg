@@ -51,7 +51,7 @@ fn transcoder<P: AsRef<Path>>(ictx: &mut format::context::Input, octx: &mut form
 	let codec   = try!(ffmpeg::encoder::find(octx.format().codec(path, media::Type::Audio)).expect("failed to find encoder").audio());
 	let global  = octx.format().flags().contains(ffmpeg::format::flag::GLOBAL_HEADER);
 
-	try!(decoder.set_parameters(input.codec_parameters()));
+	try!(decoder.set_parameters(input.parameters()));
 
 	let mut output  = try!(octx.add_stream(codec));
 	let mut encoder = try!(output.codec().encoder().audio());
@@ -75,7 +75,7 @@ fn transcoder<P: AsRef<Path>>(ictx: &mut format::context::Input, octx: &mut form
 	output.set_time_base((1, decoder.rate() as i32));
 
 	let encoder = try!(encoder.open_as(codec));
-	try!(output.set_codec_parameters_from(&encoder));
+	output.set_parameters(&***encoder);
 
 	let filter  = try!(filter(filter_spec, &decoder, &encoder));
 

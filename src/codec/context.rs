@@ -104,9 +104,11 @@ impl Context {
 		}
 	}
 
-	pub fn set_parameters(&mut self, params: &Parameters) -> Result<(), Error> {
+	pub fn set_parameters<P: Into<Parameters>>(&mut self, parameters: P) -> Result<(), Error> {
+		let parameters = parameters.into();
+
 		unsafe {
-			match avcodec_parameters_to_context(self.as_mut_ptr(), params.as_ptr()) {
+			match avcodec_parameters_to_context(self.as_mut_ptr(), parameters.as_ptr()) {
 				e if e < 0 => Err(Error::from(e)),
 				_          => Ok(()),
 			}

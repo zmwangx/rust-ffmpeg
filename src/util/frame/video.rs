@@ -222,6 +222,17 @@ impl Video {
 	}
 
 	#[inline]
+	pub fn stride(&self, index: usize) -> usize {
+		if index >= self.planes() {
+			panic!("out of bounds");
+		}
+
+		unsafe {
+			(*self.as_ptr()).linesize[index] as usize
+		}
+	}
+
+	#[inline]
 	pub fn planes(&self) -> usize {
 		for i in 0 .. 8 {
 			unsafe {

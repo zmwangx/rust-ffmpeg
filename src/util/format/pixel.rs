@@ -167,6 +167,8 @@ pub enum Pixel {
 
 	D3D11VA_VLD,
 
+	CUDA,
+
 	ZRGB,
 	RGBZ,
 	ZBGR,
@@ -457,6 +459,8 @@ impl From<AVPixelFormat> for Pixel {
 
 			AV_PIX_FMT_D3D11VA_VLD => Pixel::D3D11VA_VLD,
 
+			AV_PIX_FMT_CUDA => Pixel::CUDA,
+
 			AV_PIX_FMT_0RGB     => Pixel::ZRGB,
 			AV_PIX_FMT_RGB0     => Pixel::RGBZ,
 			AV_PIX_FMT_0BGR     => Pixel::ZBGR,
@@ -680,6 +684,8 @@ impl Into<AVPixelFormat> for Pixel {
 			Pixel::MMAL            => AV_PIX_FMT_MMAL,
 
 			Pixel::D3D11VA_VLD => AV_PIX_FMT_D3D11VA_VLD,
+
+			Pixel::CUDA => AV_PIX_FMT_CUDA,
 
 			Pixel::ZRGB     => AV_PIX_FMT_0RGB,
 			Pixel::RGBZ     => AV_PIX_FMT_RGB0,

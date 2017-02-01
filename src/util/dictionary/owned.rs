@@ -9,6 +9,12 @@ pub struct Owned<'a> {
 	inner: mutable::Ref<'a>,
 }
 
+impl<'a> Default for Owned<'a> {
+	fn default() -> Self {
+		Self::new()
+	}
+}
+
 impl<'a> Owned<'a> {
 	pub unsafe fn own(ptr: *mut AVDictionary) -> Self {
 		Owned { inner: mutable::Ref::wrap(ptr) }

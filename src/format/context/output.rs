@@ -36,10 +36,11 @@ impl Output {
 		}
 	}
 
-	pub fn write_header(&mut self) -> Result<(), Error> {
+	pub fn write_header(&mut self, dictionary: Dictionary) -> Result<Dictionary, Error> {
 		unsafe {
-			match avformat_write_header(self.as_mut_ptr(), ptr::null_mut()) {
-				0 => Ok(()),
+			let mut d = dictionary.disown();
+			match avformat_write_header(self.as_mut_ptr(), &mut d) {
+				0 => Ok(Dictionary::own(d)),
 				e => Err(Error::from(e)),
 			}
 		}

@@ -2,7 +2,7 @@ use libc::c_uint;
 use ffi::*;
 
 bitflags! {
-	flags Capabilities: c_uint {
+	pub flags Capabilities: c_uint {
 		const MMX     = SWS_CPU_CAPS_MMX,
 		const MMXEXT  = SWS_CPU_CAPS_MMXEXT,
 		const MMX2    = SWS_CPU_CAPS_MMX2,

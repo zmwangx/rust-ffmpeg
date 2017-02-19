@@ -2,7 +2,7 @@ use libc::c_uint;
 use ffi::*;
 
 bitflags! {
-	flags Flags: c_uint {
+	pub flags Flags: c_uint {
 		const UNALIGNED       = AV_CODEC_FLAG_UNALIGNED,
 		const QSCALE          = AV_CODEC_FLAG_QSCALE,
 		const _4MV            = AV_CODEC_FLAG_4MV,

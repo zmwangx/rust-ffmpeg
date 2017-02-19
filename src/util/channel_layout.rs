@@ -2,7 +2,7 @@ use libc::c_ulonglong;
 use ffi::*;
 
 bitflags! {
-	flags ChannelLayout: c_ulonglong {
+	pub flags ChannelLayout: c_ulonglong {
 		const FRONT_LEFT            = AV_CH_FRONT_LEFT,
 		const FRONT_RIGHT           = AV_CH_FRONT_RIGHT,
 		const FRONT_CENTER          = AV_CH_FRONT_CENTER,

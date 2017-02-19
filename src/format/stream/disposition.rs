@@ -2,7 +2,7 @@ use libc::c_int;
 use ffi::*;
 
 bitflags! {
-	flags Disposition: c_int {
+	pub flags Disposition: c_int {
 		const DEFAULT          = AV_DISPOSITION_DEFAULT,
 		const DUB              = AV_DISPOSITION_DUB,
 		const ORIGINAL         = AV_DISPOSITION_ORIGINAL,

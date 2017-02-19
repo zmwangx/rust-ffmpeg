@@ -2,7 +2,7 @@ use libc::c_int;
 use ffi::*;
 
 bitflags! {
-	flags Flags: c_int {
+	pub flags Flags: c_int {
 		const NO_FILE       = AVFMT_NOFILE,
 		const NEED_NUMBER   = AVFMT_NEEDNUMBER,
 		const SHOW_IDS      = AVFMT_SHOW_IDS,

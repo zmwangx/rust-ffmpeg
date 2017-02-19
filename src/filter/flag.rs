@@ -2,7 +2,7 @@ use libc::c_int;
 use ffi::*;
 
 bitflags! {
-	flags Flags: c_int {
+	pub flags Flags: c_int {
 		const DYNAMIC_INPUTS            = AVFILTER_FLAG_DYNAMIC_INPUTS,
 		const DYNAMIC_OUTPUTS           = AVFILTER_FLAG_DYNAMIC_OUTPUTS,
 		const SLICE_THREADS             = AVFILTER_FLAG_SLICE_THREADS,

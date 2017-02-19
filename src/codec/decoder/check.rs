@@ -2,7 +2,7 @@ use libc::c_int;
 use ffi::*;
 
 bitflags! {
-	flags Check: c_int {
+	pub flags Check: c_int {
 		const CRC      = AV_EF_CRCCHECK,
 		const BISTREAM = AV_EF_BITSTREAM,
 		const BUFFER   = AV_EF_BUFFER,

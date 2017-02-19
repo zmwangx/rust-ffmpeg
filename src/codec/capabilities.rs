@@ -2,7 +2,7 @@ use libc::c_uint;
 use ffi::*;
 
 bitflags! {
-	flags Capabilities: c_uint {
+	pub flags Capabilities: c_uint {
 		const DRAW_HORIZ_BAND     = AV_CODEC_CAP_DRAW_HORIZ_BAND,
 		const DR1                 = AV_CODEC_CAP_DR1,
 		const TRUNCATED           = AV_CODEC_CAP_TRUNCATED,

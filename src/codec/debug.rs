@@ -2,7 +2,7 @@ use libc::c_int;
 use ffi::*;
 
 bitflags! {
-	flags Debug: c_int {
+	pub flags Debug: c_int {
 		const PICT_INFO   = FF_DEBUG_PICT_INFO,
 		const RC          = FF_DEBUG_RC,
 		const BITSTREAM   = FF_DEBUG_BITSTREAM,

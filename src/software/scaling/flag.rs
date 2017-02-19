@@ -2,7 +2,7 @@ use libc::c_int;
 use ffi::*;
 
 bitflags! {
-	flags Flags: c_int {
+	pub flags Flags: c_int {
 		const FAST_BILINEAR        = SWS_FAST_BILINEAR,
 		const BILINEAR             = SWS_BILINEAR,
 		const BICUBIC              = SWS_BICUBIC,

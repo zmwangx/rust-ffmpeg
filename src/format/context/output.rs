@@ -45,15 +45,13 @@ impl Output {
 		}
 	}
 
-	pub fn write_header_with(&mut self, options: Dictionary) -> Result<(), Error> {
+	pub fn write_header_with(&mut self, options: Dictionary) -> Result<Dictionary, Error> {
 		unsafe {
 			let mut opts = options.disown();
 			let     res  = avformat_write_header(self.as_mut_ptr(), &mut opts);
 
-			Dictionary::own(opts);
-
 			match res {
-				0 => Ok(()),
+				0 => Ok(Dictionary::own(opts)),
 				e => Err(Error::from(e)),
 			}
 		}

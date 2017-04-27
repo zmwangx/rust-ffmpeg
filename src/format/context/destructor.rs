@@ -27,8 +27,10 @@ impl Drop for Destructor {
 				Mode::Input =>
 					avformat_close_input(&mut self.ptr),
 
-				Mode::Output =>
-					avformat_free_context(self.ptr),
+				Mode::Output => {
+					avio_close((*self.ptr).pb);
+					avformat_free_context(self.ptr);
+				}
 			}
 		}
 	}

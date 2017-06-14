@@ -41,6 +41,12 @@ impl<'a> StreamMut<'a> {
 		}
 	}
 
+	pub fn set_avg_frame_rate<R: Into<Rational>>(&mut self, value: R) {
+		unsafe {
+			(*self.as_mut_ptr()).avg_frame_rate = value.into().into();
+		}
+	}
+
 	pub fn set_parameters<P: Into<codec::Parameters>>(&mut self, parameters: P) {
 		let parameters = parameters.into();
 

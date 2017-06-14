@@ -84,6 +84,12 @@ impl<'a> Stream<'a> {
 			Rational::from(av_stream_get_r_frame_rate(self.as_ptr()))
 		}
 	}
+
+	pub fn avg_frame_rate(&self) -> Rational {
+		unsafe {
+			Rational::from((*self.as_ptr()).avg_frame_rate)
+		}
+	}
 }
 
 impl<'a> PartialEq for Stream<'a> {

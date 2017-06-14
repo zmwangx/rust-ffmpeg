@@ -289,6 +289,38 @@ pub enum Pixel {
 	AYUV64,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub struct Descriptor {
+	ptr: *const AVPixFmtDescriptor,
+}
+
+unsafe impl Send for Descriptor {}
+unsafe impl Sync for Descriptor {}
+
+impl Pixel {
+	pub fn descriptor(self) -> Option<Descriptor> {
+		let ptr = unsafe { av_pix_fmt_desc_get(self.into()) };
+
+		if ptr.is_null() {
+			None
+		} else {
+			Some(Descriptor { ptr })
+		}
+	}
+}
+
+impl Descriptor {
+	pub fn as_ptr(self) -> *const AVPixFmtDescriptor {
+		self.ptr
+	}
+
+	pub fn log2_chroma_h(self) -> u8 {
+		unsafe {
+			(*self.as_ptr()).log2_chroma_h
+		}
+	}
+}
+
 impl From<AVPixelFormat> for Pixel {
 	#[inline]
 	fn from(value: AVPixelFormat) -> Self {

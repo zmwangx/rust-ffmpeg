@@ -245,6 +245,22 @@ impl Video {
 		8
 	}
 
+	fn plane_height(&self, index: usize) -> u32 {
+		// Logic taken from av_image_fill_pointers().
+		if index != 1 && index != 2 {
+			return self.height();
+		}
+
+		match self.format().descriptor() {
+			None => self.height(),
+
+			Some(desc) => {
+				let s = desc.log2_chroma_h();
+				(self.height() + (1 << s) - 1) >> s
+			}
+		}
+	}
+
 	#[inline]
 	pub fn plane<T: Component>(&self, index: usize) -> &[T] {
 		if index >= self.planes() {
@@ -258,7 +274,7 @@ impl Video {
 		unsafe {
 			slice::from_raw_parts(
 				mem::transmute((*self.as_ptr()).data[index]),
-				(*self.as_ptr()).linesize[index] as usize * self.height() as usize / mem::size_of::<T>())
+				(*self.as_ptr()).linesize[index] as usize * self.plane_height(index) as usize / mem::size_of::<T>())
 		}
 	}
 
@@ -275,7 +291,7 @@ impl Video {
 		unsafe {
 			slice::from_raw_parts_mut(
 				mem::transmute((*self.as_mut_ptr()).data[index]),
-				(*self.as_ptr()).linesize[index] as usize * self.height() as usize / mem::size_of::<T>())
+				(*self.as_ptr()).linesize[index] as usize * self.plane_height(index) as usize / mem::size_of::<T>())
 		}
 	}
 
@@ -287,7 +303,7 @@ impl Video {
 
 		unsafe {
 			slice::from_raw_parts((*self.as_ptr()).data[index],
-				(*self.as_ptr()).linesize[index] as usize * self.height() as usize)
+				(*self.as_ptr()).linesize[index] as usize * self.plane_height(index) as usize)
 		}
 	}
 
@@ -299,7 +315,7 @@ impl Video {
 
 		unsafe {
 			slice::from_raw_parts_mut((*self.as_mut_ptr()).data[index],
-				(*self.as_ptr()).linesize[index] as usize * self.height() as usize)
+				(*self.as_ptr()).linesize[index] as usize * self.plane_height(index) as usize)
 		}
 	}
 }

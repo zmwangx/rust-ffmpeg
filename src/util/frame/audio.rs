@@ -163,7 +163,7 @@ impl Audio {
 	}
 
 	#[inline]
-	pub fn plane_mut<T: Sample>(&mut self, index: usize) -> &[T] {
+	pub fn plane_mut<T: Sample>(&mut self, index: usize) -> &mut [T] {
 		if index >= self.planes() {
 			panic!("out of bounds");
 		}

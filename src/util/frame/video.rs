@@ -245,7 +245,12 @@ impl Video {
 		8
 	}
 
-	fn plane_height(&self, index: usize) -> u32 {
+	#[inline]
+	pub fn plane_height(&self, index: usize) -> u32 {
+		if index >= self.planes() {
+			panic!("out of bounds");
+		}
+
 		// Logic taken from av_image_fill_pointers().
 		if index != 1 && index != 2 {
 			return self.height();

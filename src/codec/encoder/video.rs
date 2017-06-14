@@ -6,7 +6,7 @@ use ffi::*;
 
 use super::Encoder as Super;
 use super::{MotionEstimation, Prediction, Comparison, Decision};
-use ::{packet, Error, Rational, Dictionary, frame, format};
+use ::{color, packet, Error, Rational, Dictionary, frame, format};
 use codec::{traits, Context};
 
 pub struct Video(pub Super);
@@ -289,7 +289,7 @@ impl Video {
 			(*self.as_mut_ptr()).me_range = value as c_int;
 		}
 	}
-	
+
 	#[inline]
 	#[cfg(feature = "ff_api_quant_bias")]
 	pub fn set_intra_quant_bias(&mut self, value: Option<usize>) {
@@ -362,6 +362,34 @@ impl Video {
 	pub fn set_global_quality(&mut self, value: i32) {
 		unsafe {
 			(*self.as_mut_ptr()).global_quality = value as c_int;
+		}
+	}
+
+	#[inline]
+	pub fn set_colorspace(&mut self, value: color::Space) {
+		unsafe {
+			(*self.as_mut_ptr()).colorspace = value.into();
+		}
+	}
+
+	#[inline]
+	pub fn colorspace(&self) -> color::Space {
+		unsafe {
+			(*self.as_ptr()).colorspace.into()
+		}
+	}
+
+	#[inline]
+	pub fn set_color_range(&mut self, value: color::Range) {
+		unsafe {
+			(*self.as_mut_ptr()).color_range = value.into();
+		}
+	}
+
+	#[inline]
+	pub fn color_range(&self) -> color::Range {
+		unsafe {
+			(*self.as_ptr()).color_range.into()
 		}
 	}
 }

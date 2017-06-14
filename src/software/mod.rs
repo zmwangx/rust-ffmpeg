@@ -22,7 +22,7 @@ pub fn converter((width, height): (u32, u32),
 #[cfg(feature = "software-resampling")]
 pub mod resampling;
 
-#[cfg(feature = "softare-resampling")]
+#[cfg(feature = "software-resampling")]
 #[inline]
 pub fn resampler((in_format, in_layout, in_rate): (::format::Sample, ::ChannelLayout, u32),
                  (out_format, out_layout, out_rate): (::format::Sample, ::ChannelLayout, u32))

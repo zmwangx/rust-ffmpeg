@@ -298,7 +298,7 @@ impl Video {
 		unsafe {
 			slice::from_raw_parts(
 				mem::transmute((*self.as_ptr()).data[index]),
-				(*self.as_ptr()).linesize[index] as usize * self.plane_height(index) as usize / mem::size_of::<T>())
+				self.stride(index) * self.plane_height(index) as usize / mem::size_of::<T>())
 		}
 	}
 
@@ -315,7 +315,7 @@ impl Video {
 		unsafe {
 			slice::from_raw_parts_mut(
 				mem::transmute((*self.as_mut_ptr()).data[index]),
-				(*self.as_ptr()).linesize[index] as usize * self.plane_height(index) as usize / mem::size_of::<T>())
+				self.stride(index) * self.plane_height(index) as usize / mem::size_of::<T>())
 		}
 	}
 
@@ -327,7 +327,7 @@ impl Video {
 
 		unsafe {
 			slice::from_raw_parts((*self.as_ptr()).data[index],
-				(*self.as_ptr()).linesize[index] as usize * self.plane_height(index) as usize)
+				self.stride(index) * self.plane_height(index) as usize)
 		}
 	}
 
@@ -339,7 +339,7 @@ impl Video {
 
 		unsafe {
 			slice::from_raw_parts_mut((*self.as_mut_ptr()).data[index],
-				(*self.as_ptr()).linesize[index] as usize * self.plane_height(index) as usize)
+				self.stride(index) * self.plane_height(index) as usize)
 		}
 	}
 }

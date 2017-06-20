@@ -259,7 +259,8 @@ impl Video {
 		if let Some(desc) = self.format().descriptor() {
 			let s = desc.log2_chroma_h();
 			(self.height() + (1 << s) - 1) >> s
-		} else {
+		}
+		else {
 			self.height()
 		}
 	}

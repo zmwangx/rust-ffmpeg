@@ -312,6 +312,12 @@ impl Descriptor {
 		self.ptr
 	}
 
+	pub fn nb_components(self) -> u8 {
+		unsafe {
+			(*self.as_ptr()).nb_components
+		}
+	}
+
 	pub fn log2_chroma_h(self) -> u8 {
 		unsafe {
 			(*self.as_ptr()).log2_chroma_h

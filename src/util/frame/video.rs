@@ -258,7 +258,6 @@ impl Video {
 
 		match self.format().descriptor() {
 			None => self.height(),
-
 			Some(desc) => {
 				let s = desc.log2_chroma_h();
 				(self.height() + (1 << s) - 1) >> s

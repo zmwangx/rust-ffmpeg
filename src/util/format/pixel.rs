@@ -303,7 +303,8 @@ impl Pixel {
 
 		if ptr.is_null() {
 			None
-		} else {
+		}
+		else {
 			Some(Descriptor { ptr })
 		}
 	}

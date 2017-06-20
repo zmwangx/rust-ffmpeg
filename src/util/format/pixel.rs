@@ -299,13 +299,10 @@ unsafe impl Sync for Descriptor {}
 
 impl Pixel {
 	pub fn descriptor(self) -> Option<Descriptor> {
-		let ptr = unsafe { av_pix_fmt_desc_get(self.into()) };
+		unsafe {
+			let ptr = av_pix_fmt_desc_get(self.into());
 
-		if ptr.is_null() {
-			None
-		}
-		else {
-			Some(Descriptor { ptr })
+			ptr.as_ref().map(|ptr| Descriptor { ptr })
 		}
 	}
 }

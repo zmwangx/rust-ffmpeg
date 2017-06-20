@@ -256,12 +256,11 @@ impl Video {
 			return self.height();
 		}
 
-		match self.format().descriptor() {
-			None => self.height(),
-			Some(desc) => {
-				let s = desc.log2_chroma_h();
-				(self.height() + (1 << s) - 1) >> s
-			}
+		if let Some(desc) = self.format().descriptor() {
+			let s = desc.log2_chroma_h();
+			(self.height() + (1 << s) - 1) >> s
+		} else {
+			self.height()
 		}
 	}
 

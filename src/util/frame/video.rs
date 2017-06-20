@@ -246,6 +246,26 @@ impl Video {
 	}
 
 	#[inline]
+	pub fn plane_width(&self, index: usize) -> u32 {
+		if index >= self.planes() {
+			panic!("out of bounds");
+		}
+
+		// Logic taken from image_get_linesize().
+		if index != 1 && index != 2 {
+			return self.width();
+		}
+
+		if let Some(desc) = self.format().descriptor() {
+			let s = desc.log2_chroma_w();
+			(self.width() + (1 << s) - 1) >> s
+		}
+		else {
+			self.width()
+		}
+	}
+
+	#[inline]
 	pub fn plane_height(&self, index: usize) -> u32 {
 		if index >= self.planes() {
 			panic!("out of bounds");

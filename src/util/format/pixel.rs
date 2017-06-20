@@ -1,3 +1,6 @@
+use std::ffi::CStr;
+use std::str::from_utf8_unchecked;
+
 use ffi::*;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
@@ -312,9 +315,21 @@ impl Descriptor {
 		self.ptr
 	}
 
+	pub fn name(self) -> &'static str {
+		unsafe {
+			from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).name).to_bytes())
+		}
+	}
+
 	pub fn nb_components(self) -> u8 {
 		unsafe {
 			(*self.as_ptr()).nb_components
+		}
+	}
+
+	pub fn log2_chroma_w(self) -> u8 {
+		unsafe {
+			(*self.as_ptr()).log2_chroma_w
 		}
 	}
 

@@ -1,5 +1,7 @@
-use std::ffi::CStr;
-use std::str::from_utf8_unchecked;
+use std::error;
+use std::ffi::{CStr, CString, NulError};
+use std::fmt;
+use std::str::{FromStr, from_utf8_unchecked};
 
 use ffi::*;
 
@@ -856,6 +858,59 @@ impl Into<AVPixelFormat> for Pixel {
 			Pixel::XYZ12  => AV_PIX_FMT_XYZ12,
 			Pixel::NV20   => AV_PIX_FMT_NV20,
 			Pixel::AYUV64 => AV_PIX_FMT_AYUV64,
+		}
+	}
+}
+
+#[derive(Debug)]
+pub enum ParsePixelError {
+	NulError(NulError),
+	UnknownFormat,
+}
+
+impl fmt::Display for ParsePixelError {
+	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+		match *self {
+			ParsePixelError::NulError(ref e) => e.fmt(f),
+			ParsePixelError::UnknownFormat => write!(f, "unknown pixel format")
+		}
+	}
+}
+
+impl error::Error for ParsePixelError {
+	fn description(&self) -> &str {
+		match *self {
+			ParsePixelError::NulError(ref e) => e.description(),
+			ParsePixelError::UnknownFormat => "unknown pixel format"
+		}
+	}
+
+	fn cause(&self) -> Option<&error::Error> {
+		match *self {
+			ParsePixelError::NulError(ref e) => Some(e),
+			ParsePixelError::UnknownFormat => None
+		}
+	}
+}
+
+impl From<NulError> for ParsePixelError {
+	fn from(x: NulError) -> ParsePixelError {
+		ParsePixelError::NulError(x)
+	}
+}
+
+impl FromStr for Pixel {
+	type Err = ParsePixelError;
+
+	#[inline(always)]
+	fn from_str(s: &str) -> Result<Pixel, ParsePixelError> {
+		let cstring = CString::new(s)?;
+		let format = unsafe { av_get_pix_fmt(cstring.as_ptr()) }.into();
+
+		if format == Pixel::None {
+			Err(ParsePixelError::UnknownFormat)
+		} else {
+			Ok(format)
 		}
 	}
 }

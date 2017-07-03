@@ -13,6 +13,7 @@ pub mod channel_layout;
 pub mod option;
 pub mod range;
 pub mod mathematics;
+pub mod interrupt;
 
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;

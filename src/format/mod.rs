@@ -1,5 +1,6 @@
 pub use ::util::format::{sample, Sample};
 pub use ::util::format::{pixel, Pixel};
+use ::util::interrupt;
 
 pub mod stream;
 
@@ -155,7 +156,7 @@ pub fn input<P: AsRef<Path>>(path: &P) -> Result<context::Input, Error> {
 	}
 }
 
-pub fn input_with<P: AsRef<Path>>(path: &P, options: Dictionary) -> Result<context::Input, Error> {
+pub fn input_with_dictionary<P: AsRef<Path>>(path: &P, options: Dictionary) -> Result<context::Input, Error> {
 	unsafe {
 		let mut ps   = ptr::null_mut();
 		let     path = from_path(path);
@@ -171,7 +172,27 @@ pub fn input_with<P: AsRef<Path>>(path: &P, options: Dictionary) -> Result<conte
 					e           => Err(Error::from(e)),
 				}
 			}
-			
+
+			e => Err(Error::from(e))
+		}
+	}
+}
+
+pub fn input_with_interrupt<P: AsRef<Path>, F>(path: &P, closure: F) -> Result<context::Input, Error>
+	where F: FnMut() -> bool {
+	unsafe {
+		let mut ps   = context::Input::wrap(avformat_alloc_context());
+		let     path = from_path(path);
+		(*ps.as_mut_ptr()).interrupt_callback = interrupt::new(Box::new(closure)).interrupt;
+
+		match avformat_open_input(&mut ps.as_mut_ptr(), path.as_ptr(), ptr::null_mut(), ptr::null_mut()) {
+			0 => {
+				match avformat_find_stream_info(ps.as_mut_ptr(), ptr::null_mut()) {
+					r if r >= 0 => Ok(ps),
+					e           => Err(Error::from(e)),
+				}
+			}
+
 			e => Err(Error::from(e))
 		}
 	}

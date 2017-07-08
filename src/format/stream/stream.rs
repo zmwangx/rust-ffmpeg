@@ -1,7 +1,7 @@
 use libc::c_int;
 use ffi::*;
 use ::codec::{self, packet};
-use ::{Rational, Discard};
+use ::{Rational, Discard, DictionaryRef};
 use super::Disposition;
 use format::context::common::Context;
 
@@ -88,6 +88,12 @@ impl<'a> Stream<'a> {
 	pub fn avg_frame_rate(&self) -> Rational {
 		unsafe {
 			Rational::from((*self.as_ptr()).avg_frame_rate)
+		}
+	}
+
+	pub fn metadata(&self) -> DictionaryRef {
+		unsafe {
+			DictionaryRef::wrap((*self.as_ptr()).metadata)
 		}
 	}
 }

@@ -208,7 +208,7 @@ impl Packet {
 				return Err(Error::InvalidData);
 			}
 
-			match av_write_frame(format.as_mut_ptr(), self.as_ptr()) {
+			match av_write_frame(format.as_mut_ptr(), self.as_ptr() as *mut _) {
 				1 => Ok(true),
 				0 => Ok(false),
 				e => Err(Error::from(e))
@@ -223,7 +223,7 @@ impl Packet {
 				return Err(Error::InvalidData);
 			}
 
-			match av_interleaved_write_frame(format.as_mut_ptr(), self.as_ptr()) {
+			match av_interleaved_write_frame(format.as_mut_ptr(), self.as_ptr() as *mut _) {
 				1 => Ok(true),
 				0 => Ok(false),
 				e => Err(Error::from(e))

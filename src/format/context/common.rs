@@ -106,7 +106,7 @@ impl<'a> Best<'a> {
 	pub fn best<'b>(self, kind: media::Type) -> Option<Stream<'b>> where 'a: 'b {
 		unsafe {
 			let mut decoder = ptr::null_mut();
-			let     index   = av_find_best_stream(self.context.as_ptr(),
+			let     index   = av_find_best_stream(self.context.ptr,
 				kind.into(), self.wanted as c_int, self.related as c_int,
 				&mut decoder, 0);
 

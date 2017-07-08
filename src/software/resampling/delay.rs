@@ -14,10 +14,10 @@ impl Delay {
 	pub fn from(context: &Context) -> Self {
 		unsafe {
 			Delay {
-				seconds:      swr_get_delay(context.as_ptr(), 1),
-				milliseconds: swr_get_delay(context.as_ptr(), 1000),
-				input:        swr_get_delay(context.as_ptr(), context.input().rate as int64_t),
-				output:       swr_get_delay(context.as_ptr(), context.output().rate as int64_t),
+				seconds:      swr_get_delay(context.as_ptr() as *mut _, 1),
+				milliseconds: swr_get_delay(context.as_ptr() as *mut _, 1000),
+				input:        swr_get_delay(context.as_ptr() as *mut _, context.input().rate as int64_t),
+				output:       swr_get_delay(context.as_ptr() as *mut _, context.output().rate as int64_t),
 			}
 		}
 	}

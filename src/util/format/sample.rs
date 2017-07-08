@@ -7,6 +7,7 @@ use std::mem;
 
 use libc::{c_int, uint8_t};
 use ffi::*;
+use ffi::AVSampleFormat::*;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Sample {
@@ -15,6 +16,7 @@ pub enum Sample {
 	U8(Type),
 	I16(Type),
 	I32(Type),
+	I64(Type),
 	F32(Type),
 	F64(Type),
 }
@@ -81,12 +83,14 @@ impl From<AVSampleFormat> for Sample {
 			AV_SAMPLE_FMT_U8  => Sample::U8(Type::Packed),
 			AV_SAMPLE_FMT_S16 => Sample::I16(Type::Packed),
 			AV_SAMPLE_FMT_S32 => Sample::I32(Type::Packed),
+			AV_SAMPLE_FMT_S64 => Sample::I64(Type::Packed),
 			AV_SAMPLE_FMT_FLT => Sample::F32(Type::Packed),
 			AV_SAMPLE_FMT_DBL => Sample::F64(Type::Packed),
 
 			AV_SAMPLE_FMT_U8P  => Sample::U8(Type::Planar),
 			AV_SAMPLE_FMT_S16P => Sample::I16(Type::Planar),
 			AV_SAMPLE_FMT_S32P => Sample::I32(Type::Planar),
+			AV_SAMPLE_FMT_S64P => Sample::I64(Type::Planar),
 			AV_SAMPLE_FMT_FLTP => Sample::F32(Type::Planar),
 			AV_SAMPLE_FMT_DBLP => Sample::F64(Type::Planar),
 
@@ -115,12 +119,14 @@ impl Into<AVSampleFormat> for Sample {
 			Sample::U8(Type::Packed)  => AV_SAMPLE_FMT_U8,
 			Sample::I16(Type::Packed) => AV_SAMPLE_FMT_S16,
 			Sample::I32(Type::Packed) => AV_SAMPLE_FMT_S32,
+			Sample::I64(Type::Packed) => AV_SAMPLE_FMT_S64,
 			Sample::F32(Type::Packed) => AV_SAMPLE_FMT_FLT,
 			Sample::F64(Type::Packed) => AV_SAMPLE_FMT_DBL,
 
 			Sample::U8(Type::Planar)  => AV_SAMPLE_FMT_U8P,
 			Sample::I16(Type::Planar) => AV_SAMPLE_FMT_S16P,
 			Sample::I32(Type::Planar) => AV_SAMPLE_FMT_S32P,
+			Sample::I64(Type::Planar) => AV_SAMPLE_FMT_S64P,
 			Sample::F32(Type::Planar) => AV_SAMPLE_FMT_FLTP,
 			Sample::F64(Type::Planar) => AV_SAMPLE_FMT_DBLP,
 		}

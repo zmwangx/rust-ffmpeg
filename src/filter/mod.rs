@@ -27,7 +27,7 @@ pub fn register_all() {
 
 pub fn register(filter: &Filter) -> Result<(), Error> {
 	unsafe {
-		match avfilter_register(filter.as_ptr()) {
+		match avfilter_register(filter.as_ptr() as *mut _) {
 			0 => Ok(()),
 			_ => Err(Error::InvalidData),
 		}

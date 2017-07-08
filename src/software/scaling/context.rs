@@ -104,7 +104,7 @@ impl Context {
 		if input.format() != self.input.format || input.width() != self.input.width || input.height() != self.input.height {
 			return Err(Error::InputChanged);
 		}
-		
+
 		unsafe {
 			if output.is_empty() {
 				output.alloc(self.output.format, self.output.width, self.output.height);
@@ -119,7 +119,7 @@ impl Context {
 			sws_scale(self.as_mut_ptr(),
 				(*input.as_ptr()).data.as_ptr() as *const *const _, (*input.as_ptr()).linesize.as_ptr() as *const _,
 				0, self.output.height as c_int,
-				(*output.as_mut_ptr()).data.as_ptr() as *mut *mut _, (*output.as_mut_ptr()).linesize.as_ptr() as *mut _);
+				(*output.as_mut_ptr()).data.as_ptr() as *const *const _, (*output.as_mut_ptr()).linesize.as_ptr() as *mut _);
 		}
 
 		Ok(())

@@ -4,6 +4,7 @@ use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
 use ffi::*;
+use ffi::AVFrameSideDataType::*;
 use super::Frame;
 use ::DictionaryRef;
 
@@ -22,6 +23,7 @@ pub enum Type {
 	AudioServiceType,
 	MasteringDisplayMetadata,
 	GOPTimecode,
+	Spherical,
 }
 
 impl Type {
@@ -50,6 +52,7 @@ impl From<AVFrameSideDataType> for Type {
 			AV_FRAME_DATA_AUDIO_SERVICE_TYPE => Type::AudioServiceType,
 			AV_FRAME_DATA_MASTERING_DISPLAY_METADATA => Type::MasteringDisplayMetadata,
 			AV_FRAME_DATA_GOP_TIMECODE       => Type::GOPTimecode,
+			AV_FRAME_DATA_SPHERICAL          => Type::Spherical,
 		}
 	}
 }
@@ -71,6 +74,7 @@ impl Into<AVFrameSideDataType> for Type {
 			Type::AudioServiceType => AV_FRAME_DATA_AUDIO_SERVICE_TYPE,
 			Type::MasteringDisplayMetadata => AV_FRAME_DATA_MASTERING_DISPLAY_METADATA,
 			Type::GOPTimecode      => AV_FRAME_DATA_GOP_TIMECODE,
+			Type::Spherical        => AV_FRAME_DATA_SPHERICAL,
 		}
 	}
 }
@@ -102,7 +106,7 @@ impl<'a> SideData<'a> {
 	#[inline]
 	pub fn kind(&self) -> Type {
 		unsafe {
-			Type::from((*self.as_ptr()).kind)
+			Type::from((*self.as_ptr()).type_)
 		}
 	}
 

@@ -29,11 +29,11 @@ pub fn register_all() {
 pub fn register(format: &Format) {
 	match format {
 		&Format::Input(ref format) => unsafe {
-			av_register_input_format(format.as_ptr());
+			av_register_input_format(format.as_ptr() as *mut _);
 		},
 
 		&Format::Output(ref format) => unsafe {
-			av_register_output_format(format.as_ptr());
+			av_register_output_format(format.as_ptr() as *mut _);
 		}
 	}
 }
@@ -69,7 +69,7 @@ pub fn open<P: AsRef<Path>>(path: &P, format: &Format) -> Result<Context, Error>
 
 		match format {
 			&Format::Input(ref format) => {
-				match avformat_open_input(&mut ps, path.as_ptr(), format.as_ptr(), ptr::null_mut()) {
+				match avformat_open_input(&mut ps, path.as_ptr(), format.as_ptr() as *mut _, ptr::null_mut()) {
 					0 => {
 						match avformat_find_stream_info(ps, ptr::null_mut()) {
 							r if r >= 0 => Ok(Context::Input(context::Input::wrap(ps))),
@@ -82,7 +82,7 @@ pub fn open<P: AsRef<Path>>(path: &P, format: &Format) -> Result<Context, Error>
 			}
 
 			&Format::Output(ref format) => {
-				match avformat_alloc_output_context2(&mut ps, format.as_ptr(), ptr::null(), path.as_ptr()) {
+				match avformat_alloc_output_context2(&mut ps, format.as_ptr() as *mut _, ptr::null(), path.as_ptr()) {
 					0 => {
 						match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
 							0 => Ok(Context::Output(context::Output::wrap(ps))),
@@ -105,7 +105,7 @@ pub fn open_with<P: AsRef<Path>>(path: &P, format: &Format, options: Dictionary)
 
 		match format {
 			&Format::Input(ref format) => {
-				let res = avformat_open_input(&mut ps, path.as_ptr(), format.as_ptr(), &mut opts);
+				let res = avformat_open_input(&mut ps, path.as_ptr(), format.as_ptr() as *mut _, &mut opts);
 
 				Dictionary::own(opts);
 
@@ -122,7 +122,7 @@ pub fn open_with<P: AsRef<Path>>(path: &P, format: &Format, options: Dictionary)
 			}
 
 			&Format::Output(ref format) => {
-				match avformat_alloc_output_context2(&mut ps, format.as_ptr(), ptr::null(), path.as_ptr()) {
+				match avformat_alloc_output_context2(&mut ps, format.as_ptr() as *mut _, ptr::null(), path.as_ptr()) {
 					0 => {
 						match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
 							0 => Ok(Context::Output(context::Output::wrap(ps))),

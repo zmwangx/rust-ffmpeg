@@ -2,6 +2,7 @@ use std::marker::PhantomData;
 use std::slice;
 
 use ffi::*;
+use ffi::AVPacketSideDataType::*;
 use super::Packet;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
@@ -26,7 +27,9 @@ pub enum Type {
 	WebVTTSettings,
 	MetadataUpdate,
 	MPEGTSStreamID,
-	MasteringDisplayMetadata
+	MasteringDisplayMetadata,
+	DataSpherical,
+	DataNb,
 }
 
 impl From<AVPacketSideDataType> for Type {
@@ -52,7 +55,9 @@ impl From<AVPacketSideDataType> for Type {
 			AV_PKT_DATA_WEBVTT_SETTINGS            => Type::WebVTTSettings,
 			AV_PKT_DATA_METADATA_UPDATE            => Type::MetadataUpdate,
 			AV_PKT_DATA_MPEGTS_STREAM_ID           => Type::MPEGTSStreamID,
-			AV_PKT_DATA_MASTERING_DISPLAY_METADATA => Type::MasteringDisplayMetadata
+			AV_PKT_DATA_MASTERING_DISPLAY_METADATA => Type::MasteringDisplayMetadata,
+			AV_PKT_DATA_SPHERICAL                  => Type::DataSpherical,
+			AV_PKT_DATA_NB                         => Type::DataNb,
 		}
 	}
 }
@@ -80,7 +85,9 @@ impl Into<AVPacketSideDataType> for Type {
 			Type::WebVTTSettings           => AV_PKT_DATA_WEBVTT_SETTINGS,
 			Type::MetadataUpdate           => AV_PKT_DATA_METADATA_UPDATE,
 			Type::MPEGTSStreamID           => AV_PKT_DATA_MPEGTS_STREAM_ID,
-			Type::MasteringDisplayMetadata => AV_PKT_DATA_MASTERING_DISPLAY_METADATA
+			Type::MasteringDisplayMetadata => AV_PKT_DATA_MASTERING_DISPLAY_METADATA,
+			Type::DataSpherical            => AV_PKT_DATA_SPHERICAL,
+			Type::DataNb                   => AV_PKT_DATA_NB,
 		}
 	}
 }
@@ -104,7 +111,7 @@ impl<'a> SideData<'a> {
 impl<'a> SideData<'a> {
 	pub fn kind(&self) -> Type {
 		unsafe {
-			Type::from((*self.as_ptr()).kind)
+			Type::from((*self.as_ptr()).type_)
 		}
 	}
 

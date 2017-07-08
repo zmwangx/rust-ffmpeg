@@ -64,19 +64,19 @@ impl<'a> Vector<'a> {
 
 	pub fn conv(&mut self, other: &Vector) {
 		unsafe {
-			sws_convVec(self.as_mut_ptr(), other.as_ptr());
+			sws_convVec(self.as_mut_ptr(), other.as_ptr() as *mut _);
 		}
 	}
 
 	pub fn add(&mut self, other: &Vector) {
 		unsafe {
-			sws_addVec(self.as_mut_ptr(), other.as_ptr());
+			sws_addVec(self.as_mut_ptr(), other.as_ptr() as *mut _);
 		}
 	}
 
 	pub fn sub(&mut self, other: &Vector) {
 		unsafe {
-			sws_subVec(self.as_mut_ptr(), other.as_ptr());
+			sws_subVec(self.as_mut_ptr(), other.as_ptr() as *mut _);
 		}
 	}
 
@@ -104,7 +104,7 @@ impl<'a> Vector<'a> {
 impl<'a> Clone for Vector<'a> {
 	fn clone(&self) -> Self {
 		unsafe {
-			Vector { ptr: sws_cloneVec(self.as_ptr()), _own: true, _marker: PhantomData }
+			Vector { ptr: sws_cloneVec(self.as_ptr() as *mut _), _own: true, _marker: PhantomData }
 		}
 	}
 }

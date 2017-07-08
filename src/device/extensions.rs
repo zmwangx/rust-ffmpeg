@@ -26,7 +26,7 @@ impl<'a> DeviceIter<'a> {
 	pub unsafe fn wrap(ctx: *const AVFormatContext) -> Result<Self, Error> {
 		let mut ptr: *mut AVDeviceInfoList = ptr::null_mut();
 
-		match avdevice_list_devices(ctx, &mut ptr) {
+		match avdevice_list_devices(ctx as *mut _, &mut ptr) {
 			n if n < 0 =>
 				Err(Error::from(n)),
 

@@ -14,7 +14,7 @@ pub enum RectMut<'a> {
 
 impl<'a> RectMut<'a> {
 	pub unsafe fn wrap(ptr: *mut AVSubtitleRect) -> Self {
-		match Type::from((*ptr).kind) {
+		match Type::from((*ptr).type_) {
 			Type::None   => RectMut::None(ptr),
 			Type::Bitmap => RectMut::Bitmap(BitmapMut::wrap(ptr)),
 			Type::Text   => RectMut::Text(TextMut::wrap(ptr)),
@@ -62,7 +62,7 @@ impl<'a> BitmapMut<'a> {
 	pub unsafe fn wrap(ptr: *mut AVSubtitleRect) -> Self {
 		BitmapMut { immutable: Bitmap::wrap(ptr as *const _) }
 	}
-	
+
 	pub unsafe fn as_mut_ptr(&mut self) -> *mut AVSubtitleRect {
 		self.as_ptr() as *mut _
 	}

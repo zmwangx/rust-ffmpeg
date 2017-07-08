@@ -70,7 +70,7 @@ impl Output {
 		let path = CString::new(path.as_ref().as_os_str().to_str().unwrap()).unwrap();
 
 		unsafe {
-			codec::Id::from(av_guess_codec(self.as_ptr(), ptr::null(), path.as_ptr(), ptr::null(), kind.into()))
+			codec::Id::from(av_guess_codec(self.as_ptr() as *mut _, ptr::null(), path.as_ptr(), ptr::null(), kind.into()))
 		}
 	}
 

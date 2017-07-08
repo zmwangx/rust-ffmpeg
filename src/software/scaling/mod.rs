@@ -1,9 +1,6 @@
 pub mod flag;
 pub use self::flag::Flags;
 
-pub mod capability;
-pub use self::capability::Capabilities;
-
 pub mod color_space;
 pub use self::color_space::ColorSpace;
 

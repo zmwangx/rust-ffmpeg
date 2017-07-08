@@ -1,4 +1,5 @@
 use ffi::*;
+use sys::SwrEngine::*;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Engine {

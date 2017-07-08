@@ -12,6 +12,7 @@ use std::mem;
 
 use libc::{c_uint, uint32_t, size_t};
 use ffi::*;
+use ffi::AVSubtitleType::*;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Type {
@@ -105,7 +106,7 @@ impl Subtitle {
 				as *mut _;
 
 			let mut rect = av_mallocz(mem::size_of::<AVSubtitleRect>() as size_t) as *mut AVSubtitleRect;
-			(*rect).kind = kind.into();
+			(*rect).type_ = kind.into();
 
 			*self.0.rects.offset((self.0.num_rects - 1) as isize) = rect;
 

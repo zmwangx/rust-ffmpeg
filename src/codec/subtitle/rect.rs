@@ -15,7 +15,7 @@ pub enum Rect<'a> {
 
 impl<'a> Rect<'a> {
 	pub unsafe fn wrap(ptr: *const AVSubtitleRect) -> Self {
-		match Type::from((*ptr).kind) {
+		match Type::from((*ptr).type_) {
 			Type::None   => Rect::None(ptr),
 			Type::Bitmap => Rect::Bitmap(Bitmap::wrap(ptr)),
 			Type::Text   => Rect::Text(Text::wrap(ptr)),

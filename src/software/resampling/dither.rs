@@ -1,4 +1,5 @@
 use ffi::*;
+use ffi::SwrDitherType::*;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Dither {
@@ -23,7 +24,7 @@ impl From<SwrDitherType> for Dither {
 			SWR_DITHER_RECTANGULAR         => Dither::Rectangular,
 			SWR_DITHER_TRIANGULAR          => Dither::Triangular,
 			SWR_DITHER_TRIANGULAR_HIGHPASS => Dither::TriangularHighPass,
-		
+
 			SWR_DITHER_NS                     => Dither::None,
 			SWR_DITHER_NS_LIPSHITZ            => Dither::NoiseShapingLipshitz,
 			SWR_DITHER_NS_F_WEIGHTED          => Dither::NoiseShapingFWeighted,
@@ -44,7 +45,7 @@ impl Into<SwrDitherType> for Dither {
 			Dither::Rectangular        => SWR_DITHER_RECTANGULAR,
 			Dither::Triangular         => SWR_DITHER_TRIANGULAR,
 			Dither::TriangularHighPass => SWR_DITHER_TRIANGULAR_HIGHPASS,
-		
+
 			Dither::NoiseShapingLipshitz          => SWR_DITHER_NS_LIPSHITZ,
 			Dither::NoiseShapingFWeighted         => SWR_DITHER_NS_F_WEIGHTED,
 			Dither::NoiseShapingModifiedEWeighted => SWR_DITHER_NS_MODIFIED_E_WEIGHTED,

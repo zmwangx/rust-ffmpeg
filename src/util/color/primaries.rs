@@ -1,4 +1,5 @@
 use ffi::*;
+use ffi::AVColorPrimaries::*;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Primaries {
@@ -13,6 +14,11 @@ pub enum Primaries {
 	SMPTE240M,
 	Film,
 	BT2020,
+
+	SMPTE428,
+	SMPTE431,
+	SMPTE432,
+	JEDEC_P22,
 }
 
 impl From<AVColorPrimaries> for Primaries {
@@ -29,7 +35,12 @@ impl From<AVColorPrimaries> for Primaries {
 			AVCOL_PRI_SMPTE240M => Primaries::SMPTE240M,
 			AVCOL_PRI_FILM      => Primaries::Film,
 			AVCOL_PRI_BT2020    => Primaries::BT2020,
-			AVCOL_PRI_NB        => Primaries::Reserved0
+			AVCOL_PRI_NB        => Primaries::Reserved0,
+
+			AVCOL_PRI_SMPTE428  => Primaries::SMPTE428,
+			AVCOL_PRI_SMPTE431  => Primaries::SMPTE431,
+			AVCOL_PRI_SMPTE432  => Primaries::SMPTE432,
+			AVCOL_PRI_JEDEC_P22 => Primaries::JEDEC_P22,
 		}
 	}
 }
@@ -48,6 +59,11 @@ impl Into<AVColorPrimaries> for Primaries {
 			Primaries::SMPTE240M => AVCOL_PRI_SMPTE240M,
 			Primaries::Film      => AVCOL_PRI_FILM,
 			Primaries::BT2020    => AVCOL_PRI_BT2020,
+
+			Primaries::SMPTE428  => AVCOL_PRI_SMPTE428,
+			Primaries::SMPTE431  => AVCOL_PRI_SMPTE431,
+			Primaries::SMPTE432  => AVCOL_PRI_SMPTE432,
+			Primaries::JEDEC_P22 => AVCOL_PRI_JEDEC_P22,
 		}
 	}
 }

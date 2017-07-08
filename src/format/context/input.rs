@@ -182,7 +182,7 @@ pub fn dump(ctx: &Input, index: i32, url: Option<&str>) {
 	let url = url.map(|u| CString::new(u).unwrap());
 
 	unsafe {
-		av_dump_format(ctx.as_ptr(), index,
+		av_dump_format(ctx.as_ptr() as *mut _, index,
 			url.map(|u| u.as_ptr()).unwrap_or(ptr::null()), 0);
 	}
 }

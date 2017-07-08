@@ -1,4 +1,5 @@
 use ffi::*;
+use ffi::AVColorTransferCharacteristic::*;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum TransferCharacteristic {
@@ -18,6 +19,9 @@ pub enum TransferCharacteristic {
 	IEC61966_2_1,
 	BT2020_10,
 	BT2020_12,
+	SMPTE2084,
+	SMPTE428,
+	ARIB_STD_B67,
 }
 
 impl From<AVColorTransferCharacteristic> for TransferCharacteristic {
@@ -39,7 +43,10 @@ impl From<AVColorTransferCharacteristic> for TransferCharacteristic {
 			AVCOL_TRC_IEC61966_2_1 => TransferCharacteristic::IEC61966_2_1,
 			AVCOL_TRC_BT2020_10    => TransferCharacteristic::BT2020_10,
 			AVCOL_TRC_BT2020_12    => TransferCharacteristic::BT2020_12,
-			AVCOL_TRC_NB           => TransferCharacteristic::Reserved0
+			AVCOL_TRC_NB           => TransferCharacteristic::Reserved0,
+			AVCOL_TRC_SMPTE2084    => TransferCharacteristic::SMPTE2084,
+			AVCOL_TRC_SMPTE428     => TransferCharacteristic::SMPTE428,
+			AVCOL_TRC_ARIB_STD_B67 => TransferCharacteristic::ARIB_STD_B67,
 		}
 	}
 }
@@ -62,7 +69,10 @@ impl Into<AVColorTransferCharacteristic> for TransferCharacteristic {
 			TransferCharacteristic::BT1361_ECG   => AVCOL_TRC_BT1361_ECG,
 			TransferCharacteristic::IEC61966_2_1 => AVCOL_TRC_IEC61966_2_1,
 			TransferCharacteristic::BT2020_10    => AVCOL_TRC_BT2020_10,
-			TransferCharacteristic::BT2020_12    => AVCOL_TRC_BT2020_12
+			TransferCharacteristic::BT2020_12    => AVCOL_TRC_BT2020_12,
+			TransferCharacteristic::SMPTE2084    => AVCOL_TRC_SMPTE2084,
+			TransferCharacteristic::SMPTE428     => AVCOL_TRC_SMPTE428,
+			TransferCharacteristic::ARIB_STD_B67 => AVCOL_TRC_ARIB_STD_B67,
 		}
 	}
 }

@@ -1,4 +1,5 @@
 use ffi::*;
+use ffi::SwrFilterType::*;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Filter {

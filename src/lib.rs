@@ -31,6 +31,8 @@ pub mod format;
 pub use format::format::Format;
 #[cfg(feature = "format")]
 pub use format::stream::{Stream, StreamMut};
+#[cfg(feature = "format")]
+pub use format::chapter::{Chapter, ChapterMut};
 
 #[cfg(feature = "codec")]
 pub mod codec;

@@ -4,6 +4,8 @@ use ::util::interrupt;
 
 pub mod stream;
 
+pub mod chapter;
+
 pub mod context;
 pub use self::context::Context;
 

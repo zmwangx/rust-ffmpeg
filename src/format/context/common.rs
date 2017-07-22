@@ -4,7 +4,7 @@ use std::mem;
 
 use ffi::*;
 use libc::{c_int, c_uint};
-use ::{media, Stream, StreamMut, DictionaryRef};
+use ::{media, Stream, StreamMut, Chapter, ChapterMut, DictionaryRef};
 use super::destructor::{self, Destructor};
 
 pub struct Context {
@@ -67,6 +67,42 @@ impl Context {
 		unsafe {
 			(*self.as_ptr()).duration
 		}
+	}
+
+	pub fn nb_chapters(&self) -> u32 {
+		unsafe {
+			(*self.as_ptr()).nb_chapters
+		}
+	}
+
+	pub fn chapter<'a, 'b>(&'a self, index: usize) -> Option<Chapter<'b>> where 'a: 'b {
+		unsafe {
+			if index >= (*self.as_ptr()).nb_chapters as usize {
+				None
+			}
+			else {
+				Some(Chapter::wrap(self, index))
+			}
+		}
+	}
+
+	pub fn chapter_mut<'a, 'b>(&'a mut self, index: usize) -> Option<ChapterMut<'b>> where 'a: 'b {
+		unsafe {
+			if index >= (*self.as_ptr()).nb_chapters as usize {
+				None
+			}
+			else {
+				Some(ChapterMut::wrap(self, index))
+			}
+		}
+	}
+
+	pub fn chapters(&self) -> ChapterIter {
+		ChapterIter::new(self)
+	}
+
+	pub fn chapters_mut(&mut self) -> ChapterIterMut {
+		ChapterIterMut::new(self)
 	}
 
 	pub fn metadata(&self) -> DictionaryRef {
@@ -213,3 +249,77 @@ impl<'a> Iterator for StreamIterMut<'a> {
 }
 
 impl<'a> ExactSizeIterator for StreamIterMut<'a> { }
+
+pub struct ChapterIter<'a> {
+	context: &'a Context,
+	current: c_uint,
+}
+
+impl<'a> ChapterIter<'a> {
+	pub fn new<'s, 'c: 's>(context: &'c Context) -> ChapterIter<'s> {
+		ChapterIter { context: context, current: 0 }
+	}
+}
+
+impl<'a> Iterator for ChapterIter<'a> {
+	type Item = Chapter<'a>;
+
+	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+		unsafe {
+			if self.current >= (*self.context.as_ptr()).nb_chapters {
+				return None;
+			}
+
+			self.current += 1;
+
+			Some(Chapter::wrap(self.context, (self.current - 1) as usize))
+		}
+	}
+
+	fn size_hint(&self) -> (usize, Option<usize>) {
+		unsafe {
+			let length = (*self.context.as_ptr()).nb_chapters as usize;
+
+			(length - self.current as usize, Some(length - self.current as usize))
+		}
+	}
+}
+
+impl<'a> ExactSizeIterator for ChapterIter<'a> { }
+
+pub struct ChapterIterMut<'a> {
+	context: &'a mut Context,
+	current: c_uint,
+}
+
+impl<'a> ChapterIterMut<'a> {
+	pub fn new<'s, 'c: 's>(context: &'c mut Context) -> ChapterIterMut<'s> {
+		ChapterIterMut { context: context, current: 0 }
+	}
+}
+
+impl<'a> Iterator for ChapterIterMut<'a> {
+	type Item = ChapterMut<'a>;
+
+	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+		unsafe {
+			if self.current >= (*self.context.as_ptr()).nb_chapters {
+				return None
+			}
+
+			self.current += 1;
+
+			Some(ChapterMut::wrap(mem::transmute_copy(&self.context), (self.current - 1) as usize))
+		}
+	}
+
+	fn size_hint(&self) -> (usize, Option<usize>) {
+		unsafe {
+			let length = (*self.context.as_ptr()).nb_chapters as usize;
+
+			(length - self.current as usize, Some(length - self.current as usize))
+		}
+	}
+}
+
+impl<'a> ExactSizeIterator for ChapterIterMut<'a> { }

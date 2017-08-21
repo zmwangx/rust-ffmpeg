@@ -181,14 +181,14 @@ pub fn input_with_dictionary<P: AsRef<Path>>(path: &P, options: Dictionary) -> R
 pub fn input_with_interrupt<P: AsRef<Path>, F>(path: &P, closure: F) -> Result<context::Input, Error>
 	where F: FnMut() -> bool {
 	unsafe {
-		let mut ps   = context::Input::wrap(avformat_alloc_context());
+		let mut ps   = avformat_alloc_context();
 		let     path = from_path(path);
-		(*ps.as_mut_ptr()).interrupt_callback = interrupt::new(Box::new(closure)).interrupt;
+		(*ps).interrupt_callback = interrupt::new(Box::new(closure)).interrupt;
 
-		match avformat_open_input(&mut ps.as_mut_ptr(), path.as_ptr(), ptr::null_mut(), ptr::null_mut()) {
+		match avformat_open_input(&mut ps, path.as_ptr(), ptr::null_mut(), ptr::null_mut()) {
 			0 => {
-				match avformat_find_stream_info(ps.as_mut_ptr(), ptr::null_mut()) {
-					r if r >= 0 => Ok(ps),
+				match avformat_find_stream_info(ps, ptr::null_mut()) {
+					r if r >= 0 => Ok(context::Input::wrap(ps)),
 					e           => Err(Error::from(e)),
 				}
 			}

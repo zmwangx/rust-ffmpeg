@@ -134,7 +134,7 @@ impl<'a> Parser<'a> {
 	pub fn input(mut self, name: &str, pad: usize) -> Result<Self, Error> {
 		unsafe {
 			let mut context = try!(self.graph.get(name).ok_or(Error::InvalidData));
-			let mut input   = avfilter_inout_alloc();
+			let input   = avfilter_inout_alloc();
 
 			if input.is_null() {
 				panic!("out of memory");
@@ -161,7 +161,7 @@ impl<'a> Parser<'a> {
 	pub fn output(mut self, name: &str, pad: usize) -> Result<Self, Error> {
 		unsafe {
 			let mut context = try!(self.graph.get(name).ok_or(Error::InvalidData));
-			let mut output  = avfilter_inout_alloc();
+			let output  = avfilter_inout_alloc();
 
 			if output.is_null() {
 				panic!("out of memory");

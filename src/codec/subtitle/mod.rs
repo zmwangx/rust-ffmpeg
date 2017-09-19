@@ -105,7 +105,7 @@ impl Subtitle {
 				(mem::size_of::<*const AVSubtitleRect>() * self.0.num_rects as usize) as size_t)
 				as *mut _;
 
-			let mut rect = av_mallocz(mem::size_of::<AVSubtitleRect>() as size_t) as *mut AVSubtitleRect;
+			let rect = av_mallocz(mem::size_of::<AVSubtitleRect>() as size_t) as *mut AVSubtitleRect;
 			(*rect).type_ = kind.into();
 
 			*self.0.rects.offset((self.0.num_rects - 1) as isize) = rect;

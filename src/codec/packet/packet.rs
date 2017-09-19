@@ -264,7 +264,7 @@ impl Clone for Packet {
 impl Drop for Packet {
 	fn drop(&mut self) {
 		unsafe {
-			av_free_packet(&mut self.0);
+			av_packet_unref(&mut self.0);
 		}
 	}
 }

@@ -19,6 +19,10 @@ pub enum Space {
 	BT2020NCL,
 	BT2020CL,
 	SMPTE2085,
+
+	ChromaDerivedNCL,
+	ChromaDerivedCL,
+	ICTCP,
 }
 
 impl Space {
@@ -45,6 +49,10 @@ impl From<AVColorSpace> for Space {
 			AVCOL_SPC_BT2020_CL   => Space::BT2020CL,
 			AVCOL_SPC_SMPTE2085   => Space::SMPTE2085,
 			AVCOL_SPC_NB          => Space::Unspecified,
+
+			AVCOL_SPC_CHROMA_DERIVED_NCL => Space::ChromaDerivedNCL,
+			AVCOL_SPC_CHROMA_DERIVED_CL  => Space::ChromaDerivedCL,
+			AVCOL_SPC_ICTCP              => Space::ICTCP,
 		}
 	}
 }
@@ -65,6 +73,10 @@ impl Into<AVColorSpace> for Space {
 			Space::BT2020NCL   => AVCOL_SPC_BT2020_NCL,
 			Space::BT2020CL    => AVCOL_SPC_BT2020_CL,
 			Space::SMPTE2085   => AVCOL_SPC_SMPTE2085,
+
+			Space::ChromaDerivedNCL => AVCOL_SPC_CHROMA_DERIVED_NCL,
+			Space::ChromaDerivedCL  => AVCOL_SPC_CHROMA_DERIVED_CL,
+			Space::ICTCP            => AVCOL_SPC_ICTCP,
 		}
 	}
 }

@@ -472,6 +472,15 @@ pub enum Id {
 	PCM_F24LE,
 	ATRAC3AL,
 	ATRAC3PAL,
+
+	BITPACKED,
+	MSCC,
+	SRGC,
+	SVG,
+	GDV,
+	FITS,
+	GREMLIN_DPCM,
+	DOLBY_E,
 }
 
 impl Id {
@@ -951,6 +960,15 @@ impl From<AVCodecID> for Id {
 			AV_CODEC_ID_PCM_F24LE       => Id::PCM_F24LE,
 			AV_CODEC_ID_ATRAC3AL        => Id::ATRAC3AL,
 			AV_CODEC_ID_ATRAC3PAL       => Id::ATRAC3PAL,
+
+			AV_CODEC_ID_BITPACKED       => Id::BITPACKED,
+			AV_CODEC_ID_MSCC            => Id::MSCC,
+			AV_CODEC_ID_SRGC            => Id::SRGC,
+			AV_CODEC_ID_SVG             => Id::SVG,
+			AV_CODEC_ID_GDV             => Id::GDV,
+			AV_CODEC_ID_FITS            => Id::FITS,
+			AV_CODEC_ID_GREMLIN_DPCM    => Id::GREMLIN_DPCM,
+			AV_CODEC_ID_DOLBY_E         => Id::DOLBY_E,
 		}
 	}
 }
@@ -1422,6 +1440,15 @@ impl Into<AVCodecID> for Id {
 			Id::PCM_F24LE  => AV_CODEC_ID_PCM_F24LE,
 			Id::ATRAC3AL   => AV_CODEC_ID_ATRAC3AL,
 			Id::ATRAC3PAL  => AV_CODEC_ID_ATRAC3PAL,
+
+			Id::BITPACKED    => AV_CODEC_ID_BITPACKED,
+			Id::MSCC         => AV_CODEC_ID_MSCC,
+			Id::SRGC         => AV_CODEC_ID_SRGC,
+			Id::SVG          => AV_CODEC_ID_SVG,
+			Id::GDV          => AV_CODEC_ID_GDV,
+			Id::FITS         => AV_CODEC_ID_FITS,
+			Id::GREMLIN_DPCM => AV_CODEC_ID_GREMLIN_DPCM,
+			Id::DOLBY_E      => AV_CODEC_ID_DOLBY_E,
 		}
 	}
 }

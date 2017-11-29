@@ -301,6 +301,15 @@ pub enum Pixel {
 	GRAY10LE,
 	P016LE,
 	P016BE,
+
+	D3D11,
+	GRAY9BE,
+	GRAY9LE,
+	GBRPF32BE,
+	GBRPF32LE,
+	GBRAPF32BE,
+	GBRAPF32LE,
+	DRM_PRIME,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -579,6 +588,15 @@ impl From<AVPixelFormat> for Pixel {
 			AV_PIX_FMT_P016BE => Pixel::P016BE,
 
 			AV_PIX_FMT_NB => Pixel::None,
+
+			AV_PIX_FMT_D3D11      => Pixel::D3D11,
+			AV_PIX_FMT_GRAY9BE    => Pixel::GRAY9BE,
+			AV_PIX_FMT_GRAY9LE    => Pixel::GRAY9LE,
+			AV_PIX_FMT_GBRPF32BE  => Pixel::GBRPF32BE,
+			AV_PIX_FMT_GBRPF32LE  => Pixel::GBRPF32LE,
+			AV_PIX_FMT_GBRAPF32BE => Pixel::GBRAPF32BE,
+			AV_PIX_FMT_GBRAPF32LE => Pixel::GBRAPF32LE,
+			AV_PIX_FMT_DRM_PRIME  => Pixel::DRM_PRIME,
 		}
 	}
 }
@@ -879,6 +897,15 @@ impl Into<AVPixelFormat> for Pixel {
 			Pixel::GRAY10LE => AV_PIX_FMT_GRAY10LE,
 			Pixel::P016LE => AV_PIX_FMT_P016LE,
 			Pixel::P016BE => AV_PIX_FMT_P016BE,
+
+			Pixel::D3D11      => AV_PIX_FMT_D3D11,
+			Pixel::GRAY9BE    => AV_PIX_FMT_GRAY9BE,
+			Pixel::GRAY9LE    => AV_PIX_FMT_GRAY9LE,
+			Pixel::GBRPF32BE  => AV_PIX_FMT_GBRPF32BE,
+			Pixel::GBRPF32LE  => AV_PIX_FMT_GBRPF32LE,
+			Pixel::GBRAPF32BE => AV_PIX_FMT_GBRAPF32BE,
+			Pixel::GBRAPF32LE => AV_PIX_FMT_GBRAPF32LE,
+			Pixel::DRM_PRIME  => AV_PIX_FMT_DRM_PRIME,
 		}
 	}
 }

@@ -1,5 +1,5 @@
 pub mod traits;
-pub use self::traits::{Ref, Mut};
+pub use self::traits::{Mut, Ref};
 
 pub mod packet;
 pub use self::packet::Packet;

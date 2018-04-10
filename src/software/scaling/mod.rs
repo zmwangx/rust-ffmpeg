@@ -23,19 +23,13 @@ use std::str::from_utf8_unchecked;
 use ffi::*;
 
 pub fn version() -> u32 {
-	unsafe {
-		swscale_version()
-	}
+    unsafe { swscale_version() }
 }
 
 pub fn configuration() -> &'static str {
-	unsafe {
-		from_utf8_unchecked(CStr::from_ptr(swscale_configuration()).to_bytes())
-	}
+    unsafe { from_utf8_unchecked(CStr::from_ptr(swscale_configuration()).to_bytes()) }
 }
 
 pub fn license() -> &'static str {
-	unsafe {
-		from_utf8_unchecked(CStr::from_ptr(swscale_license()).to_bytes())
-	}
+    unsafe { from_utf8_unchecked(CStr::from_ptr(swscale_license()).to_bytes()) }
 }

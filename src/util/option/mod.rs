@@ -1,83 +1,83 @@
 mod traits;
-pub use self::traits::{Target, Settable, Gettable, Iterable};
+pub use self::traits::{Gettable, Iterable, Settable, Target};
 
-use ffi::*;
 use ffi::AVOptionType::*;
+use ffi::*;
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub enum Type {
-	Flags,
-	Int,
-	Int64,
-	Double,
-	Float,
-	String,
-	Rational,
-	Binary,
-	Dictionary,
-	Constant,
+    Flags,
+    Int,
+    Int64,
+    Double,
+    Float,
+    String,
+    Rational,
+    Binary,
+    Dictionary,
+    Constant,
 
-	ImageSize,
-	PixelFormat,
-	SampleFormat,
-	VideoRate,
-	Duration,
-	Color,
-	ChannelLayout,
-	c_ulong,
-	bool,
+    ImageSize,
+    PixelFormat,
+    SampleFormat,
+    VideoRate,
+    Duration,
+    Color,
+    ChannelLayout,
+    c_ulong,
+    bool,
 }
 
 impl From<AVOptionType> for Type {
-	fn from(value: AVOptionType) -> Self {
-		match value {
-			AV_OPT_TYPE_FLAGS    => Type::Flags,
-			AV_OPT_TYPE_INT      => Type::Int,
-			AV_OPT_TYPE_INT64    => Type::Int64,
-			AV_OPT_TYPE_DOUBLE   => Type::Double,
-			AV_OPT_TYPE_FLOAT    => Type::Float,
-			AV_OPT_TYPE_STRING   => Type::String,
-			AV_OPT_TYPE_RATIONAL => Type::Rational,
-			AV_OPT_TYPE_BINARY   => Type::Binary,
-			AV_OPT_TYPE_DICT     => Type::Dictionary,
-			AV_OPT_TYPE_CONST    => Type::Constant,
-			AV_OPT_TYPE_UINT64   => Type::c_ulong,
-			AV_OPT_TYPE_BOOL     => Type::bool,
+    fn from(value: AVOptionType) -> Self {
+        match value {
+            AV_OPT_TYPE_FLAGS => Type::Flags,
+            AV_OPT_TYPE_INT => Type::Int,
+            AV_OPT_TYPE_INT64 => Type::Int64,
+            AV_OPT_TYPE_DOUBLE => Type::Double,
+            AV_OPT_TYPE_FLOAT => Type::Float,
+            AV_OPT_TYPE_STRING => Type::String,
+            AV_OPT_TYPE_RATIONAL => Type::Rational,
+            AV_OPT_TYPE_BINARY => Type::Binary,
+            AV_OPT_TYPE_DICT => Type::Dictionary,
+            AV_OPT_TYPE_CONST => Type::Constant,
+            AV_OPT_TYPE_UINT64 => Type::c_ulong,
+            AV_OPT_TYPE_BOOL => Type::bool,
 
-			AV_OPT_TYPE_IMAGE_SIZE     => Type::ImageSize,
-			AV_OPT_TYPE_PIXEL_FMT      => Type::PixelFormat,
-			AV_OPT_TYPE_SAMPLE_FMT     => Type::SampleFormat,
-			AV_OPT_TYPE_VIDEO_RATE     => Type::VideoRate,
-			AV_OPT_TYPE_DURATION       => Type::Duration,
-			AV_OPT_TYPE_COLOR          => Type::Color,
-			AV_OPT_TYPE_CHANNEL_LAYOUT => Type::ChannelLayout,
-		}
-	}
+            AV_OPT_TYPE_IMAGE_SIZE => Type::ImageSize,
+            AV_OPT_TYPE_PIXEL_FMT => Type::PixelFormat,
+            AV_OPT_TYPE_SAMPLE_FMT => Type::SampleFormat,
+            AV_OPT_TYPE_VIDEO_RATE => Type::VideoRate,
+            AV_OPT_TYPE_DURATION => Type::Duration,
+            AV_OPT_TYPE_COLOR => Type::Color,
+            AV_OPT_TYPE_CHANNEL_LAYOUT => Type::ChannelLayout,
+        }
+    }
 }
 
 impl Into<AVOptionType> for Type {
-	fn into(self) -> AVOptionType {
-		match self {
-			Type::Flags      => AV_OPT_TYPE_FLAGS,
-			Type::Int        => AV_OPT_TYPE_INT,
-			Type::Int64      => AV_OPT_TYPE_INT64,
-			Type::Double     => AV_OPT_TYPE_DOUBLE,
-			Type::Float      => AV_OPT_TYPE_FLOAT,
-			Type::String     => AV_OPT_TYPE_STRING,
-			Type::Rational   => AV_OPT_TYPE_RATIONAL,
-			Type::Binary     => AV_OPT_TYPE_BINARY,
-			Type::Dictionary => AV_OPT_TYPE_DICT,
-			Type::Constant   => AV_OPT_TYPE_CONST,
-			Type::c_ulong    => AV_OPT_TYPE_UINT64,
-			Type::bool       => AV_OPT_TYPE_BOOL,
+    fn into(self) -> AVOptionType {
+        match self {
+            Type::Flags => AV_OPT_TYPE_FLAGS,
+            Type::Int => AV_OPT_TYPE_INT,
+            Type::Int64 => AV_OPT_TYPE_INT64,
+            Type::Double => AV_OPT_TYPE_DOUBLE,
+            Type::Float => AV_OPT_TYPE_FLOAT,
+            Type::String => AV_OPT_TYPE_STRING,
+            Type::Rational => AV_OPT_TYPE_RATIONAL,
+            Type::Binary => AV_OPT_TYPE_BINARY,
+            Type::Dictionary => AV_OPT_TYPE_DICT,
+            Type::Constant => AV_OPT_TYPE_CONST,
+            Type::c_ulong => AV_OPT_TYPE_UINT64,
+            Type::bool => AV_OPT_TYPE_BOOL,
 
-			Type::ImageSize     => AV_OPT_TYPE_IMAGE_SIZE,
-			Type::PixelFormat   => AV_OPT_TYPE_PIXEL_FMT,
-			Type::SampleFormat  => AV_OPT_TYPE_SAMPLE_FMT,
-			Type::VideoRate     => AV_OPT_TYPE_VIDEO_RATE,
-			Type::Duration      => AV_OPT_TYPE_DURATION,
-			Type::Color         => AV_OPT_TYPE_COLOR,
-			Type::ChannelLayout => AV_OPT_TYPE_CHANNEL_LAYOUT,
-		}
-	}
+            Type::ImageSize => AV_OPT_TYPE_IMAGE_SIZE,
+            Type::PixelFormat => AV_OPT_TYPE_PIXEL_FMT,
+            Type::SampleFormat => AV_OPT_TYPE_SAMPLE_FMT,
+            Type::VideoRate => AV_OPT_TYPE_VIDEO_RATE,
+            Type::Duration => AV_OPT_TYPE_DURATION,
+            Type::Color => AV_OPT_TYPE_COLOR,
+            Type::ChannelLayout => AV_OPT_TYPE_CHANNEL_LAYOUT,
+        }
+    }
 }

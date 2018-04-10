@@ -1,152 +1,149 @@
 use std::ops::Deref;
 
-use {ChannelLayout, format};
 use super::codec::Codec;
 use ffi::*;
+use {format, ChannelLayout};
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub struct Audio {
-	codec: Codec,
+    codec: Codec,
 }
 
 impl Audio {
-	pub unsafe fn new(codec: Codec) -> Audio {
-		Audio {
-			codec: codec,
-		}
-	}
+    pub unsafe fn new(codec: Codec) -> Audio {
+        Audio { codec: codec }
+    }
 }
 
 impl Audio {
-	pub fn rates(&self) -> Option<RateIter> {
-		unsafe {
-			if (*self.as_ptr()).supported_samplerates.is_null() {
-				None
-			}
-			else {
-				Some(RateIter::new((*self.codec.as_ptr()).supported_samplerates))
-			}
-		}
-	}
+    pub fn rates(&self) -> Option<RateIter> {
+        unsafe {
+            if (*self.as_ptr()).supported_samplerates.is_null() {
+                None
+            } else {
+                Some(RateIter::new((*self.codec.as_ptr()).supported_samplerates))
+            }
+        }
+    }
 
-	pub fn formats(&self) -> Option<FormatIter> {
-		unsafe {
-			if (*self.codec.as_ptr()).sample_fmts.is_null() {
-				None
-			}
-			else {
-				Some(FormatIter::new((*self.codec.as_ptr()).sample_fmts))
-			}
-		}
-	}
+    pub fn formats(&self) -> Option<FormatIter> {
+        unsafe {
+            if (*self.codec.as_ptr()).sample_fmts.is_null() {
+                None
+            } else {
+                Some(FormatIter::new((*self.codec.as_ptr()).sample_fmts))
+            }
+        }
+    }
 
-	pub fn channel_layouts(&self) -> Option<ChannelLayoutIter> {
-		unsafe {
-			if (*self.codec.as_ptr()).channel_layouts.is_null() {
-				None
-			}
-			else {
-				Some(ChannelLayoutIter::new((*self.codec.as_ptr()).channel_layouts))
-			}
-		}
-	}
+    pub fn channel_layouts(&self) -> Option<ChannelLayoutIter> {
+        unsafe {
+            if (*self.codec.as_ptr()).channel_layouts.is_null() {
+                None
+            } else {
+                Some(ChannelLayoutIter::new(
+                    (*self.codec.as_ptr()).channel_layouts,
+                ))
+            }
+        }
+    }
 }
 
 impl Deref for Audio {
-	type Target = Codec;
+    type Target = Codec;
 
-	fn deref(&self) -> &Self::Target {
-		&self.codec
-	}
+    fn deref(&self) -> &Self::Target {
+        &self.codec
+    }
 }
 
 pub struct RateIter {
-	ptr: *const i32,
+    ptr: *const i32,
 }
 
 impl RateIter {
-	pub fn new(ptr: *const i32) -> Self {
-		RateIter { ptr: ptr }
-	}
+    pub fn new(ptr: *const i32) -> Self {
+        RateIter { ptr: ptr }
+    }
 }
 
 impl Iterator for RateIter {
-	type Item = i32;
+    type Item = i32;
 
-	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
-		unsafe {
-			if *self.ptr == 0 {
-				return None;
-			}
+    fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+        unsafe {
+            if *self.ptr == 0 {
+                return None;
+            }
 
-			let rate = *self.ptr;
-			self.ptr = self.ptr.offset(1);
+            let rate = *self.ptr;
+            self.ptr = self.ptr.offset(1);
 
-			Some(rate)
-		}
-	}
+            Some(rate)
+        }
+    }
 }
 
 pub struct FormatIter {
-	ptr: *const AVSampleFormat,
+    ptr: *const AVSampleFormat,
 }
 
 impl FormatIter {
-	pub fn new(ptr: *const AVSampleFormat) -> Self {
-		FormatIter { ptr: ptr }
-	}
+    pub fn new(ptr: *const AVSampleFormat) -> Self {
+        FormatIter { ptr: ptr }
+    }
 }
 
 impl Iterator for FormatIter {
-	type Item = format::Sample;
+    type Item = format::Sample;
 
-	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
-		unsafe {
-			if *self.ptr == AVSampleFormat::AV_SAMPLE_FMT_NONE {
-				return None;
-			}
+    fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+        unsafe {
+            if *self.ptr == AVSampleFormat::AV_SAMPLE_FMT_NONE {
+                return None;
+            }
 
-			let format = (*self.ptr).into();
-			self.ptr   = self.ptr.offset(1);
+            let format = (*self.ptr).into();
+            self.ptr = self.ptr.offset(1);
 
-			Some(format)
-		}
-	}
+            Some(format)
+        }
+    }
 }
 
 pub struct ChannelLayoutIter {
-	ptr: *const u64,
+    ptr: *const u64,
 }
 
 impl ChannelLayoutIter {
-	pub fn new(ptr: *const u64) -> Self {
-		ChannelLayoutIter { ptr: ptr }
-	}
+    pub fn new(ptr: *const u64) -> Self {
+        ChannelLayoutIter { ptr: ptr }
+    }
 
-	pub fn best(self, max: i32) -> ChannelLayout {
-		self.fold(::channel_layout::MONO, |acc, cur|
-			if cur.channels() > acc.channels() && cur.channels() <= max {
-				cur
-			}
-			else {
-				acc
-			})
-	}
+    pub fn best(self, max: i32) -> ChannelLayout {
+        self.fold(::channel_layout::MONO, |acc, cur| {
+            if cur.channels() > acc.channels() && cur.channels() <= max {
+                cur
+            } else {
+                acc
+            }
+        })
+    }
 }
 
 impl Iterator for ChannelLayoutIter {
-	type Item = ChannelLayout;
+    type Item = ChannelLayout;
 
-	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
-		unsafe {
-			if *self.ptr == 0 {
-				return None;
-			}
+    fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+        unsafe {
+            if *self.ptr == 0 {
+                return None;
+            }
 
-			let layout = ChannelLayout::from_bits_truncate(*self.ptr);
-			self.ptr   = self.ptr.offset(1);
+            let layout = ChannelLayout::from_bits_truncate(*self.ptr);
+            self.ptr = self.ptr.offset(1);
 
-			Some(layout)
-		}
-	}
+            Some(layout)
+        }
+    }
 }

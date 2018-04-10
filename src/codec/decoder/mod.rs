@@ -23,38 +23,36 @@ pub use self::opened::Opened;
 
 use std::ffi::CString;
 
-use ffi::*;
 use codec::Context;
-use ::Codec;
 use codec::Id;
+use ffi::*;
+use Codec;
 
 pub fn new() -> Decoder {
-	Context::new().decoder()
+    Context::new().decoder()
 }
 
 pub fn find(id: Id) -> Option<Codec> {
-	unsafe {
-		let ptr = avcodec_find_decoder(id.into());
+    unsafe {
+        let ptr = avcodec_find_decoder(id.into());
 
-		if ptr.is_null() {
-			None
-		}
-		else {
-			Some(Codec::wrap(ptr))
-		}
-	}
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Codec::wrap(ptr))
+        }
+    }
 }
 
 pub fn find_by_name(name: &str) -> Option<Codec> {
-	unsafe {
-		let name = CString::new(name).unwrap();
-		let ptr  = avcodec_find_decoder_by_name(name.as_ptr());
+    unsafe {
+        let name = CString::new(name).unwrap();
+        let ptr = avcodec_find_decoder_by_name(name.as_ptr());
 
-		if ptr.is_null() {
-			None
-		}
-		else {
-			Some(Codec::wrap(ptr))
-		}
-	}
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Codec::wrap(ptr))
+        }
+    }
 }

@@ -1,55 +1,53 @@
 use std::ptr;
 
 use ffi::*;
-use ::format;
-use ::Format;
+use format;
+use Format;
 
 pub struct AudioIter(*mut AVInputFormat);
 
 impl Iterator for AudioIter {
-	type Item = Format;
+    type Item = Format;
 
-	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
-		unsafe {
-			let ptr = av_input_audio_device_next(self.0);
+    fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+        unsafe {
+            let ptr = av_input_audio_device_next(self.0);
 
-			if ptr.is_null() && !self.0.is_null() {
-				None
-			}
-			else {
-				self.0 = ptr;
+            if ptr.is_null() && !self.0.is_null() {
+                None
+            } else {
+                self.0 = ptr;
 
-				Some(Format::Input(format::Input::wrap(ptr)))
-			}
-		}
-	}
+                Some(Format::Input(format::Input::wrap(ptr)))
+            }
+        }
+    }
 }
 
 pub fn audio() -> AudioIter {
-	AudioIter(ptr::null_mut())
+    AudioIter(ptr::null_mut())
 }
 
 pub struct VideoIter(*mut AVInputFormat);
 
 impl Iterator for VideoIter {
-	type Item = Format;
+    type Item = Format;
 
-	fn next(&mut self) -> Option<<Self as Iterator>::Item> {
-		unsafe {
-			let ptr = av_input_video_device_next(self.0);
+    fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+        unsafe {
+            let ptr = av_input_video_device_next(self.0);
 
-			if ptr.is_null() && !self.0.is_null() {
-				None
-			}
-			else {
-				self.0 = ptr;
+            if ptr.is_null() && !self.0.is_null() {
+                None
+            } else {
+                self.0 = ptr;
 
-				Some(Format::Input(format::Input::wrap(ptr)))
-			}
-		}
-	}
+                Some(Format::Input(format::Input::wrap(ptr)))
+            }
+        }
+    }
 }
 
 pub fn video() -> VideoIter {
-	VideoIter(ptr::null_mut())
+    VideoIter(ptr::null_mut())
 }

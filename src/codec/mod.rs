@@ -29,8 +29,8 @@ pub use self::video::Video;
 pub mod audio;
 pub use self::audio::Audio;
 
-pub mod field_order;
 pub mod audio_service;
+pub mod field_order;
 
 pub mod compliance;
 pub use self::compliance::Compliance;
@@ -43,8 +43,8 @@ pub use self::profile::Profile;
 
 pub mod threading;
 
-pub mod encoder;
 pub mod decoder;
+pub mod encoder;
 pub mod traits;
 
 use std::ffi::CStr;
@@ -53,19 +53,13 @@ use std::str::from_utf8_unchecked;
 use ffi::*;
 
 pub fn version() -> u32 {
-	unsafe {
-		avcodec_version()
-	}
+    unsafe { avcodec_version() }
 }
 
 pub fn configuration() -> &'static str {
-	unsafe {
-		from_utf8_unchecked(CStr::from_ptr(avcodec_configuration()).to_bytes())
-	}
+    unsafe { from_utf8_unchecked(CStr::from_ptr(avcodec_configuration()).to_bytes()) }
 }
 
 pub fn license() -> &'static str {
-	unsafe {
-		from_utf8_unchecked(CStr::from_ptr(avcodec_license()).to_bytes())
-	}
+    unsafe { from_utf8_unchecked(CStr::from_ptr(avcodec_license()).to_bytes()) }
 }

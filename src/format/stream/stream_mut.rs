@@ -4,7 +4,7 @@ use std::ops::Deref;
 use super::Stream;
 use ffi::*;
 use format::context::common::Context;
-use {codec, Rational};
+use {codec, Dictionary, Rational};
 
 pub struct StreamMut<'a> {
     context: &'a mut Context,
@@ -54,6 +54,13 @@ impl<'a> StreamMut<'a> {
 
         unsafe {
             avcodec_parameters_copy((*self.as_mut_ptr()).codecpar, parameters.as_ptr());
+        }
+    }
+
+    pub fn set_metadata(&mut self, metadata: Dictionary) {
+        unsafe {
+            let metadata = metadata.disown();
+            (*self.as_mut_ptr()).metadata = metadata;
         }
     }
 }

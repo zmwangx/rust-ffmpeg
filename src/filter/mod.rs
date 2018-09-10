@@ -54,7 +54,7 @@ pub fn find(name: &str) -> Option<Filter> {
         if ptr.is_null() {
             None
         } else {
-            Some(Filter::wrap(ptr))
+            Some(Filter::wrap(ptr as *mut _))
         }
     }
 }

@@ -397,6 +397,7 @@ pub enum Id {
     ON2AVC,
     DSS_SP,
 
+    CODEC2,
     FFWAVESYNTH,
     SONIC,
     SONIC_LS,
@@ -480,6 +481,9 @@ pub enum Id {
     FITS,
     GREMLIN_DPCM,
     DOLBY_E,
+    APTX,
+    APTX_HD,
+    SBC,
 }
 
 impl Id {
@@ -882,6 +886,7 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_ON2AVC => Id::ON2AVC,
             AV_CODEC_ID_DSS_SP => Id::DSS_SP,
 
+            AV_CODEC_ID_CODEC2 => Id::CODEC2,
             AV_CODEC_ID_FFWAVESYNTH => Id::FFWAVESYNTH,
             AV_CODEC_ID_SONIC => Id::SONIC,
             AV_CODEC_ID_SONIC_LS => Id::SONIC_LS,
@@ -964,6 +969,9 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_FITS => Id::FITS,
             AV_CODEC_ID_GREMLIN_DPCM => Id::GREMLIN_DPCM,
             AV_CODEC_ID_DOLBY_E => Id::DOLBY_E,
+            AV_CODEC_ID_APTX => Id::APTX,
+            AV_CODEC_ID_APTX_HD => Id::APTX_HD,
+            AV_CODEC_ID_SBC => Id::SBC,
         }
     }
 }
@@ -1360,6 +1368,7 @@ impl Into<AVCodecID> for Id {
             Id::ON2AVC => AV_CODEC_ID_ON2AVC,
             Id::DSS_SP => AV_CODEC_ID_DSS_SP,
 
+            Id::CODEC2 => AV_CODEC_ID_CODEC2,
             Id::FFWAVESYNTH => AV_CODEC_ID_FFWAVESYNTH,
             Id::SONIC => AV_CODEC_ID_SONIC,
             Id::SONIC_LS => AV_CODEC_ID_SONIC_LS,
@@ -1443,6 +1452,9 @@ impl Into<AVCodecID> for Id {
             Id::FITS => AV_CODEC_ID_FITS,
             Id::GREMLIN_DPCM => AV_CODEC_ID_GREMLIN_DPCM,
             Id::DOLBY_E => AV_CODEC_ID_DOLBY_E,
+            Id::APTX => AV_CODEC_ID_APTX,
+            Id::APTX_HD => AV_CODEC_ID_APTX_HD,
+            Id::SBC => AV_CODEC_ID_SBC,
         }
     }
 }

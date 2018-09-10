@@ -27,6 +27,9 @@ pub enum Type {
 
     ContentLightLevel,
     IccProfile,
+
+    QPTableProperties,
+    QPTableData,
 }
 
 impl Type {
@@ -59,6 +62,9 @@ impl From<AVFrameSideDataType> for Type {
 
             AV_FRAME_DATA_CONTENT_LIGHT_LEVEL => Type::ContentLightLevel,
             AV_FRAME_DATA_ICC_PROFILE => Type::IccProfile,
+
+            AV_FRAME_DATA_QP_TABLE_PROPERTIES => Type::QPTableProperties,
+            AV_FRAME_DATA_QP_TABLE_DATA => Type::QPTableData,
         }
     }
 }
@@ -84,6 +90,9 @@ impl Into<AVFrameSideDataType> for Type {
 
             Type::ContentLightLevel => AV_FRAME_DATA_CONTENT_LIGHT_LEVEL,
             Type::IccProfile => AV_FRAME_DATA_ICC_PROFILE,
+
+            Type::QPTableProperties => AV_FRAME_DATA_QP_TABLE_PROPERTIES,
+            Type::QPTableData => AV_FRAME_DATA_QP_TABLE_DATA,
         }
     }
 }

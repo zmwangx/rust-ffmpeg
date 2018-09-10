@@ -6,7 +6,6 @@ bitflags! {
         const NO_FILE       = AVFMT_NOFILE;
         const NEED_NUMBER   = AVFMT_NEEDNUMBER;
         const SHOW_IDS      = AVFMT_SHOW_IDS;
-        const RAW_PICTURE   = AVFMT_RAWPICTURE;
         const GLOBAL_HEADER = AVFMT_GLOBALHEADER;
         const NO_TIMESTAMPS = AVFMT_NOTIMESTAMPS;
         const GENERIC_INDEX = AVFMT_GENERIC_INDEX;

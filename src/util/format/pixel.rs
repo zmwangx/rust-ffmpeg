@@ -217,7 +217,6 @@ pub enum Pixel {
     VIDEOTOOLBOX,
 
     // --- defaults
-    #[cfg(feature = "ff_api_xvmc")]
     XVMC,
     Y400A,
     GRAY8A,
@@ -370,6 +369,7 @@ impl From<AVPixelFormat> for Pixel {
             AV_PIX_FMT_YUVJ420P => Pixel::YUVJ420P,
             AV_PIX_FMT_YUVJ422P => Pixel::YUVJ422P,
             AV_PIX_FMT_YUVJ444P => Pixel::YUVJ444P,
+            AV_PIX_FMT_XVMC => Pixel::XVMC,
             #[cfg(feature = "ff_api_xvmc")]
             AV_PIX_FMT_XVMC_MPEG2_MC => Pixel::XVMC_MPEG2_MC,
             #[cfg(feature = "ff_api_xvmc")]

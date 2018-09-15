@@ -1,3 +1,6 @@
+use std::ffi::CStr;
+use std::str::from_utf8_unchecked;
+
 use ffi::AVColorTransferCharacteristic::*;
 use ffi::*;
 
@@ -22,6 +25,19 @@ pub enum TransferCharacteristic {
     SMPTE2084,
     SMPTE428,
     ARIB_STD_B67,
+}
+
+impl TransferCharacteristic {
+    pub fn name(&self) -> Option<&'static str> {
+        unsafe {
+            let ptr = av_color_transfer_name((*self).into());
+            if ptr.is_null() {
+                None
+            } else {
+                Some(from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()))
+            }
+        }
+    }
 }
 
 impl From<AVColorTransferCharacteristic> for TransferCharacteristic {

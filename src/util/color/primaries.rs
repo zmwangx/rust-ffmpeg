@@ -1,3 +1,6 @@
+use std::ffi::CStr;
+use std::str::from_utf8_unchecked;
+
 use ffi::AVColorPrimaries::*;
 use ffi::*;
 
@@ -19,6 +22,19 @@ pub enum Primaries {
     SMPTE431,
     SMPTE432,
     JEDEC_P22,
+}
+
+impl Primaries {
+    pub fn name(&self) -> Option<&'static str> {
+        unsafe {
+            let ptr = av_color_primaries_name((*self).into());
+            if ptr.is_null() {
+                None
+            } else {
+                Some(from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()))
+            }
+        }
+    }
 }
 
 impl From<AVColorPrimaries> for Primaries {

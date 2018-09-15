@@ -1,3 +1,6 @@
+use std::ffi::CStr;
+use std::str::from_utf8_unchecked;
+
 use ffi::AVColorRange::*;
 use ffi::*;
 
@@ -6,6 +9,19 @@ pub enum Range {
     Unspecified,
     MPEG,
     JPEG,
+}
+
+impl Range {
+    pub fn name(&self) -> Option<&'static str> {
+        unsafe {
+            let ptr = av_color_range_name((*self).into());
+            if ptr.is_null() {
+                None
+            } else {
+                Some(from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()))
+            }
+        }
+    }
 }
 
 impl From<AVColorRange> for Range {

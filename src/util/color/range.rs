@@ -18,11 +18,7 @@ impl Range {
         }
         unsafe {
             let ptr = av_color_range_name((*self).into());
-            if ptr.is_null() {
-                None
-            } else {
-                Some(from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()))
-            }
+            ptr.as_ref().map(|ptr| from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()))
         }
     }
 }

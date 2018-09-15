@@ -26,9 +26,14 @@ pub enum Space {
 }
 
 impl Space {
-    pub fn name(&self) -> &'static str {
+    pub fn name(&self) -> Option<&'static str> {
         unsafe {
-            from_utf8_unchecked(CStr::from_ptr(av_get_colorspace_name((*self).into())).to_bytes())
+            let ptr = av_color_space_name((*self).into());
+            if ptr.is_null() {
+                None
+            } else {
+                Some(from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()))
+            }
         }
     }
 }

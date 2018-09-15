@@ -26,6 +26,9 @@ pub enum Primaries {
 
 impl Primaries {
     pub fn name(&self) -> Option<&'static str> {
+        if *self == Primaries::Unspecified {
+            return None;
+        }
         unsafe {
             let ptr = av_color_primaries_name((*self).into());
             if ptr.is_null() {

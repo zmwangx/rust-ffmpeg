@@ -13,6 +13,9 @@ pub enum Range {
 
 impl Range {
     pub fn name(&self) -> Option<&'static str> {
+        if *self == Range::Unspecified {
+            return None;
+        }
         unsafe {
             let ptr = av_color_range_name((*self).into());
             if ptr.is_null() {

@@ -29,6 +29,9 @@ pub enum TransferCharacteristic {
 
 impl TransferCharacteristic {
     pub fn name(&self) -> Option<&'static str> {
+        if *self == TransferCharacteristic::Unspecified {
+            return None;
+        }
         unsafe {
             let ptr = av_color_transfer_name((*self).into());
             if ptr.is_null() {

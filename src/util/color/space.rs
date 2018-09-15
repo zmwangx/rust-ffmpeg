@@ -27,6 +27,9 @@ pub enum Space {
 
 impl Space {
     pub fn name(&self) -> Option<&'static str> {
+        if *self == Space::Unspecified {
+            return None;
+        }
         unsafe {
             let ptr = av_color_space_name((*self).into());
             if ptr.is_null() {

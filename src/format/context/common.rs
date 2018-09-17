@@ -70,6 +70,10 @@ impl Context {
         StreamIterMut::new(self)
     }
 
+    pub fn bit_rate(&self) -> i64 {
+        unsafe { (*self.as_ptr()).bit_rate }
+    }
+
     pub fn duration(&self) -> i64 {
         unsafe { (*self.as_ptr()).duration }
     }

@@ -28,7 +28,9 @@ pub enum Type {
     ContentLightLevel,
     IccProfile,
 
+    #[cfg(feature = "ffmpeg4")]
     QPTableProperties,
+    #[cfg(feature = "ffmpeg4")]
     QPTableData,
 }
 
@@ -63,7 +65,9 @@ impl From<AVFrameSideDataType> for Type {
             AV_FRAME_DATA_CONTENT_LIGHT_LEVEL => Type::ContentLightLevel,
             AV_FRAME_DATA_ICC_PROFILE => Type::IccProfile,
 
+            #[cfg(feature = "ffmpeg4")]
             AV_FRAME_DATA_QP_TABLE_PROPERTIES => Type::QPTableProperties,
+            #[cfg(feature = "ffmpeg4")]
             AV_FRAME_DATA_QP_TABLE_DATA => Type::QPTableData,
         }
     }
@@ -91,7 +95,9 @@ impl Into<AVFrameSideDataType> for Type {
             Type::ContentLightLevel => AV_FRAME_DATA_CONTENT_LIGHT_LEVEL,
             Type::IccProfile => AV_FRAME_DATA_ICC_PROFILE,
 
+            #[cfg(feature = "ffmpeg4")]
             Type::QPTableProperties => AV_FRAME_DATA_QP_TABLE_PROPERTIES,
+            #[cfg(feature = "ffmpeg4")]
             Type::QPTableData => AV_FRAME_DATA_QP_TABLE_DATA,
         }
     }

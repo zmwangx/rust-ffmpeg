@@ -397,6 +397,7 @@ pub enum Id {
     ON2AVC,
     DSS_SP,
 
+    #[cfg(feature = "ffmpeg4")]
     CODEC2,
     FFWAVESYNTH,
     SONIC,
@@ -481,8 +482,11 @@ pub enum Id {
     FITS,
     GREMLIN_DPCM,
     DOLBY_E,
+    #[cfg(feature = "ffmpeg4")]
     APTX,
+    #[cfg(feature = "ffmpeg4")]
     APTX_HD,
+    #[cfg(feature = "ffmpeg4")]
     SBC,
 }
 
@@ -886,6 +890,7 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_ON2AVC => Id::ON2AVC,
             AV_CODEC_ID_DSS_SP => Id::DSS_SP,
 
+            #[cfg(feature = "ffmpeg4")]
             AV_CODEC_ID_CODEC2 => Id::CODEC2,
             AV_CODEC_ID_FFWAVESYNTH => Id::FFWAVESYNTH,
             AV_CODEC_ID_SONIC => Id::SONIC,
@@ -969,8 +974,11 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_FITS => Id::FITS,
             AV_CODEC_ID_GREMLIN_DPCM => Id::GREMLIN_DPCM,
             AV_CODEC_ID_DOLBY_E => Id::DOLBY_E,
+            #[cfg(feature = "ffmpeg4")]
             AV_CODEC_ID_APTX => Id::APTX,
+            #[cfg(feature = "ffmpeg4")]
             AV_CODEC_ID_APTX_HD => Id::APTX_HD,
+            #[cfg(feature = "ffmpeg4")]
             AV_CODEC_ID_SBC => Id::SBC,
         }
     }
@@ -1368,6 +1376,7 @@ impl Into<AVCodecID> for Id {
             Id::ON2AVC => AV_CODEC_ID_ON2AVC,
             Id::DSS_SP => AV_CODEC_ID_DSS_SP,
 
+            #[cfg(feature = "ffmpeg4")]
             Id::CODEC2 => AV_CODEC_ID_CODEC2,
             Id::FFWAVESYNTH => AV_CODEC_ID_FFWAVESYNTH,
             Id::SONIC => AV_CODEC_ID_SONIC,
@@ -1452,8 +1461,11 @@ impl Into<AVCodecID> for Id {
             Id::FITS => AV_CODEC_ID_FITS,
             Id::GREMLIN_DPCM => AV_CODEC_ID_GREMLIN_DPCM,
             Id::DOLBY_E => AV_CODEC_ID_DOLBY_E,
+            #[cfg(feature = "ffmpeg4")]
             Id::APTX => AV_CODEC_ID_APTX,
+            #[cfg(feature = "ffmpeg4")]
             Id::APTX_HD => AV_CODEC_ID_APTX_HD,
+            #[cfg(feature = "ffmpeg4")]
             Id::SBC => AV_CODEC_ID_SBC,
         }
     }

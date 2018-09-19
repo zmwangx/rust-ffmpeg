@@ -306,6 +306,7 @@ pub enum Pixel {
     GBRAPF32BE,
     GBRAPF32LE,
     DRM_PRIME,
+    #[cfg(feature = "ffmpeg4")]
     OPENCL,
 }
 
@@ -584,6 +585,7 @@ impl From<AVPixelFormat> for Pixel {
             AV_PIX_FMT_GBRAPF32BE => Pixel::GBRAPF32BE,
             AV_PIX_FMT_GBRAPF32LE => Pixel::GBRAPF32LE,
             AV_PIX_FMT_DRM_PRIME => Pixel::DRM_PRIME,
+            #[cfg(feature = "ffmpeg4")]
             AV_PIX_FMT_OPENCL => Pixel::OPENCL,
         }
     }
@@ -891,6 +893,7 @@ impl Into<AVPixelFormat> for Pixel {
             Pixel::GBRAPF32BE => AV_PIX_FMT_GBRAPF32BE,
             Pixel::GBRAPF32LE => AV_PIX_FMT_GBRAPF32LE,
             Pixel::DRM_PRIME => AV_PIX_FMT_DRM_PRIME,
+            #[cfg(feature = "ffmpeg4")]
             Pixel::OPENCL => AV_PIX_FMT_OPENCL,
         }
     }

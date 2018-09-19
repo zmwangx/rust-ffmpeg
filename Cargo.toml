@@ -10,6 +10,7 @@ description = "Safe FFmpeg wrapper (FFmpeg 4 compatible fork of the ffmpeg crate
 documentation = "https://docs.rs/ffmpeg-next"
 homepage = "https://github.com/zmwangx/rust-ffmpeg#readme"
 repository  = "https://github.com/zmwangx/rust-ffmpeg"
+readme = "README.md"
 keywords    = ["ffmpeg", "multimedia", "video", "audio"]
 
 [features]

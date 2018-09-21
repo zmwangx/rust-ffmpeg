@@ -55,7 +55,7 @@ impl Context {
                 ptr::null_mut(),
             );
 
-            if ptr.is_null() {
+            if !ptr.is_null() {
                 match swr_init(ptr) {
                     e if e < 0 => Err(Error::from(e)),
 

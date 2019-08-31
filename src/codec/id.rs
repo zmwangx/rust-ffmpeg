@@ -490,6 +490,26 @@ pub enum Id {
     APTX_HD,
     #[cfg(feature = "ffmpeg4")]
     SBC,
+    #[cfg(feature = "ffmpeg4")]
+    AVS2,
+    #[cfg(feature = "ffmpeg4")]
+    IMM4,
+    #[cfg(feature = "ffmpeg4")]
+    Prosumer,
+    #[cfg(feature = "ffmpeg4")]
+    MWSC,
+    #[cfg(feature = "ffmpeg4")]
+    WCMV,
+    #[cfg(feature = "ffmpeg4")]
+    RASC,
+    #[cfg(feature = "ffmpeg4")]
+    FirstAudio,
+    #[cfg(feature = "ffmpeg4")]
+    PCM_VIDC,
+    #[cfg(feature = "ffmpeg4")]
+    ATRAC9,
+    #[cfg(feature = "ffmpeg4")]
+    TTML,
 }
 
 impl Id {
@@ -982,6 +1002,26 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_APTX_HD => Id::APTX_HD,
             #[cfg(feature = "ffmpeg4")]
             AV_CODEC_ID_SBC => Id::SBC,
+            #[cfg(feature = "ffmpeg4")]
+            AV_CODEC_ID_AVS2 => Id::AVS2,
+            #[cfg(feature = "ffmpeg4")]
+            AV_CODEC_ID_IMM4 => Id::IMM4,
+            #[cfg(feature = "ffmpeg4")]
+            AV_CODEC_ID_PROSUMER => Id::Prosumer,
+            #[cfg(feature = "ffmpeg4")]
+            AV_CODEC_ID_MWSC => Id::MWSC,
+            #[cfg(feature = "ffmpeg4")]
+            AV_CODEC_ID_WCMV => Id::WCMV,
+            #[cfg(feature = "ffmpeg4")]
+            AV_CODEC_ID_RASC => Id::RASC,
+            #[cfg(feature = "ffmpeg4")]
+            AV_CODEC_ID_FIRST_AUDIO => Id::FirstAudio,
+            #[cfg(feature = "ffmpeg4")]
+            AV_CODEC_ID_PCM_VIDC => Id::PCM_VIDC,
+            #[cfg(feature = "ffmpeg4")]
+            AV_CODEC_ID_ATRAC9 => Id::ATRAC9,
+            #[cfg(feature = "ffmpeg4")]
+            AV_CODEC_ID_TTML => Id::TTML,
         }
     }
 }
@@ -1471,6 +1511,26 @@ impl Into<AVCodecID> for Id {
             Id::APTX_HD => AV_CODEC_ID_APTX_HD,
             #[cfg(feature = "ffmpeg4")]
             Id::SBC => AV_CODEC_ID_SBC,
+            #[cfg(feature = "ffmpeg4")]
+            Id::AVS2 => AV_CODEC_ID_AVS2,
+            #[cfg(feature = "ffmpeg4")]
+            Id::IMM4 => AV_CODEC_ID_IMM4,
+            #[cfg(feature = "ffmpeg4")]
+            Id::Prosumer => AV_CODEC_ID_PROSUMER,
+            #[cfg(feature = "ffmpeg4")]
+            Id::MWSC => AV_CODEC_ID_MWSC,
+            #[cfg(feature = "ffmpeg4")]
+            Id::WCMV => AV_CODEC_ID_WCMV,
+            #[cfg(feature = "ffmpeg4")]
+            Id::RASC => AV_CODEC_ID_RASC,
+            #[cfg(feature = "ffmpeg4")]
+            Id::FirstAudio => AV_CODEC_ID_FIRST_AUDIO,
+            #[cfg(feature = "ffmpeg4")]
+            Id::PCM_VIDC => AV_CODEC_ID_PCM_VIDC,
+            #[cfg(feature = "ffmpeg4")]
+            Id::ATRAC9 => AV_CODEC_ID_ATRAC9,
+            #[cfg(feature = "ffmpeg4")]
+            Id::TTML => AV_CODEC_ID_TTML,
         }
     }
 }

@@ -2,7 +2,7 @@ use std::ptr;
 
 use super::Delay;
 use ffi::*;
-use libc::{c_int, int64_t};
+use libc::c_int;
 use util::format;
 use {frame, ChannelLayout, Error};
 
@@ -45,10 +45,10 @@ impl Context {
         unsafe {
             let ptr = swr_alloc_set_opts(
                 ptr::null_mut(),
-                dst_channel_layout.bits() as int64_t,
+                dst_channel_layout.bits() as i64,
                 dst_format.into(),
                 dst_rate as c_int,
-                src_channel_layout.bits() as int64_t,
+                src_channel_layout.bits() as i64,
                 src_format.into(),
                 src_rate as c_int,
                 0,

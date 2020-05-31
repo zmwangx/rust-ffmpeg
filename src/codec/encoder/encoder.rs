@@ -2,7 +2,7 @@ use std::ops::{Deref, DerefMut};
 
 use super::{audio, subtitle, video};
 use codec::Context;
-use libc::{c_int, int64_t};
+use libc::c_int;
 use {media, Error, Rational};
 
 pub struct Encoder(pub Context);
@@ -58,13 +58,13 @@ impl Encoder {
 
     pub fn set_bit_rate(&mut self, value: usize) {
         unsafe {
-            (*self.as_mut_ptr()).bit_rate = value as int64_t;
+            (*self.as_mut_ptr()).bit_rate = value as i64;
         }
     }
 
     pub fn set_max_bit_rate(&mut self, value: usize) {
         unsafe {
-            (*self.as_mut_ptr()).rc_max_rate = value as int64_t;
+            (*self.as_mut_ptr()).rc_max_rate = value as i64;
         }
     }
 

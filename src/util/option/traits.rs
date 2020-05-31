@@ -4,7 +4,7 @@ use std::ffi::CString;
 use std::mem;
 
 use ffi::*;
-use libc::{c_int, c_void, int64_t};
+use libc::{c_int, c_void};
 use util::format;
 use {ChannelLayout, Error, Rational};
 
@@ -58,7 +58,7 @@ pub trait Settable: Target {
             check!(av_opt_set_int(
                 self.as_mut_ptr(),
                 name.as_ptr(),
-                value as int64_t,
+                value,
                 AV_OPT_SEARCH_CHILDREN
             ))
         }
@@ -137,7 +137,7 @@ pub trait Settable: Target {
             check!(av_opt_set_channel_layout(
                 self.as_mut_ptr(),
                 name.as_ptr(),
-                layout.bits() as int64_t,
+                layout.bits() as i64,
                 AV_OPT_SEARCH_CHILDREN
             ))
         }

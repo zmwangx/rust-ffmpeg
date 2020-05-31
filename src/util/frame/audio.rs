@@ -4,7 +4,7 @@ use std::slice;
 
 use super::Frame;
 use ffi::*;
-use libc::{c_int, c_ulonglong, int64_t};
+use libc::{c_int, c_ulonglong};
 use util::format;
 use ChannelLayout;
 
@@ -71,7 +71,7 @@ impl Audio {
     #[inline]
     pub fn set_channel_layout(&mut self, value: ChannelLayout) {
         unsafe {
-            av_frame_set_channel_layout(self.as_mut_ptr(), value.bits() as int64_t);
+            av_frame_set_channel_layout(self.as_mut_ptr(), value.bits() as i64);
         }
     }
 

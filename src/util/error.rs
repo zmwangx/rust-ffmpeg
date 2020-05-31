@@ -111,6 +111,8 @@ impl Into<c_int> for Error {
     }
 }
 
+impl error::Error for Error {}
+
 impl From<Error> for io::Error {
     fn from(value: Error) -> io::Error {
         io::Error::new(io::ErrorKind::Other, value)
@@ -119,7 +121,9 @@ impl From<Error> for io::Error {
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        f.write_str(error::Error::description(self))
+        f.write_str(unsafe {
+            from_utf8_unchecked(CStr::from_ptr(STRINGS[index(self)].as_ptr()).to_bytes())
+        })
     }
 }
 
@@ -309,11 +313,5 @@ pub fn register_all() {
             STRINGS[index(&Error::HttpServerError)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE,
         );
-    }
-}
-
-impl error::Error for Error {
-    fn description(&self) -> &str {
-        unsafe { from_utf8_unchecked(CStr::from_ptr(STRINGS[index(self)].as_ptr()).to_bytes()) }
     }
 }

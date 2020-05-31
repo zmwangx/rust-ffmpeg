@@ -7,7 +7,7 @@ use std::str::from_utf8_unchecked;
 
 use ffi::AVSampleFormat::*;
 use ffi::*;
-use libc::{c_int, uint8_t};
+use libc::c_int;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Sample {
@@ -131,7 +131,7 @@ pub struct Buffer {
     pub samples: usize,
     pub align: bool,
 
-    buffer: *mut *mut uint8_t,
+    buffer: *mut *mut u8,
     size: c_int,
 }
 

@@ -11,13 +11,13 @@ use {Codec, Error};
 
 pub struct Context {
     ptr: *mut AVCodecContext,
-    owner: Option<Rc<Drop>>,
+    owner: Option<Rc<dyn Drop>>,
 }
 
 unsafe impl Send for Context {}
 
 impl Context {
-    pub unsafe fn wrap(ptr: *mut AVCodecContext, owner: Option<Rc<Drop>>) -> Self {
+    pub unsafe fn wrap(ptr: *mut AVCodecContext, owner: Option<Rc<dyn Drop>>) -> Self {
         Context {
             ptr: ptr,
             owner: owner,

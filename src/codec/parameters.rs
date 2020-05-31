@@ -6,13 +6,13 @@ use media;
 
 pub struct Parameters {
     ptr: *mut AVCodecParameters,
-    owner: Option<Rc<Drop>>,
+    owner: Option<Rc<dyn Drop>>,
 }
 
 unsafe impl Send for Parameters {}
 
 impl Parameters {
-    pub unsafe fn wrap(ptr: *mut AVCodecParameters, owner: Option<Rc<Drop>>) -> Self {
+    pub unsafe fn wrap(ptr: *mut AVCodecParameters, owner: Option<Rc<dyn Drop>>) -> Self {
         Parameters {
             ptr: ptr,
             owner: owner,

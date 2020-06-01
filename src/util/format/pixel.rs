@@ -223,9 +223,6 @@ pub enum Pixel {
 
     // --- defaults
     XVMC,
-    Y400A,
-    GRAY8A,
-    GBR24P,
 
     RGB32,
     RGB32_1,
@@ -324,6 +321,10 @@ unsafe impl Send for Descriptor {}
 unsafe impl Sync for Descriptor {}
 
 impl Pixel {
+    pub const Y400A: Pixel = Pixel::YA8;
+    pub const GRAY8A: Pixel = Pixel::YA8;
+    pub const GBR24P: Pixel = Pixel::GBRP;
+
     pub fn descriptor(self) -> Option<Descriptor> {
         unsafe {
             let ptr = av_pix_fmt_desc_get(self.into());
@@ -820,9 +821,6 @@ impl Into<AVPixelFormat> for Pixel {
 
             // --- defaults
             Pixel::XVMC => AV_PIX_FMT_XVMC,
-            Pixel::Y400A => AV_PIX_FMT_Y400A,
-            Pixel::GRAY8A => AV_PIX_FMT_GRAY8A,
-            Pixel::GBR24P => AV_PIX_FMT_GBR24P,
 
             Pixel::RGB32 => AV_PIX_FMT_RGB32,
             Pixel::RGB32_1 => AV_PIX_FMT_RGB32_1,

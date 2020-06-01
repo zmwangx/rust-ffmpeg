@@ -14,7 +14,6 @@ pub enum Space {
     BT470BG,
     SMPTE170M,
     SMPTE240M,
-    YCOCG,
     YCGCO,
     BT2020NCL,
     BT2020CL,
@@ -26,6 +25,8 @@ pub enum Space {
 }
 
 impl Space {
+    pub const YCOCG: Space = Space::YCGCO;
+
     pub fn name(&self) -> Option<&'static str> {
         if *self == Space::Unspecified {
             return None;
@@ -48,7 +49,7 @@ impl From<AVColorSpace> for Space {
             AVCOL_SPC_BT470BG => Space::BT470BG,
             AVCOL_SPC_SMPTE170M => Space::SMPTE170M,
             AVCOL_SPC_SMPTE240M => Space::SMPTE240M,
-            AVCOL_SPC_YCOCG => Space::YCOCG,
+            AVCOL_SPC_YCGCO => Space::YCGCO,
             AVCOL_SPC_BT2020_NCL => Space::BT2020NCL,
             AVCOL_SPC_BT2020_CL => Space::BT2020CL,
             AVCOL_SPC_SMPTE2085 => Space::SMPTE2085,
@@ -72,7 +73,6 @@ impl Into<AVColorSpace> for Space {
             Space::BT470BG => AVCOL_SPC_BT470BG,
             Space::SMPTE170M => AVCOL_SPC_SMPTE170M,
             Space::SMPTE240M => AVCOL_SPC_SMPTE240M,
-            Space::YCOCG => AVCOL_SPC_YCOCG,
             Space::YCGCO => AVCOL_SPC_YCGCO,
             Space::BT2020NCL => AVCOL_SPC_BT2020_NCL,
             Space::BT2020CL => AVCOL_SPC_BT2020_CL,

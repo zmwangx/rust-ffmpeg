@@ -1,4 +1,4 @@
-use super::{flag, Context, Flags};
+use super::{Context, Flags};
 use util::format;
 use {decoder, frame, Error, Picture};
 
@@ -25,7 +25,7 @@ impl<'a> Picture<'a> {
             format,
             self.width(),
             self.height(),
-            flag::FAST_BILINEAR,
+            Flags::FAST_BILINEAR,
         )
     }
 }
@@ -53,7 +53,7 @@ impl frame::Video {
             format,
             self.width(),
             self.height(),
-            flag::FAST_BILINEAR,
+            Flags::FAST_BILINEAR,
         )
     }
 }
@@ -81,7 +81,7 @@ impl decoder::Video {
             format,
             self.width(),
             self.height(),
-            flag::FAST_BILINEAR,
+            Flags::FAST_BILINEAR,
         )
     }
 }

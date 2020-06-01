@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 use std::mem;
 use std::slice;
 
-use super::{flag, Borrow, Flags, Mut, Ref, SideData};
+use super::{Borrow, Flags, Mut, Ref, SideData};
 use ffi::*;
 use libc::c_int;
 use {format, Error, Rational};
@@ -99,12 +99,12 @@ impl Packet {
 
     #[inline]
     pub fn is_key(&self) -> bool {
-        self.flags().contains(flag::KEY)
+        self.flags().contains(Flags::KEY)
     }
 
     #[inline]
     pub fn is_corrupt(&self) -> bool {
-        self.flags().contains(flag::CORRUPT)
+        self.flags().contains(Flags::CORRUPT)
     }
 
     #[inline]

@@ -75,7 +75,7 @@ impl Frame {
 
     #[inline]
     pub fn is_corrupt(&self) -> bool {
-        self.flags().contains(flag::CORRUPT)
+        self.flags().contains(Flags::CORRUPT)
     }
 
     #[inline]

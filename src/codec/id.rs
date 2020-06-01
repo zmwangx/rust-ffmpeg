@@ -510,6 +510,23 @@ pub enum Id {
     ATRAC9,
     #[cfg(feature = "ffmpeg41")]
     TTML,
+
+    #[cfg(feature = "ffmpeg42")]
+    HYMT,
+    #[cfg(feature = "ffmpeg42")]
+    ARBC,
+    #[cfg(feature = "ffmpeg42")]
+    AGM,
+    #[cfg(feature = "ffmpeg42")]
+    LSCR,
+    #[cfg(feature = "ffmpeg42")]
+    VP4,
+    #[cfg(feature = "ffmpeg42")]
+    ADPCM_AGM,
+    #[cfg(feature = "ffmpeg42")]
+    HCOM,
+    #[cfg(feature = "ffmpeg42")]
+    ARIB_CAPTION,
 }
 
 impl Id {
@@ -1022,6 +1039,23 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_ATRAC9 => Id::ATRAC9,
             #[cfg(feature = "ffmpeg41")]
             AV_CODEC_ID_TTML => Id::TTML,
+
+            #[cfg(feature = "ffmpeg42")]
+            AV_CODEC_ID_HYMT => Id::HYMT,
+            #[cfg(feature = "ffmpeg42")]
+            AV_CODEC_ID_ARBC => Id::ARBC,
+            #[cfg(feature = "ffmpeg42")]
+            AV_CODEC_ID_AGM => Id::AGM,
+            #[cfg(feature = "ffmpeg42")]
+            AV_CODEC_ID_LSCR => Id::LSCR,
+            #[cfg(feature = "ffmpeg42")]
+            AV_CODEC_ID_VP4 => Id::VP4,
+            #[cfg(feature = "ffmpeg42")]
+            AV_CODEC_ID_ADPCM_AGM => Id::ADPCM_AGM,
+            #[cfg(feature = "ffmpeg42")]
+            AV_CODEC_ID_HCOM => Id::HCOM,
+            #[cfg(feature = "ffmpeg42")]
+            AV_CODEC_ID_ARIB_CAPTION => Id::ARIB_CAPTION,
         }
     }
 }
@@ -1531,6 +1565,23 @@ impl Into<AVCodecID> for Id {
             Id::ATRAC9 => AV_CODEC_ID_ATRAC9,
             #[cfg(feature = "ffmpeg41")]
             Id::TTML => AV_CODEC_ID_TTML,
+
+            #[cfg(feature = "ffmpeg42")]
+            Id::HYMT => AV_CODEC_ID_HYMT,
+            #[cfg(feature = "ffmpeg42")]
+            Id::ARBC => AV_CODEC_ID_ARBC,
+            #[cfg(feature = "ffmpeg42")]
+            Id::AGM => AV_CODEC_ID_AGM,
+            #[cfg(feature = "ffmpeg42")]
+            Id::LSCR => AV_CODEC_ID_LSCR,
+            #[cfg(feature = "ffmpeg42")]
+            Id::VP4 => AV_CODEC_ID_VP4,
+            #[cfg(feature = "ffmpeg42")]
+            Id::ADPCM_AGM => AV_CODEC_ID_ADPCM_AGM,
+            #[cfg(feature = "ffmpeg42")]
+            Id::HCOM => AV_CODEC_ID_HCOM,
+            #[cfg(feature = "ffmpeg42")]
+            Id::ARIB_CAPTION => AV_CODEC_ID_ARIB_CAPTION,
         }
     }
 }

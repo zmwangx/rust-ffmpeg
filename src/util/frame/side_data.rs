@@ -35,6 +35,11 @@ pub enum Type {
 
     #[cfg(feature = "ffmpeg41")]
     S12M_TIMECODE,
+
+    #[cfg(feature = "ffmpeg42")]
+    DYNAMIC_HDR_PLUS,
+    #[cfg(feature = "ffmpeg42")]
+    REGIONS_OF_INTEREST,
 }
 
 impl Type {
@@ -75,6 +80,11 @@ impl From<AVFrameSideDataType> for Type {
 
             #[cfg(feature = "ffmpeg41")]
             AV_FRAME_DATA_S12M_TIMECODE => Type::S12M_TIMECODE,
+
+            #[cfg(feature = "ffmpeg42")]
+            AV_FRAME_DATA_DYNAMIC_HDR_PLUS => Type::DYNAMIC_HDR_PLUS,
+            #[cfg(feature = "ffmpeg42")]
+            AV_FRAME_DATA_REGIONS_OF_INTEREST => Type::REGIONS_OF_INTEREST,
         }
     }
 }
@@ -108,6 +118,11 @@ impl Into<AVFrameSideDataType> for Type {
 
             #[cfg(feature = "ffmpeg41")]
             Type::S12M_TIMECODE => AV_FRAME_DATA_S12M_TIMECODE,
+
+            #[cfg(feature = "ffmpeg42")]
+            Type::DYNAMIC_HDR_PLUS => AV_FRAME_DATA_DYNAMIC_HDR_PLUS,
+            #[cfg(feature = "ffmpeg42")]
+            Type::REGIONS_OF_INTEREST => AV_FRAME_DATA_REGIONS_OF_INTEREST,
         }
     }
 }

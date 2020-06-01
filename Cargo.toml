@@ -15,8 +15,9 @@ keywords      = ["ffmpeg", "multimedia", "video", "audio"]
 categories    = ["multimedia"]
 
 [features]
-default = ["ffmpeg41", "codec", "device", "filter", "format", "resampling", "software-resampling", "software-scaling"]
+default = ["ffmpeg42", "codec", "device", "filter", "format", "resampling", "software-resampling", "software-scaling"]
 
+ffmpeg42 = ["ffmpeg41"]
 ffmpeg41 = ["ffmpeg4"]
 ffmpeg4 = []
 

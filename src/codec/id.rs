@@ -484,12 +484,32 @@ pub enum Id {
     FITS,
     GREMLIN_DPCM,
     DOLBY_E,
+
     #[cfg(feature = "ffmpeg4")]
     APTX,
     #[cfg(feature = "ffmpeg4")]
     APTX_HD,
     #[cfg(feature = "ffmpeg4")]
     SBC,
+
+    #[cfg(feature = "ffmpeg41")]
+    AVS2,
+    #[cfg(feature = "ffmpeg41")]
+    IMM4,
+    #[cfg(feature = "ffmpeg41")]
+    PROSUMER,
+    #[cfg(feature = "ffmpeg41")]
+    MWSC,
+    #[cfg(feature = "ffmpeg41")]
+    WCMV,
+    #[cfg(feature = "ffmpeg41")]
+    RASC,
+    #[cfg(feature = "ffmpeg41")]
+    PCM_VIDC,
+    #[cfg(feature = "ffmpeg41")]
+    ATRAC9,
+    #[cfg(feature = "ffmpeg41")]
+    TTML,
 }
 
 impl Id {
@@ -976,12 +996,32 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_FITS => Id::FITS,
             AV_CODEC_ID_GREMLIN_DPCM => Id::GREMLIN_DPCM,
             AV_CODEC_ID_DOLBY_E => Id::DOLBY_E,
+
             #[cfg(feature = "ffmpeg4")]
             AV_CODEC_ID_APTX => Id::APTX,
             #[cfg(feature = "ffmpeg4")]
             AV_CODEC_ID_APTX_HD => Id::APTX_HD,
             #[cfg(feature = "ffmpeg4")]
             AV_CODEC_ID_SBC => Id::SBC,
+
+            #[cfg(feature = "ffmpeg41")]
+            AV_CODEC_ID_AVS2 => Id::AVS2,
+            #[cfg(feature = "ffmpeg41")]
+            AV_CODEC_ID_IMM4 => Id::IMM4,
+            #[cfg(feature = "ffmpeg41")]
+            AV_CODEC_ID_PROSUMER => Id::PROSUMER,
+            #[cfg(feature = "ffmpeg41")]
+            AV_CODEC_ID_MWSC => Id::MWSC,
+            #[cfg(feature = "ffmpeg41")]
+            AV_CODEC_ID_WCMV => Id::WCMV,
+            #[cfg(feature = "ffmpeg41")]
+            AV_CODEC_ID_RASC => Id::RASC,
+            #[cfg(feature = "ffmpeg41")]
+            AV_CODEC_ID_PCM_VIDC => Id::PCM_VIDC,
+            #[cfg(feature = "ffmpeg41")]
+            AV_CODEC_ID_ATRAC9 => Id::ATRAC9,
+            #[cfg(feature = "ffmpeg41")]
+            AV_CODEC_ID_TTML => Id::TTML,
         }
     }
 }
@@ -1465,12 +1505,32 @@ impl Into<AVCodecID> for Id {
             Id::FITS => AV_CODEC_ID_FITS,
             Id::GREMLIN_DPCM => AV_CODEC_ID_GREMLIN_DPCM,
             Id::DOLBY_E => AV_CODEC_ID_DOLBY_E,
+
             #[cfg(feature = "ffmpeg4")]
             Id::APTX => AV_CODEC_ID_APTX,
             #[cfg(feature = "ffmpeg4")]
             Id::APTX_HD => AV_CODEC_ID_APTX_HD,
             #[cfg(feature = "ffmpeg4")]
             Id::SBC => AV_CODEC_ID_SBC,
+
+            #[cfg(feature = "ffmpeg41")]
+            Id::AVS2 => AV_CODEC_ID_AVS2,
+            #[cfg(feature = "ffmpeg41")]
+            Id::IMM4 => AV_CODEC_ID_IMM4,
+            #[cfg(feature = "ffmpeg41")]
+            Id::PROSUMER => AV_CODEC_ID_PROSUMER,
+            #[cfg(feature = "ffmpeg41")]
+            Id::MWSC => AV_CODEC_ID_MWSC,
+            #[cfg(feature = "ffmpeg41")]
+            Id::WCMV => AV_CODEC_ID_WCMV,
+            #[cfg(feature = "ffmpeg41")]
+            Id::RASC => AV_CODEC_ID_RASC,
+            #[cfg(feature = "ffmpeg41")]
+            Id::PCM_VIDC => AV_CODEC_ID_PCM_VIDC,
+            #[cfg(feature = "ffmpeg41")]
+            Id::ATRAC9 => AV_CODEC_ID_ATRAC9,
+            #[cfg(feature = "ffmpeg41")]
+            Id::TTML => AV_CODEC_ID_TTML,
         }
     }
 }

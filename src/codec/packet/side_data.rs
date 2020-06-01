@@ -33,10 +33,14 @@ pub enum Type {
 
     ContentLightLevel,
     A53CC,
+
     #[cfg(feature = "ffmpeg4")]
     EncryptionInitInfo,
     #[cfg(feature = "ffmpeg4")]
     EncryptionInfo,
+
+    #[cfg(feature = "ffmpeg41")]
+    AFD,
 }
 
 impl From<AVPacketSideDataType> for Type {
@@ -68,10 +72,14 @@ impl From<AVPacketSideDataType> for Type {
 
             AV_PKT_DATA_CONTENT_LIGHT_LEVEL => Type::ContentLightLevel,
             AV_PKT_DATA_A53_CC => Type::A53CC,
+
             #[cfg(feature = "ffmpeg4")]
             AV_PKT_DATA_ENCRYPTION_INIT_INFO => Type::EncryptionInitInfo,
             #[cfg(feature = "ffmpeg4")]
             AV_PKT_DATA_ENCRYPTION_INFO => Type::EncryptionInfo,
+
+            #[cfg(feature = "ffmpeg41")]
+            AV_PKT_DATA_AFD => Type::AFD,
         }
     }
 }
@@ -105,10 +113,14 @@ impl Into<AVPacketSideDataType> for Type {
 
             Type::ContentLightLevel => AV_PKT_DATA_CONTENT_LIGHT_LEVEL,
             Type::A53CC => AV_PKT_DATA_A53_CC,
+
             #[cfg(feature = "ffmpeg4")]
             Type::EncryptionInitInfo => AV_PKT_DATA_ENCRYPTION_INIT_INFO,
             #[cfg(feature = "ffmpeg4")]
             Type::EncryptionInfo => AV_PKT_DATA_ENCRYPTION_INFO,
+
+            #[cfg(feature = "ffmpeg41")]
+            Type::AFD => AV_PKT_DATA_AFD,
         }
     }
 }

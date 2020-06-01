@@ -308,8 +308,18 @@ pub enum Pixel {
     GBRAPF32BE,
     GBRAPF32LE,
     DRM_PRIME,
+
     #[cfg(feature = "ffmpeg4")]
     OPENCL,
+
+    #[cfg(feature = "ffmpeg41")]
+    GRAY14BE,
+    #[cfg(feature = "ffmpeg41")]
+    GRAY14LE,
+    #[cfg(feature = "ffmpeg41")]
+    GRAYF32BE,
+    #[cfg(feature = "ffmpeg41")]
+    GRAYF32LE,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -596,8 +606,18 @@ impl From<AVPixelFormat> for Pixel {
             AV_PIX_FMT_GBRAPF32BE => Pixel::GBRAPF32BE,
             AV_PIX_FMT_GBRAPF32LE => Pixel::GBRAPF32LE,
             AV_PIX_FMT_DRM_PRIME => Pixel::DRM_PRIME,
+
             #[cfg(feature = "ffmpeg4")]
             AV_PIX_FMT_OPENCL => Pixel::OPENCL,
+
+            #[cfg(feature = "ffmpeg41")]
+            AV_PIX_FMT_GRAY14BE => Pixel::GRAY14BE,
+            #[cfg(feature = "ffmpeg41")]
+            AV_PIX_FMT_GRAY14LE => Pixel::GRAY14LE,
+            #[cfg(feature = "ffmpeg41")]
+            AV_PIX_FMT_GRAYF32BE => Pixel::GRAYF32BE,
+            #[cfg(feature = "ffmpeg41")]
+            AV_PIX_FMT_GRAYF32LE => Pixel::GRAYF32LE,
         }
     }
 }
@@ -906,8 +926,18 @@ impl Into<AVPixelFormat> for Pixel {
             Pixel::GBRAPF32BE => AV_PIX_FMT_GBRAPF32BE,
             Pixel::GBRAPF32LE => AV_PIX_FMT_GBRAPF32LE,
             Pixel::DRM_PRIME => AV_PIX_FMT_DRM_PRIME,
+
             #[cfg(feature = "ffmpeg4")]
             Pixel::OPENCL => AV_PIX_FMT_OPENCL,
+
+            #[cfg(feature = "ffmpeg41")]
+            Pixel::GRAY14BE => AV_PIX_FMT_GRAY14BE,
+            #[cfg(feature = "ffmpeg41")]
+            Pixel::GRAY14LE => AV_PIX_FMT_GRAY14LE,
+            #[cfg(feature = "ffmpeg41")]
+            Pixel::GRAYF32BE => AV_PIX_FMT_GRAYF32BE,
+            #[cfg(feature = "ffmpeg41")]
+            Pixel::GRAYF32LE => AV_PIX_FMT_GRAYF32LE,
         }
     }
 }

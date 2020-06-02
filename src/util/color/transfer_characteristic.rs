@@ -34,7 +34,8 @@ impl TransferCharacteristic {
         }
         unsafe {
             let ptr = av_color_transfer_name((*self).into());
-            ptr.as_ref().map(|ptr| from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()))
+            ptr.as_ref()
+                .map(|ptr| from_utf8_unchecked(CStr::from_ptr(ptr).to_bytes()))
         }
     }
 }

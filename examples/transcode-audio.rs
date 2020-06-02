@@ -66,14 +66,16 @@ fn transcoder<P: AsRef<Path>>(
     path: &P,
     filter_spec: &str,
 ) -> Result<Transcoder, ffmpeg::Error> {
-    let input = ictx.streams()
+    let input = ictx
+        .streams()
         .best(media::Type::Audio)
         .expect("could not find best audio stream");
     let mut decoder = input.codec().decoder().audio()?;
     let codec = ffmpeg::encoder::find(octx.format().codec(path, media::Type::Audio))
         .expect("failed to find encoder")
         .audio()?;
-    let global = octx.format()
+    let global = octx
+        .format()
         .flags()
         .contains(ffmpeg::format::flag::Flags::GLOBAL_HEADER);
 

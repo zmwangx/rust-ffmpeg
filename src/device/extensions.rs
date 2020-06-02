@@ -59,9 +59,9 @@ impl<'a> Iterator for DeviceIter<'a> {
                 None
             } else {
                 self.cur += 1;
-                Some(device::Info::wrap(*(*self.ptr)
-                    .devices
-                    .offset((self.cur - 1) as isize)))
+                Some(device::Info::wrap(
+                    *(*self.ptr).devices.offset((self.cur - 1) as isize),
+                ))
             }
         }
     }

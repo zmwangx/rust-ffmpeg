@@ -399,19 +399,27 @@ unsafe impl Component for (u8, u8, u8) {
 unsafe impl Component for [u8; 4] {
     #[inline(always)]
     fn is_valid(format: format::Pixel) -> bool {
-        format == format::Pixel::RGBA || format == format::Pixel::BGRA
-            || format == format::Pixel::ARGB || format == format::Pixel::ABGR
-            || format == format::Pixel::RGBZ || format == format::Pixel::BGRZ
-            || format == format::Pixel::ZRGB || format == format::Pixel::ZBGR
+        format == format::Pixel::RGBA
+            || format == format::Pixel::BGRA
+            || format == format::Pixel::ARGB
+            || format == format::Pixel::ABGR
+            || format == format::Pixel::RGBZ
+            || format == format::Pixel::BGRZ
+            || format == format::Pixel::ZRGB
+            || format == format::Pixel::ZBGR
     }
 }
 
 unsafe impl Component for (u8, u8, u8, u8) {
     #[inline(always)]
     fn is_valid(format: format::Pixel) -> bool {
-        format == format::Pixel::RGBA || format == format::Pixel::BGRA
-            || format == format::Pixel::ARGB || format == format::Pixel::ABGR
-            || format == format::Pixel::RGBZ || format == format::Pixel::BGRZ
-            || format == format::Pixel::ZRGB || format == format::Pixel::ZBGR
+        format == format::Pixel::RGBA
+            || format == format::Pixel::BGRA
+            || format == format::Pixel::ARGB
+            || format == format::Pixel::ABGR
+            || format == format::Pixel::RGBZ
+            || format == format::Pixel::BGRZ
+            || format == format::Pixel::ZRGB
+            || format == format::Pixel::ZBGR
     }
 }

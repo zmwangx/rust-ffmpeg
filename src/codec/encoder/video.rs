@@ -422,7 +422,8 @@ impl Encoder {
         out: &mut P,
     ) -> Result<bool, Error> {
         unsafe {
-            if self.format() != frame.format() || self.width() != frame.width()
+            if self.format() != frame.format()
+                || self.width() != frame.width()
                 || self.height() != frame.height()
             {
                 return Err(Error::InvalidData);

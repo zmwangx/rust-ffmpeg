@@ -147,9 +147,9 @@ impl<'a> Iterator for RectIter<'a> {
                 None
             } else {
                 self.cur += 1;
-                Some(Rect::wrap(*(*self.ptr)
-                    .rects
-                    .offset((self.cur - 1) as isize)))
+                Some(Rect::wrap(
+                    *(*self.ptr).rects.offset((self.cur - 1) as isize),
+                ))
             }
         }
     }
@@ -191,9 +191,9 @@ impl<'a> Iterator for RectMutIter<'a> {
                 None
             } else {
                 self.cur += 1;
-                Some(RectMut::wrap(*(*self.ptr)
-                    .rects
-                    .offset((self.cur - 1) as isize)))
+                Some(RectMut::wrap(
+                    *(*self.ptr).rects.offset((self.cur - 1) as isize),
+                ))
             }
         }
     }

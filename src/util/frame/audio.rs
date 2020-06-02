@@ -64,7 +64,9 @@ impl Audio {
     #[inline]
     pub fn channel_layout(&self) -> ChannelLayout {
         unsafe {
-            ChannelLayout::from_bits_truncate(av_frame_get_channel_layout(self.as_ptr()) as c_ulonglong)
+            ChannelLayout::from_bits_truncate(
+                av_frame_get_channel_layout(self.as_ptr()) as c_ulonglong
+            )
         }
     }
 

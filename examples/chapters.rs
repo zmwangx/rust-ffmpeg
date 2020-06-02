@@ -1,4 +1,4 @@
-extern crate ffmpeg;
+extern crate ffmpeg_next as ffmpeg;
 
 use std::env;
 

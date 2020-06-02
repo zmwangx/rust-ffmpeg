@@ -1,4 +1,4 @@
-extern crate ffmpeg;
+extern crate ffmpeg_next as ffmpeg;
 
 use std::env;
 use std::path::Path;
@@ -40,7 +40,7 @@ fn filter(
     if let Some(codec) = encoder.codec() {
         if !codec
             .capabilities()
-            .contains(ffmpeg::codec::capabilities::VARIABLE_FRAME_SIZE)
+            .contains(ffmpeg::codec::capabilities::Capabilities::VARIABLE_FRAME_SIZE)
         {
             filter
                 .get("out")
@@ -75,7 +75,7 @@ fn transcoder<P: AsRef<Path>>(
         .audio()?;
     let global = octx.format()
         .flags()
-        .contains(ffmpeg::format::flag::GLOBAL_HEADER);
+        .contains(ffmpeg::format::flag::Flags::GLOBAL_HEADER);
 
     decoder.set_parameters(input.parameters())?;
 
@@ -85,10 +85,10 @@ fn transcoder<P: AsRef<Path>>(
     let channel_layout = codec
         .channel_layouts()
         .map(|cls| cls.best(decoder.channel_layout().channels()))
-        .unwrap_or(ffmpeg::channel_layout::STEREO);
+        .unwrap_or(ffmpeg::channel_layout::ChannelLayout::STEREO);
 
     if global {
-        encoder.set_flags(ffmpeg::codec::flag::GLOBAL_HEADER);
+        encoder.set_flags(ffmpeg::codec::flag::Flags::GLOBAL_HEADER);
     }
 
     encoder.set_rate(decoder.rate() as i32);

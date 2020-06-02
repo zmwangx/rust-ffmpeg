@@ -1,3 +1,16 @@
 [![crates.io](https://img.shields.io/crates/v/ffmpeg-next.svg)](https://crates.io/crates/ffmpeg-next)
 
-This is a fork of the [ffmpeg](https://crates.io/crates/ffmpeg) crate by [meh.](https://github.com/meh/rust-ffmpeg), compatible with FFmpeg major version 4 (tested against 4.0.2). FFmpeg4 code is guarded by the `ffmpeg4` feature, enabled by the default. Disable `ffmpeg4` to compile against FFmpeg 3.x (tested against 3.4.4). Earlier versions of FFmpeg are not officially supported. See my command line tool `metadata`'s [`Cargo.toml`](https://github.com/zmwangx/metadata/blob/master/Cargo.toml) for example usage when supporting both major versions of FFmpeg.
+This is a fork of the abandoned [ffmpeg](https://crates.io/crates/ffmpeg) crate by [meh.](https://github.com/meh/rust-ffmpeg).
+
+Support for different FFmpeg versions are guarded by feature flags:
+
+| FFmpeg version | lavc version | corresponding feature        |
+| -------------- | ------------ | ---------------------------- |
+| 4.2.x          | 58.54.100    | `ffmpeg42` (current default) |
+| 4.1.x          | 58.35.100    | `ffmpeg41`                   |
+| 4.0.x          | 58.18.100    | `ffmpeg4`                    |
+| <4             |              | none                         |
+
+See my [`metadata` project](https://github.com/zmwangx/metadata) for an example of targeting multiple versions of FFmpeg.
+
+A word on versioning: major and minor versions of this crate track major and minor versions of FFmpeg, e.g. 4.2.x of this crate has been updated to support the 4.2.x series of FFmpeg. Patch level is reserved for bug fixes of this crate and does not track FFmpeg patch versions.

@@ -222,6 +222,7 @@ pub enum Pixel {
     VIDEOTOOLBOX,
 
     // --- defaults
+    #[cfg(not(feature = "ff_api_xvmc"))]
     XVMC,
 
     RGB32,
@@ -347,6 +348,8 @@ impl Pixel {
     pub const Y400A: Pixel = Pixel::YA8;
     pub const GRAY8A: Pixel = Pixel::YA8;
     pub const GBR24P: Pixel = Pixel::GBRP;
+    #[cfg(feature = "ff_api_xvmc")]
+    pub const XVMC: Pixel = Pixel::XVMC_MPEG2_IDCT;
 
     pub fn descriptor(self) -> Option<Descriptor> {
         unsafe {
@@ -400,6 +403,7 @@ impl From<AVPixelFormat> for Pixel {
             AV_PIX_FMT_YUVJ420P => Pixel::YUVJ420P,
             AV_PIX_FMT_YUVJ422P => Pixel::YUVJ422P,
             AV_PIX_FMT_YUVJ444P => Pixel::YUVJ444P,
+            #[cfg(not(feature = "ff_api_xvmc"))]
             AV_PIX_FMT_XVMC => Pixel::XVMC,
             #[cfg(feature = "ff_api_xvmc")]
             AV_PIX_FMT_XVMC_MPEG2_MC => Pixel::XVMC_MPEG2_MC,
@@ -866,6 +870,7 @@ impl Into<AVPixelFormat> for Pixel {
             Pixel::VIDEOTOOLBOX => AV_PIX_FMT_VIDEOTOOLBOX,
 
             // --- defaults
+            #[cfg(not(feature = "ff_api_xvmc"))]
             Pixel::XVMC => AV_PIX_FMT_XVMC,
 
             Pixel::RGB32 => AV_PIX_FMT_RGB32,

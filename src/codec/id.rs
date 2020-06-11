@@ -298,8 +298,6 @@ pub enum Id {
     ADPCM_G722,
     ADPCM_IMA_APC,
     ADPCM_VIMA,
-    #[cfg(not(feature = "ffmpeg4"))]
-    VIMA,
 
     ADPCM_AFC,
     ADPCM_IMA_OKI,
@@ -530,6 +528,9 @@ pub enum Id {
 }
 
 impl Id {
+    #[cfg(feature = "ff_api_vima_decoder")]
+    pub const VIMA: Id = Id::ADPCM_VIMA;
+
     pub fn medium(&self) -> media::Type {
         unsafe { media::Type::from(avcodec_get_type((*self).into())) }
     }
@@ -1353,8 +1354,6 @@ impl Into<AVCodecID> for Id {
             Id::ADPCM_G722 => AV_CODEC_ID_ADPCM_G722,
             Id::ADPCM_IMA_APC => AV_CODEC_ID_ADPCM_IMA_APC,
             Id::ADPCM_VIMA => AV_CODEC_ID_ADPCM_VIMA,
-            #[cfg(not(feature = "ffmpeg4"))]
-            Id::VIMA => AV_CODEC_ID_VIMA,
 
             Id::ADPCM_AFC => AV_CODEC_ID_ADPCM_AFC,
             Id::ADPCM_IMA_OKI => AV_CODEC_ID_ADPCM_IMA_OKI,

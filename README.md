@@ -6,7 +6,8 @@ Support for different FFmpeg versions are guarded by feature flags:
 
 | FFmpeg version | lavc version | corresponding feature        |
 | -------------- | ------------ | ---------------------------- |
-| 4.2.x          | 58.54.100    | `ffmpeg42` (current default) |
+| 4.3.x          | 58.91.100    | `ffmpeg43` (current default) |
+| 4.2.x          | 58.54.100    | `ffmpeg42`                   |
 | 4.1.x          | 58.35.100    | `ffmpeg41`                   |
 | 4.0.x          | 58.18.100    | `ffmpeg4`                    |
 | 3.4.x          | 57.107.100   | none                         |

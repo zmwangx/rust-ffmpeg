@@ -41,6 +41,13 @@ pub enum Type {
 
     #[cfg(feature = "ffmpeg41")]
     AFD,
+
+    #[cfg(feature = "ffmpeg43")]
+    PRFT,
+    #[cfg(feature = "ffmpeg43")]
+    ICC_PROFILE,
+    #[cfg(feature = "ffmpeg43")]
+    DOVI_CONF,
 }
 
 impl From<AVPacketSideDataType> for Type {
@@ -80,6 +87,13 @@ impl From<AVPacketSideDataType> for Type {
 
             #[cfg(feature = "ffmpeg41")]
             AV_PKT_DATA_AFD => Type::AFD,
+
+            #[cfg(feature = "ffmpeg43")]
+            AV_PKT_DATA_PRFT => Type::PRFT,
+            #[cfg(feature = "ffmpeg43")]
+            AV_PKT_DATA_ICC_PROFILE => Type::ICC_PROFILE,
+            #[cfg(feature = "ffmpeg43")]
+            AV_PKT_DATA_DOVI_CONF => Type::DOVI_CONF,
         }
     }
 }
@@ -121,6 +135,13 @@ impl Into<AVPacketSideDataType> for Type {
 
             #[cfg(feature = "ffmpeg41")]
             Type::AFD => AV_PKT_DATA_AFD,
+
+            #[cfg(feature = "ffmpeg43")]
+            Type::PRFT => AV_PKT_DATA_PRFT,
+            #[cfg(feature = "ffmpeg43")]
+            Type::ICC_PROFILE => AV_PKT_DATA_ICC_PROFILE,
+            #[cfg(feature = "ffmpeg43")]
+            Type::DOVI_CONF => AV_PKT_DATA_DOVI_CONF,
         }
     }
 }

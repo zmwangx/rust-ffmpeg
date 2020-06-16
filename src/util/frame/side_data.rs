@@ -40,6 +40,9 @@ pub enum Type {
     DYNAMIC_HDR_PLUS,
     #[cfg(feature = "ffmpeg42")]
     REGIONS_OF_INTEREST,
+
+    #[cfg(feature = "ffmpeg43")]
+    VIDEO_ENC_PARAMS,
 }
 
 impl Type {
@@ -85,6 +88,9 @@ impl From<AVFrameSideDataType> for Type {
             AV_FRAME_DATA_DYNAMIC_HDR_PLUS => Type::DYNAMIC_HDR_PLUS,
             #[cfg(feature = "ffmpeg42")]
             AV_FRAME_DATA_REGIONS_OF_INTEREST => Type::REGIONS_OF_INTEREST,
+
+            #[cfg(feature = "ffmpeg43")]
+            AV_FRAME_DATA_VIDEO_ENC_PARAMS => Type::VIDEO_ENC_PARAMS,
         }
     }
 }
@@ -123,6 +129,9 @@ impl Into<AVFrameSideDataType> for Type {
             Type::DYNAMIC_HDR_PLUS => AV_FRAME_DATA_DYNAMIC_HDR_PLUS,
             #[cfg(feature = "ffmpeg42")]
             Type::REGIONS_OF_INTEREST => AV_FRAME_DATA_REGIONS_OF_INTEREST,
+
+            #[cfg(feature = "ffmpeg43")]
+            Type::VIDEO_ENC_PARAMS => AV_FRAME_DATA_VIDEO_ENC_PARAMS,
         }
     }
 }

@@ -334,6 +334,13 @@ pub enum Pixel {
     NV24,
     #[cfg(feature = "ffmpeg42")]
     NV42,
+
+    #[cfg(feature = "ffmpeg43")]
+    VULKAN,
+    #[cfg(feature = "ffmpeg43")]
+    Y210BE,
+    #[cfg(feature = "ffmpeg43")]
+    Y210LE,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -648,6 +655,13 @@ impl From<AVPixelFormat> for Pixel {
             AV_PIX_FMT_NV24 => Pixel::NV24,
             #[cfg(feature = "ffmpeg42")]
             AV_PIX_FMT_NV42 => Pixel::NV42,
+
+            #[cfg(feature = "ffmpeg43")]
+            AV_PIX_FMT_VULKAN => Pixel::VULKAN,
+            #[cfg(feature = "ffmpeg43")]
+            AV_PIX_FMT_Y210BE => Pixel::Y210BE,
+            #[cfg(feature = "ffmpeg43")]
+            AV_PIX_FMT_Y210LE => Pixel::Y210LE,
         }
     }
 }
@@ -982,6 +996,13 @@ impl Into<AVPixelFormat> for Pixel {
             Pixel::NV24 => AV_PIX_FMT_NV24,
             #[cfg(feature = "ffmpeg42")]
             Pixel::NV42 => AV_PIX_FMT_NV42,
+
+            #[cfg(feature = "ffmpeg43")]
+            Pixel::VULKAN => AV_PIX_FMT_VULKAN,
+            #[cfg(feature = "ffmpeg43")]
+            Pixel::Y210BE => AV_PIX_FMT_Y210BE,
+            #[cfg(feature = "ffmpeg43")]
+            Pixel::Y210LE => AV_PIX_FMT_Y210LE,
         }
     }
 }

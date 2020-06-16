@@ -525,6 +525,47 @@ pub enum Id {
     HCOM,
     #[cfg(feature = "ffmpeg42")]
     ARIB_CAPTION,
+
+    #[cfg(feature = "ffmpeg43")]
+    IMM5,
+    #[cfg(feature = "ffmpeg43")]
+    MVDV,
+    #[cfg(feature = "ffmpeg43")]
+    MVHA,
+    #[cfg(feature = "ffmpeg43")]
+    CDTOONS,
+    #[cfg(feature = "ffmpeg43")]
+    MV30,
+    #[cfg(feature = "ffmpeg43")]
+    NOTCHLC,
+    #[cfg(feature = "ffmpeg43")]
+    PFM,
+    #[cfg(feature = "ffmpeg43")]
+    ADPCM_ARGO,
+    #[cfg(feature = "ffmpeg43")]
+    ADPCM_IMA_SSI,
+    #[cfg(feature = "ffmpeg43")]
+    ADPCM_ZORK,
+    #[cfg(feature = "ffmpeg43")]
+    ADPCM_IMA_APM,
+    #[cfg(feature = "ffmpeg43")]
+    ADPCM_IMA_ALP,
+    #[cfg(feature = "ffmpeg43")]
+    ADPCM_IMA_MTF,
+    #[cfg(feature = "ffmpeg43")]
+    ADPCM_IMA_CUNNING,
+    #[cfg(feature = "ffmpeg43")]
+    DERF_DPCM,
+    #[cfg(feature = "ffmpeg43")]
+    ACELP_KELVIN,
+    #[cfg(feature = "ffmpeg43")]
+    MPEGH_3D_AUDIO,
+    #[cfg(feature = "ffmpeg43")]
+    SIREN,
+    #[cfg(feature = "ffmpeg43")]
+    HCA,
+    #[cfg(feature = "ffmpeg43")]
+    EPG,
 }
 
 impl Id {
@@ -1057,6 +1098,47 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_HCOM => Id::HCOM,
             #[cfg(feature = "ffmpeg42")]
             AV_CODEC_ID_ARIB_CAPTION => Id::ARIB_CAPTION,
+
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_IMM5 => Id::IMM5,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_MVDV => Id::MVDV,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_MVHA => Id::MVHA,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_CDTOONS => Id::CDTOONS,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_MV30 => Id::MV30,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_NOTCHLC => Id::NOTCHLC,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_PFM => Id::PFM,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_ADPCM_ARGO => Id::ADPCM_ARGO,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_ADPCM_IMA_SSI => Id::ADPCM_IMA_SSI,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_ADPCM_ZORK => Id::ADPCM_ZORK,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_ADPCM_IMA_APM => Id::ADPCM_IMA_APM,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_ADPCM_IMA_ALP => Id::ADPCM_IMA_ALP,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_ADPCM_IMA_MTF => Id::ADPCM_IMA_MTF,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_ADPCM_IMA_CUNNING => Id::ADPCM_IMA_CUNNING,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_DERF_DPCM => Id::DERF_DPCM,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_ACELP_KELVIN => Id::ACELP_KELVIN,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_MPEGH_3D_AUDIO => Id::MPEGH_3D_AUDIO,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_SIREN => Id::SIREN,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_HCA => Id::HCA,
+            #[cfg(feature = "ffmpeg43")]
+            AV_CODEC_ID_EPG => Id::EPG,
         }
     }
 }
@@ -1581,6 +1663,47 @@ impl Into<AVCodecID> for Id {
             Id::HCOM => AV_CODEC_ID_HCOM,
             #[cfg(feature = "ffmpeg42")]
             Id::ARIB_CAPTION => AV_CODEC_ID_ARIB_CAPTION,
+
+            #[cfg(feature = "ffmpeg43")]
+            Id::IMM5 => AV_CODEC_ID_IMM5,
+            #[cfg(feature = "ffmpeg43")]
+            Id::MVDV => AV_CODEC_ID_MVDV,
+            #[cfg(feature = "ffmpeg43")]
+            Id::MVHA => AV_CODEC_ID_MVHA,
+            #[cfg(feature = "ffmpeg43")]
+            Id::CDTOONS => AV_CODEC_ID_CDTOONS,
+            #[cfg(feature = "ffmpeg43")]
+            Id::MV30 => AV_CODEC_ID_MV30,
+            #[cfg(feature = "ffmpeg43")]
+            Id::NOTCHLC => AV_CODEC_ID_NOTCHLC,
+            #[cfg(feature = "ffmpeg43")]
+            Id::PFM => AV_CODEC_ID_PFM,
+            #[cfg(feature = "ffmpeg43")]
+            Id::ADPCM_ARGO => AV_CODEC_ID_ADPCM_ARGO,
+            #[cfg(feature = "ffmpeg43")]
+            Id::ADPCM_IMA_SSI => AV_CODEC_ID_ADPCM_IMA_SSI,
+            #[cfg(feature = "ffmpeg43")]
+            Id::ADPCM_ZORK => AV_CODEC_ID_ADPCM_ZORK,
+            #[cfg(feature = "ffmpeg43")]
+            Id::ADPCM_IMA_APM => AV_CODEC_ID_ADPCM_IMA_APM,
+            #[cfg(feature = "ffmpeg43")]
+            Id::ADPCM_IMA_ALP => AV_CODEC_ID_ADPCM_IMA_ALP,
+            #[cfg(feature = "ffmpeg43")]
+            Id::ADPCM_IMA_MTF => AV_CODEC_ID_ADPCM_IMA_MTF,
+            #[cfg(feature = "ffmpeg43")]
+            Id::ADPCM_IMA_CUNNING => AV_CODEC_ID_ADPCM_IMA_CUNNING,
+            #[cfg(feature = "ffmpeg43")]
+            Id::DERF_DPCM => AV_CODEC_ID_DERF_DPCM,
+            #[cfg(feature = "ffmpeg43")]
+            Id::ACELP_KELVIN => AV_CODEC_ID_ACELP_KELVIN,
+            #[cfg(feature = "ffmpeg43")]
+            Id::MPEGH_3D_AUDIO => AV_CODEC_ID_MPEGH_3D_AUDIO,
+            #[cfg(feature = "ffmpeg43")]
+            Id::SIREN => AV_CODEC_ID_SIREN,
+            #[cfg(feature = "ffmpeg43")]
+            Id::HCA => AV_CODEC_ID_HCA,
+            #[cfg(feature = "ffmpeg43")]
+            Id::EPG => AV_CODEC_ID_EPG,
         }
     }
 }

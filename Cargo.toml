@@ -1,6 +1,6 @@
 [package]
 name    = "ffmpeg-next"
-version = "4.2.2"
+version = "4.3.0"
 build   = "build.rs"
 
 authors = ["meh. <meh@schizofreni.co>", "Zhiming Wang <i@zhimingwang.org>"]
@@ -105,5 +105,5 @@ optional = true
 
 [dependencies.ffmpeg-sys-next]
 path = "../rust-ffmpeg-sys"
-version = "4.2"
+version = "4.3"
 default-features = false

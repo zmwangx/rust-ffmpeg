@@ -1,5 +1,6 @@
 use std::ffi::{CStr, CString};
 use std::marker::PhantomData;
+use std::fmt;
 use std::ptr;
 use std::str::from_utf8_unchecked;
 
@@ -56,5 +57,11 @@ impl<'a> IntoIterator for &'a Ref<'a> {
 
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
+    }
+}
+
+impl<'a> fmt::Debug for Ref<'a> {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        fmt.debug_map().entries(self.iter()).finish()
     }
 }

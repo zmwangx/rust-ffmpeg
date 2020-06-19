@@ -1,4 +1,5 @@
 use std::ffi::CString;
+use std::fmt;
 use std::marker::PhantomData;
 use std::ops::Deref;
 
@@ -48,5 +49,11 @@ impl<'a> Deref for Ref<'a> {
 
     fn deref(&self) -> &Self::Target {
         &self.imm
+    }
+}
+
+impl<'a> fmt::Debug for Ref<'a> {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        self.imm.fmt(fmt)
     }
 }

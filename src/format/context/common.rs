@@ -382,3 +382,14 @@ impl<'a> Iterator for ChapterIterMut<'a> {
 }
 
 impl<'a> ExactSizeIterator for ChapterIterMut<'a> {}
+
+impl fmt::Debug for Context {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let mut s = fmt.debug_struct("AVFormatContext");
+        s.field("bit_rate", &self.bit_rate());
+        s.field("duration", &self.duration());
+        s.field("nb_chapters", &self.nb_chapters());
+        s.field("nb_streams", &self.nb_streams());
+        s.finish()
+    }
+}

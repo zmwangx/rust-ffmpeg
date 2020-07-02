@@ -72,8 +72,9 @@ impl Output {
 
     pub fn add_stream<E: traits::Encoder>(&mut self, codec: E) -> Result<StreamMut, Error> {
         unsafe {
-            let codec = codec.encoder().ok_or(Error::EncoderNotFound)?;
-            let ptr = avformat_new_stream(self.as_mut_ptr(), codec.as_ptr());
+            let codec = codec.encoder();
+            let codec = codec.map_or(ptr::null(), |c| c.as_ptr());
+            let ptr = avformat_new_stream(self.as_mut_ptr(), codec);
 
             if ptr.is_null() {
                 panic!("out of memory");

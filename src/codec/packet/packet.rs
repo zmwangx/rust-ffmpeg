@@ -127,9 +127,7 @@ impl Packet {
 
     #[inline]
     pub fn set_pts(&mut self, value: Option<i64>) {
-        unsafe {
-            (*self.as_mut_ptr()).pts = value.unwrap_or(AV_NOPTS_VALUE);
-        }
+        self.0.pts = value.unwrap_or(AV_NOPTS_VALUE);
     }
 
     #[inline]
@@ -142,9 +140,7 @@ impl Packet {
 
     #[inline]
     pub fn set_dts(&mut self, value: Option<i64>) {
-        unsafe {
-            (*self.as_mut_ptr()).dts = value.unwrap_or(AV_NOPTS_VALUE);
-        }
+        self.0.dts = value.unwrap_or(AV_NOPTS_VALUE);
     }
 
     #[inline]
@@ -158,8 +154,18 @@ impl Packet {
     }
 
     #[inline]
+    pub fn set_duration(&mut self, value: i64) {
+        self.0.duration = value;
+    }
+
+    #[inline]
     pub fn position(&self) -> isize {
         self.0.pos as isize
+    }
+
+    #[inline]
+    pub fn set_position(&mut self, value: isize) {
+        self.0.pos = value as i64
     }
 
     #[inline]

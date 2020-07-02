@@ -77,7 +77,7 @@ impl Output {
             let ptr = avformat_new_stream(self.as_mut_ptr(), codec);
 
             if ptr.is_null() {
-                panic!("out of memory");
+                return Err(Error::Unknown);
             }
 
             let index = (*self.ctx.as_ptr()).nb_streams - 1;

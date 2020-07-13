@@ -107,3 +107,23 @@ optional = true
 path = "../rust-ffmpeg-sys"
 version = "4.3"
 default-features = false
+
+[[bin]]
+name = "avi-to-ppm"
+path = "examples/avi-to-ppm.rs"
+
+[[bin]]
+name = "chapters"
+path = "examples/chapters.rs"
+
+[[bin]]
+name = "codec-info"
+path = "examples/codec-info.rs"
+
+[[bin]]
+name = "metadata"
+path = "examples/metadata.rs"
+
+[[bin]]
+name = "transcode-audio"
+path = "examples/transcode-audio.rs"

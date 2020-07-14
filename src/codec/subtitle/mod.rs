@@ -101,11 +101,11 @@ impl Subtitle {
             self.0.num_rects += 1;
             self.0.rects = av_realloc(
                 self.0.rects as *mut _,
-                (mem::size_of::<*const AVSubtitleRect>() * self.0.num_rects as usize) as size_t,
+                (mem::size_of::<*const AVSubtitleRect>() * self.0.num_rects as usize) as _,
             ) as *mut _;
 
             let rect =
-                av_mallocz(mem::size_of::<AVSubtitleRect>() as size_t) as *mut AVSubtitleRect;
+                av_mallocz(mem::size_of::<AVSubtitleRect>() as _) as *mut AVSubtitleRect;
             (*rect).type_ = kind.into();
 
             *self.0.rects.offset((self.0.num_rects - 1) as isize) = rect;

@@ -58,9 +58,9 @@ impl<'a> Picture<'a> {
 
     pub fn new(format: format::Pixel, width: u32, height: u32) -> Result<Self, Error> {
         unsafe {
-            let ptr = av_malloc(mem::size_of::<AVPicture>() as size_t) as *mut AVPicture;
+            let ptr = av_malloc(mem::size_of::<AVPicture>() as _) as *mut AVPicture;
 
-            match avpicture_alloc(ptr, format.into(), width as c_int, height as c_int) {
+            match avpicture_alloc(ptr, format.into(), width as _, height as _) {
                 0 => Ok(Picture {
                     ptr,
 

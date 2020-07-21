@@ -104,6 +104,5 @@ version  = "0.12"
 optional = true
 
 [dependencies.ffmpeg-sys-next]
-path = "../rust-ffmpeg-sys"
 version = "4.3"
 default-features = false

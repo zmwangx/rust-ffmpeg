@@ -16,6 +16,7 @@ fn main() -> Result<(), ffmpeg::Error> {
             .streams()
             .best(Type::Video)
             .ok_or_else(|| ffmpeg::Error::StreamNotFound)?;
+        let video_stream_index = input.index();
 
         let mut decoder = input.codec().decoder().video()?;
 
@@ -29,9 +30,12 @@ fn main() -> Result<(), ffmpeg::Error> {
             Flags::BILINEAR,
         )?;
 
-        for (i, (_, p)) in ictx.packets().enumerate() {
+        for (i, (stream, packet)) in ictx.packets().enumerate() {
+            if stream.index() != video_stream_index {
+                continue;
+            }
             let mut frame = Video::empty();
-            match decoder.decode(&p, &mut frame) {
+            match decoder.decode(&packet, &mut frame) {
                 Ok(_) => {
                     let mut rgb_frame = Video::empty();
                     scaler.run(&frame, &mut rgb_frame)?;

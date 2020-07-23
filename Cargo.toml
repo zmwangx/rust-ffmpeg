@@ -95,6 +95,9 @@ postprocessing      = ["ffmpeg-sys-next/postproc"]
 software-resampling = ["ffmpeg-sys-next/swresample"]
 software-scaling    = ["ffmpeg-sys-next/swscale", "codec"]
 
+# platforms
+rpi = []
+
 [dependencies]
 libc     = "0.2"
 bitflags = "1.2"

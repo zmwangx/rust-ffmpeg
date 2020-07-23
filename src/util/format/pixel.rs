@@ -341,6 +341,18 @@ pub enum Pixel {
     Y210BE,
     #[cfg(feature = "ffmpeg43")]
     Y210LE,
+    #[cfg(feature = "rpi")]
+    RPI,
+    #[cfg(feature = "rpi")]
+    SAND128,
+    #[cfg(feature = "rpi")]
+    SAND64_10,
+    #[cfg(feature = "rpi")]
+    SAND64_16,
+    #[cfg(feature = "rpi")]
+    RPI4_8,
+    #[cfg(feature = "rpi")]
+    RPI4_10,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -662,6 +674,19 @@ impl From<AVPixelFormat> for Pixel {
             AV_PIX_FMT_Y210BE => Pixel::Y210BE,
             #[cfg(feature = "ffmpeg43")]
             AV_PIX_FMT_Y210LE => Pixel::Y210LE,
+
+            #[cfg(feature = "rpi")]
+            AV_PIX_FMT_RPI => Pixel::RPI,
+            #[cfg(feature = "rpi")]
+            AV_PIX_FMT_SAND128 => Pixel::SAND128,
+            #[cfg(feature = "rpi")]
+            AV_PIX_FMT_SAND64_10 => Pixel::SAND64_10,
+            #[cfg(feature = "rpi")]
+            AV_PIX_FMT_SAND64_16 => Pixel::SAND64_16,
+            #[cfg(feature = "rpi")]
+            AV_PIX_FMT_RPI4_8 => Pixel::RPI4_8,
+            #[cfg(feature = "rpi")]
+            AV_PIX_FMT_RPI4_10 => Pixel::RPI4_10,
         }
     }
 }
@@ -1003,6 +1028,19 @@ impl Into<AVPixelFormat> for Pixel {
             Pixel::Y210BE => AV_PIX_FMT_Y210BE,
             #[cfg(feature = "ffmpeg43")]
             Pixel::Y210LE => AV_PIX_FMT_Y210LE,
+
+            #[cfg(feature = "rpi")]
+            Pixel::RPI => AV_PIX_FMT_RPI,
+            #[cfg(feature = "rpi")]
+            Pixel::SAND128 => AV_PIX_FMT_SAND128,
+            #[cfg(feature = "rpi")]
+            Pixel::SAND64_10 => AV_PIX_FMT_SAND64_10,
+            #[cfg(feature = "rpi")]
+            Pixel::SAND64_16 => AV_PIX_FMT_SAND64_16,
+            #[cfg(feature = "rpi")]
+            Pixel::RPI4_8 => AV_PIX_FMT_RPI4_8,
+            #[cfg(feature = "rpi")]
+            Pixel::RPI4_10 => AV_PIX_FMT_RPI4_10,
         }
     }
 }

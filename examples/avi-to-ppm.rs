@@ -30,7 +30,8 @@ fn main() -> Result<(), ffmpeg::Error> {
             Flags::BILINEAR,
         )?;
 
-        for (i, (stream, packet)) in ictx.packets().enumerate() {
+        let mut frame_index = 0;
+        for (stream, packet) in ictx.packets() {
             if stream.index() != video_stream_index {
                 continue;
             }
@@ -39,10 +40,11 @@ fn main() -> Result<(), ffmpeg::Error> {
                 Ok(_) => {
                     let mut rgb_frame = Video::empty();
                     scaler.run(&frame, &mut rgb_frame)?;
-                    match save_file(&rgb_frame, i) {
+                    match save_file(&rgb_frame, frame_index) {
                         Ok(_) => {}
                         Err(e) => println!("Error occurred during file writing - {}", e),
                     }
+                    frame_index += 1;
                 }
                 _ => {
                     println!("Error occurred while decoding packet.");

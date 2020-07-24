@@ -5,7 +5,7 @@ use std::io;
 use std::str::from_utf8_unchecked;
 
 use ffi::*;
-use libc::c_int;
+use libc::{c_char, c_int};
 
 #[derive(Copy, Clone)]
 pub enum Error {
@@ -170,8 +170,8 @@ fn index(error: &Error) -> usize {
 }
 
 // XXX: the length has to be synced with the number of errors
-static mut STRINGS: [[i8; AV_ERROR_MAX_STRING_SIZE as usize]; 27] =
-    [[0i8; AV_ERROR_MAX_STRING_SIZE as usize]; 27];
+static mut STRINGS: [[c_char; AV_ERROR_MAX_STRING_SIZE as usize]; 27] =
+    [[0 as c_char; AV_ERROR_MAX_STRING_SIZE as usize]; 27];
 
 pub fn register_all() {
     unsafe {

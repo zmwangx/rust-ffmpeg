@@ -60,7 +60,7 @@ impl Context {
                     e if e < 0 => Err(Error::from(e)),
 
                     _ => Ok(Context {
-                        ptr: ptr,
+                        ptr,
 
                         input: Definition {
                             format: src_format,

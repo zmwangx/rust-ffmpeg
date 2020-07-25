@@ -15,8 +15,8 @@ pub struct Pad<'a> {
 impl<'a> Pad<'a> {
     pub unsafe fn wrap(ptr: *const AVFilterPad, idx: isize) -> Self {
         Pad {
-            ptr: ptr,
-            idx: idx,
+            ptr,
+            idx,
             _marker: PhantomData,
         }
     }

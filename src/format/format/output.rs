@@ -14,7 +14,7 @@ pub struct Output {
 
 impl Output {
     pub unsafe fn wrap(ptr: *mut AVOutputFormat) -> Self {
-        Output { ptr: ptr }
+        Output { ptr }
     }
 
     pub unsafe fn as_ptr(&self) -> *const AVOutputFormat {

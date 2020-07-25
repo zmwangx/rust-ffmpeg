@@ -153,10 +153,10 @@ impl Buffer {
     pub fn new(format: Sample, channels: u16, samples: usize, align: bool) -> Self {
         unsafe {
             let mut buf = Buffer {
-                format: format,
-                channels: channels,
-                samples: samples,
-                align: align,
+                format,
+                channels,
+                samples,
+                align,
 
                 buffer: ptr::null_mut(),
                 size: 0,

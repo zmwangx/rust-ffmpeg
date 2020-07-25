@@ -16,7 +16,7 @@ unsafe impl Sync for Graph {}
 
 impl Graph {
     pub unsafe fn wrap(ptr: *mut AVFilterGraph) -> Self {
-        Graph { ptr: ptr }
+        Graph { ptr }
     }
 
     pub unsafe fn as_ptr(&self) -> *const AVFilterGraph {
@@ -136,7 +136,7 @@ pub struct Parser<'a> {
 impl<'a> Parser<'a> {
     pub fn new(graph: &mut Graph) -> Parser {
         Parser {
-            graph: graph,
+            graph,
             inputs: ptr::null_mut(),
             outputs: ptr::null_mut(),
         }

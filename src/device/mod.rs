@@ -17,7 +17,7 @@ pub struct Info<'a> {
 impl<'a> Info<'a> {
     pub unsafe fn wrap(ptr: *mut AVDeviceInfo) -> Self {
         Info {
-            ptr: ptr,
+            ptr,
             _marker: PhantomData,
         }
     }

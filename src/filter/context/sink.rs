@@ -9,7 +9,7 @@ pub struct Sink<'a> {
 
 impl<'a> Sink<'a> {
     pub unsafe fn wrap<'b>(ctx: &'b mut Context<'b>) -> Sink<'b> {
-        Sink { ctx: ctx }
+        Sink { ctx }
     }
 }
 

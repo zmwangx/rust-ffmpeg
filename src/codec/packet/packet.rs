@@ -282,7 +282,7 @@ pub struct SideDataIter<'a> {
 impl<'a> SideDataIter<'a> {
     pub fn new(ptr: *const AVPacket) -> Self {
         SideDataIter {
-            ptr: ptr,
+            ptr,
             cur: 0,
             _marker: PhantomData,
         }

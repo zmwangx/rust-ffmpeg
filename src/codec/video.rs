@@ -11,7 +11,7 @@ pub struct Video {
 
 impl Video {
     pub unsafe fn new(codec: Codec) -> Video {
-        Video { codec: codec }
+        Video { codec }
     }
 }
 
@@ -51,7 +51,7 @@ pub struct RateIter {
 
 impl RateIter {
     pub fn new(ptr: *const AVRational) -> Self {
-        RateIter { ptr: ptr }
+        RateIter { ptr }
     }
 }
 
@@ -78,7 +78,7 @@ pub struct FormatIter {
 
 impl FormatIter {
     pub fn new(ptr: *const AVPixelFormat) -> Self {
-        FormatIter { ptr: ptr }
+        FormatIter { ptr }
     }
 }
 

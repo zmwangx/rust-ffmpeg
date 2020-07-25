@@ -11,7 +11,7 @@ pub struct Audio {
 
 impl Audio {
     pub unsafe fn new(codec: Codec) -> Audio {
-        Audio { codec: codec }
+        Audio { codec }
     }
 }
 
@@ -63,7 +63,7 @@ pub struct RateIter {
 
 impl RateIter {
     pub fn new(ptr: *const i32) -> Self {
-        RateIter { ptr: ptr }
+        RateIter { ptr }
     }
 }
 
@@ -90,7 +90,7 @@ pub struct FormatIter {
 
 impl FormatIter {
     pub fn new(ptr: *const AVSampleFormat) -> Self {
-        FormatIter { ptr: ptr }
+        FormatIter { ptr }
     }
 }
 
@@ -117,7 +117,7 @@ pub struct ChannelLayoutIter {
 
 impl ChannelLayoutIter {
     pub fn new(ptr: *const u64) -> Self {
-        ChannelLayoutIter { ptr: ptr }
+        ChannelLayoutIter { ptr }
     }
 
     pub fn best(self, max: i32) -> ChannelLayout {

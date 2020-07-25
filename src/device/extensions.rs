@@ -28,7 +28,7 @@ impl<'a> DeviceIter<'a> {
             n if n < 0 => Err(Error::from(n)),
 
             _ => Ok(DeviceIter {
-                ptr: ptr,
+                ptr,
                 cur: 0,
                 _marker: PhantomData,
             }),

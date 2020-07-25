@@ -58,7 +58,7 @@ impl Context {
 
             if !ptr.is_null() {
                 Ok(Context {
-                    ptr: ptr,
+                    ptr,
 
                     input: Definition {
                         format: src_format,

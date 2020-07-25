@@ -146,7 +146,7 @@ impl<'a> SideData<'a> {
     #[inline(always)]
     pub unsafe fn wrap(ptr: *mut AVFrameSideData) -> Self {
         SideData {
-            ptr: ptr,
+            ptr,
             _marker: PhantomData,
         }
     }

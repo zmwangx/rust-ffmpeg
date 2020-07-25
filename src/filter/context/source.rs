@@ -10,7 +10,7 @@ pub struct Source<'a> {
 
 impl<'a> Source<'a> {
     pub unsafe fn wrap<'b>(ctx: &'b mut Context<'b>) -> Source<'b> {
-        Source { ctx: ctx }
+        Source { ctx }
     }
 }
 

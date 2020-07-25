@@ -14,7 +14,7 @@ pub struct Context<'a> {
 impl<'a> Context<'a> {
     pub unsafe fn wrap(ptr: *mut AVFilterContext) -> Self {
         Context {
-            ptr: ptr,
+            ptr,
             _marker: PhantomData,
         }
     }

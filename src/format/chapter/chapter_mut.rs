@@ -19,7 +19,7 @@ impl<'a> ChapterMut<'a> {
     pub unsafe fn wrap(context: &mut Context, index: usize) -> ChapterMut {
         ChapterMut {
             context: mem::transmute_copy(&context),
-            index: index,
+            index,
 
             immutable: Chapter::wrap(mem::transmute_copy(&context), index),
         }

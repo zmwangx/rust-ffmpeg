@@ -18,10 +18,7 @@ impl<'a> Borrow<'a> {
             packet.data = data.as_ptr() as *mut _;
             packet.size = data.len() as c_int;
 
-            Borrow {
-                packet: packet,
-                data: data,
-            }
+            Borrow { packet, data }
         }
     }
 

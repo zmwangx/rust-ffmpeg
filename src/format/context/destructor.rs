@@ -13,10 +13,7 @@ pub struct Destructor {
 
 impl Destructor {
     pub unsafe fn new(ptr: *mut AVFormatContext, mode: Mode) -> Self {
-        Destructor {
-            ptr: ptr,
-            mode: mode,
-        }
+        Destructor { ptr, mode }
     }
 }
 

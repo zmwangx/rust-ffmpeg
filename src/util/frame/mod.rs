@@ -37,10 +37,7 @@ unsafe impl Sync for Frame {}
 impl Frame {
     #[inline(always)]
     pub unsafe fn wrap(ptr: *mut AVFrame) -> Self {
-        Frame {
-            ptr: ptr,
-            _own: false,
-        }
+        Frame { ptr, _own: false }
     }
 
     #[inline(always)]

@@ -21,7 +21,7 @@ unsafe impl Send for Output {}
 impl Output {
     pub unsafe fn wrap(ptr: *mut AVFormatContext) -> Self {
         Output {
-            ptr: ptr,
+            ptr,
             ctx: Context::wrap(ptr, destructor::Mode::Output),
         }
     }

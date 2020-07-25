@@ -15,7 +15,7 @@ unsafe impl Sync for Codec {}
 
 impl Codec {
     pub unsafe fn wrap(ptr: *mut AVCodec) -> Self {
-        Codec { ptr: ptr }
+        Codec { ptr }
     }
 
     pub unsafe fn as_ptr(&self) -> *const AVCodec {
@@ -106,7 +106,7 @@ pub struct ProfileIter {
 
 impl ProfileIter {
     pub fn new(id: Id, ptr: *const AVProfile) -> Self {
-        ProfileIter { id: id, ptr: ptr }
+        ProfileIter { id, ptr }
     }
 }
 

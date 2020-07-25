@@ -9,7 +9,7 @@ pub struct Input {
 
 impl Input {
     pub unsafe fn wrap(ptr: *mut AVInputFormat) -> Self {
-        Input { ptr: ptr }
+        Input { ptr }
     }
 
     pub unsafe fn as_ptr(&self) -> *const AVInputFormat {

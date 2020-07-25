@@ -19,7 +19,7 @@ unsafe impl Send for Input {}
 impl Input {
     pub unsafe fn wrap(ptr: *mut AVFormatContext) -> Self {
         Input {
-            ptr: ptr,
+            ptr,
             ctx: Context::wrap(ptr, destructor::Mode::Input),
         }
     }
@@ -149,7 +149,7 @@ pub struct PacketIter<'a> {
 
 impl<'a> PacketIter<'a> {
     pub fn new(context: &mut Input) -> PacketIter {
-        PacketIter { context: context }
+        PacketIter { context }
     }
 }
 

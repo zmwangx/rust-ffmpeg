@@ -14,7 +14,7 @@ pub struct Vector<'a> {
 impl<'a> Vector<'a> {
     pub unsafe fn wrap(ptr: *mut SwsVector) -> Self {
         Vector {
-            ptr: ptr,
+            ptr,
             _own: false,
             _marker: PhantomData,
         }

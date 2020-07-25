@@ -131,7 +131,7 @@ pub struct RectIter<'a> {
 impl<'a> RectIter<'a> {
     pub fn new(ptr: *const AVSubtitle) -> Self {
         RectIter {
-            ptr: ptr,
+            ptr,
             cur: 0,
             _marker: PhantomData,
         }
@@ -175,7 +175,7 @@ pub struct RectMutIter<'a> {
 impl<'a> RectMutIter<'a> {
     pub fn new(ptr: *mut AVSubtitle) -> Self {
         RectMutIter {
-            ptr: ptr,
+            ptr,
             cur: 0,
             _marker: PhantomData,
         }

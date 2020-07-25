@@ -155,7 +155,7 @@ pub struct SideData<'a> {
 impl<'a> SideData<'a> {
     pub unsafe fn wrap(ptr: *mut AVPacketSideData) -> Self {
         SideData {
-            ptr: ptr,
+            ptr,
             _marker: PhantomData,
         }
     }

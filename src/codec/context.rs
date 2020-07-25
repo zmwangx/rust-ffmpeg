@@ -18,10 +18,7 @@ unsafe impl Send for Context {}
 
 impl Context {
     pub unsafe fn wrap(ptr: *mut AVCodecContext, owner: Option<Rc<dyn Drop>>) -> Self {
-        Context {
-            ptr: ptr,
-            owner: owner,
-        }
+        Context { ptr, owner }
     }
 
     pub unsafe fn as_ptr(&self) -> *const AVCodecContext {

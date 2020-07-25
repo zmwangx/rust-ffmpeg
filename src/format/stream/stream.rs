@@ -12,10 +12,7 @@ pub struct Stream<'a> {
 
 impl<'a> Stream<'a> {
     pub unsafe fn wrap(context: &Context, index: usize) -> Stream {
-        Stream {
-            context: context,
-            index: index,
-        }
+        Stream { context, index }
     }
 
     pub unsafe fn as_ptr(&self) -> *const AVStream {
@@ -98,10 +95,7 @@ pub struct SideDataIter<'a> {
 
 impl<'a> SideDataIter<'a> {
     pub fn new<'sd, 's: 'sd>(stream: &'s Stream) -> SideDataIter<'sd> {
-        SideDataIter {
-            stream: stream,
-            current: 0,
-        }
+        SideDataIter { stream, current: 0 }
     }
 }
 

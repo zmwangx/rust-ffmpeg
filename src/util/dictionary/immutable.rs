@@ -15,7 +15,7 @@ pub struct Ref<'a> {
 impl<'a> Ref<'a> {
     pub unsafe fn wrap(ptr: *const AVDictionary) -> Self {
         Ref {
-            ptr: ptr,
+            ptr,
             _marker: PhantomData,
         }
     }

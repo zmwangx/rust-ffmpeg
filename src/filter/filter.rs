@@ -11,7 +11,7 @@ pub struct Filter {
 
 impl Filter {
     pub unsafe fn wrap(ptr: *mut AVFilter) -> Self {
-        Filter { ptr: ptr }
+        Filter { ptr }
     }
 
     pub unsafe fn as_ptr(&self) -> *const AVFilter {
@@ -79,7 +79,7 @@ pub struct PadIter<'a> {
 impl<'a> PadIter<'a> {
     pub fn new(ptr: *const AVFilterPad) -> Self {
         PadIter {
-            ptr: ptr,
+            ptr,
             cur: 0,
             _marker: PhantomData,
         }

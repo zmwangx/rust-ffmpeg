@@ -55,7 +55,7 @@ pub struct Bitmap<'a> {
 impl<'a> Bitmap<'a> {
     pub unsafe fn wrap(ptr: *const AVSubtitleRect) -> Self {
         Bitmap {
-            ptr: ptr,
+            ptr,
             _marker: PhantomData,
         }
     }
@@ -108,7 +108,7 @@ pub struct Text<'a> {
 impl<'a> Text<'a> {
     pub unsafe fn wrap(ptr: *const AVSubtitleRect) -> Self {
         Text {
-            ptr: ptr,
+            ptr,
             _marker: PhantomData,
         }
     }
@@ -133,7 +133,7 @@ pub struct Ass<'a> {
 impl<'a> Ass<'a> {
     pub unsafe fn wrap(ptr: *const AVSubtitleRect) -> Self {
         Ass {
-            ptr: ptr,
+            ptr,
             _marker: PhantomData,
         }
     }

@@ -58,3 +58,21 @@ pub fn find(name: &str) -> Option<Filter> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_paditer() {
+        assert_eq!(
+            find("overlay")
+                .unwrap()
+                .inputs()
+                .unwrap()
+                .map(|input| input.name().unwrap().to_string())
+                .collect::<Vec<_>>(),
+            vec!("main", "overlay")
+        );
+    }
+}

@@ -95,7 +95,7 @@ impl<'a> Iterator for PadIter<'a> {
                 return None;
             }
 
-            let pad = Pad::wrap(self.ptr.offset(self.cur));
+            let pad = Pad::wrap(self.ptr, self.cur);
             self.cur += 1;
 
             Some(pad)

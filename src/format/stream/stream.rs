@@ -16,7 +16,7 @@ impl<'a> Stream<'a> {
     }
 
     pub unsafe fn as_ptr(&self) -> *const AVStream {
-        *(*self.context.as_ptr()).streams.offset(self.index as isize)
+        *(*self.context.as_ptr()).streams.add(self.index)
     }
 }
 

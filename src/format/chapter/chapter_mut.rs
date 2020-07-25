@@ -26,9 +26,7 @@ impl<'a> ChapterMut<'a> {
     }
 
     pub unsafe fn as_mut_ptr(&mut self) -> *mut AVChapter {
-        *(*self.context.as_mut_ptr())
-            .chapters
-            .offset(self.index as isize)
+        *(*self.context.as_mut_ptr()).chapters.add(self.index)
     }
 }
 

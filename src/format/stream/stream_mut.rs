@@ -24,9 +24,7 @@ impl<'a> StreamMut<'a> {
     }
 
     pub unsafe fn as_mut_ptr(&mut self) -> *mut AVStream {
-        *(*self.context.as_mut_ptr())
-            .streams
-            .offset(self.index as isize)
+        *(*self.context.as_mut_ptr()).streams.add(self.index)
     }
 }
 

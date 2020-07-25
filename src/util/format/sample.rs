@@ -185,7 +185,7 @@ impl Index<usize> for Buffer {
             panic!("out of bounds");
         }
 
-        unsafe { slice::from_raw_parts(*self.buffer.offset(index as isize), self.size as usize) }
+        unsafe { slice::from_raw_parts(*self.buffer.add(index), self.size as usize) }
     }
 }
 

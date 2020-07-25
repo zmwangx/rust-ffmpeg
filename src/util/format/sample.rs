@@ -1,5 +1,4 @@
 use std::ffi::{CStr, CString};
-use std::mem;
 use std::ops::Index;
 use std::ptr;
 use std::slice;
@@ -7,7 +6,7 @@ use std::str::from_utf8_unchecked;
 
 use ffi::AVSampleFormat::*;
 use ffi::*;
-use libc::c_int;
+use libc::{c_int, c_void};
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Sample {
@@ -203,7 +202,7 @@ impl Clone for Buffer {
         unsafe {
             av_samples_copy(
                 self.buffer,
-                mem::transmute(source.buffer),
+                source.buffer as *const *mut u8,
                 0,
                 0,
                 source.samples as c_int,
@@ -218,7 +217,7 @@ impl Drop for Buffer {
     #[inline]
     fn drop(&mut self) {
         unsafe {
-            av_freep(mem::transmute(self.buffer));
+            av_freep(self.buffer as *mut c_void);
         }
     }
 }

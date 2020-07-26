@@ -1,0 +1,51 @@
+name: build
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 0 * * *"
+jobs:
+  build-test-lint:
+    name: FFmpeg ${{ matrix.ffmpeg_version }} - build, test and lint
+    runs-on: ubuntu-latest
+    container: jrottenberg/ffmpeg:${{ matrix.ffmpeg_version }}-ubuntu
+    strategy:
+      matrix:
+        include:
+          - ffmpeg_version: '3.4'
+            ffmpeg_version_feature:
+          - ffmpeg_version: '4.0'
+            ffmpeg_version_feature: ffmpeg4
+          - ffmpeg_version: '4.1'
+            ffmpeg_version_feature: ffmpeg41
+          - ffmpeg_version: '4.2'
+            ffmpeg_version_feature: ffmpeg42
+          - ffmpeg_version: '4.3'
+            ffmpeg_version_feature: ffmpeg43
+      fail-fast: false
+    env:
+      FEATURES: ${{ matrix.ffmpeg_version_feature }},codec,device,filter,format,postprocessing,software-resampling,software-scaling
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          apt update
+          apt install -y --no-install-recommends clang curl pkg-config
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+      - name: Build
+        run: |
+          cargo build --no-default-features --features $FEATURES
+      - name: Test
+        run: |
+          cargo test --no-default-features --features $FEATURES
+      - name: Lint
+        run: |
+          cargo clippy --no-default-features --features $FEATURES
+      - name: Check format
+        run: |
+          cargo fmt -- --check

@@ -65,6 +65,7 @@ mod tests {
 
     #[test]
     fn test_paditer() {
+        register_all();
         assert_eq!(
             find("overlay")
                 .unwrap()

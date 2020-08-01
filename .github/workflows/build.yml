@@ -45,7 +45,7 @@ jobs:
           cargo test --no-default-features --features $FEATURES
       - name: Lint
         run: |
-          cargo clippy --no-default-features --features $FEATURES
+          cargo clippy --no-default-features --features $FEATURES -- -D warnings
       - name: Check format
         run: |
           cargo fmt -- --check

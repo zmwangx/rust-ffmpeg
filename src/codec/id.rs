@@ -397,7 +397,7 @@ pub enum Id {
     ON2AVC,
     DSS_SP,
 
-    #[cfg(feature = "ffmpeg4")]
+    #[cfg(feature = "ffmpeg_4_0")]
     CODEC2,
     FFWAVESYNTH,
     SONIC,
@@ -483,88 +483,88 @@ pub enum Id {
     GREMLIN_DPCM,
     DOLBY_E,
 
-    #[cfg(feature = "ffmpeg4")]
+    #[cfg(feature = "ffmpeg_4_0")]
     APTX,
-    #[cfg(feature = "ffmpeg4")]
+    #[cfg(feature = "ffmpeg_4_0")]
     APTX_HD,
-    #[cfg(feature = "ffmpeg4")]
+    #[cfg(feature = "ffmpeg_4_0")]
     SBC,
 
-    #[cfg(feature = "ffmpeg41")]
+    #[cfg(feature = "ffmpeg_4_1")]
     AVS2,
-    #[cfg(feature = "ffmpeg41")]
+    #[cfg(feature = "ffmpeg_4_1")]
     IMM4,
-    #[cfg(feature = "ffmpeg41")]
+    #[cfg(feature = "ffmpeg_4_1")]
     PROSUMER,
-    #[cfg(feature = "ffmpeg41")]
+    #[cfg(feature = "ffmpeg_4_1")]
     MWSC,
-    #[cfg(feature = "ffmpeg41")]
+    #[cfg(feature = "ffmpeg_4_1")]
     WCMV,
-    #[cfg(feature = "ffmpeg41")]
+    #[cfg(feature = "ffmpeg_4_1")]
     RASC,
-    #[cfg(feature = "ffmpeg41")]
+    #[cfg(feature = "ffmpeg_4_1")]
     PCM_VIDC,
-    #[cfg(feature = "ffmpeg41")]
+    #[cfg(feature = "ffmpeg_4_1")]
     ATRAC9,
-    #[cfg(feature = "ffmpeg41")]
+    #[cfg(feature = "ffmpeg_4_1")]
     TTML,
 
-    #[cfg(feature = "ffmpeg42")]
+    #[cfg(feature = "ffmpeg_4_2")]
     HYMT,
-    #[cfg(feature = "ffmpeg42")]
+    #[cfg(feature = "ffmpeg_4_2")]
     ARBC,
-    #[cfg(feature = "ffmpeg42")]
+    #[cfg(feature = "ffmpeg_4_2")]
     AGM,
-    #[cfg(feature = "ffmpeg42")]
+    #[cfg(feature = "ffmpeg_4_2")]
     LSCR,
-    #[cfg(feature = "ffmpeg42")]
+    #[cfg(feature = "ffmpeg_4_2")]
     VP4,
-    #[cfg(feature = "ffmpeg42")]
+    #[cfg(feature = "ffmpeg_4_2")]
     ADPCM_AGM,
-    #[cfg(feature = "ffmpeg42")]
+    #[cfg(feature = "ffmpeg_4_2")]
     HCOM,
-    #[cfg(feature = "ffmpeg42")]
+    #[cfg(feature = "ffmpeg_4_2")]
     ARIB_CAPTION,
 
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     IMM5,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     MVDV,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     MVHA,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     CDTOONS,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     MV30,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     NOTCHLC,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     PFM,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     ADPCM_ARGO,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     ADPCM_IMA_SSI,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     ADPCM_ZORK,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     ADPCM_IMA_APM,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     ADPCM_IMA_ALP,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     ADPCM_IMA_MTF,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     ADPCM_IMA_CUNNING,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     DERF_DPCM,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     ACELP_KELVIN,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     MPEGH_3D_AUDIO,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     SIREN,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     HCA,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     EPG,
 }
 
@@ -971,7 +971,7 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_ON2AVC => Id::ON2AVC,
             AV_CODEC_ID_DSS_SP => Id::DSS_SP,
 
-            #[cfg(feature = "ffmpeg4")]
+            #[cfg(feature = "ffmpeg_4_0")]
             AV_CODEC_ID_CODEC2 => Id::CODEC2,
             AV_CODEC_ID_FFWAVESYNTH => Id::FFWAVESYNTH,
             AV_CODEC_ID_SONIC => Id::SONIC,
@@ -1056,88 +1056,88 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_GREMLIN_DPCM => Id::GREMLIN_DPCM,
             AV_CODEC_ID_DOLBY_E => Id::DOLBY_E,
 
-            #[cfg(feature = "ffmpeg4")]
+            #[cfg(feature = "ffmpeg_4_0")]
             AV_CODEC_ID_APTX => Id::APTX,
-            #[cfg(feature = "ffmpeg4")]
+            #[cfg(feature = "ffmpeg_4_0")]
             AV_CODEC_ID_APTX_HD => Id::APTX_HD,
-            #[cfg(feature = "ffmpeg4")]
+            #[cfg(feature = "ffmpeg_4_0")]
             AV_CODEC_ID_SBC => Id::SBC,
 
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             AV_CODEC_ID_AVS2 => Id::AVS2,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             AV_CODEC_ID_IMM4 => Id::IMM4,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             AV_CODEC_ID_PROSUMER => Id::PROSUMER,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             AV_CODEC_ID_MWSC => Id::MWSC,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             AV_CODEC_ID_WCMV => Id::WCMV,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             AV_CODEC_ID_RASC => Id::RASC,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             AV_CODEC_ID_PCM_VIDC => Id::PCM_VIDC,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             AV_CODEC_ID_ATRAC9 => Id::ATRAC9,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             AV_CODEC_ID_TTML => Id::TTML,
 
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             AV_CODEC_ID_HYMT => Id::HYMT,
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             AV_CODEC_ID_ARBC => Id::ARBC,
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             AV_CODEC_ID_AGM => Id::AGM,
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             AV_CODEC_ID_LSCR => Id::LSCR,
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             AV_CODEC_ID_VP4 => Id::VP4,
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             AV_CODEC_ID_ADPCM_AGM => Id::ADPCM_AGM,
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             AV_CODEC_ID_HCOM => Id::HCOM,
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             AV_CODEC_ID_ARIB_CAPTION => Id::ARIB_CAPTION,
 
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_IMM5 => Id::IMM5,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_MVDV => Id::MVDV,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_MVHA => Id::MVHA,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_CDTOONS => Id::CDTOONS,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_MV30 => Id::MV30,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_NOTCHLC => Id::NOTCHLC,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_PFM => Id::PFM,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_ADPCM_ARGO => Id::ADPCM_ARGO,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_ADPCM_IMA_SSI => Id::ADPCM_IMA_SSI,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_ADPCM_ZORK => Id::ADPCM_ZORK,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_ADPCM_IMA_APM => Id::ADPCM_IMA_APM,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_ADPCM_IMA_ALP => Id::ADPCM_IMA_ALP,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_ADPCM_IMA_MTF => Id::ADPCM_IMA_MTF,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_ADPCM_IMA_CUNNING => Id::ADPCM_IMA_CUNNING,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_DERF_DPCM => Id::DERF_DPCM,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_ACELP_KELVIN => Id::ACELP_KELVIN,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_MPEGH_3D_AUDIO => Id::MPEGH_3D_AUDIO,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_SIREN => Id::SIREN,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_HCA => Id::HCA,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_EPG => Id::EPG,
         }
     }
@@ -1535,7 +1535,7 @@ impl Into<AVCodecID> for Id {
             Id::ON2AVC => AV_CODEC_ID_ON2AVC,
             Id::DSS_SP => AV_CODEC_ID_DSS_SP,
 
-            #[cfg(feature = "ffmpeg4")]
+            #[cfg(feature = "ffmpeg_4_0")]
             Id::CODEC2 => AV_CODEC_ID_CODEC2,
             Id::FFWAVESYNTH => AV_CODEC_ID_FFWAVESYNTH,
             Id::SONIC => AV_CODEC_ID_SONIC,
@@ -1621,88 +1621,88 @@ impl Into<AVCodecID> for Id {
             Id::GREMLIN_DPCM => AV_CODEC_ID_GREMLIN_DPCM,
             Id::DOLBY_E => AV_CODEC_ID_DOLBY_E,
 
-            #[cfg(feature = "ffmpeg4")]
+            #[cfg(feature = "ffmpeg_4_0")]
             Id::APTX => AV_CODEC_ID_APTX,
-            #[cfg(feature = "ffmpeg4")]
+            #[cfg(feature = "ffmpeg_4_0")]
             Id::APTX_HD => AV_CODEC_ID_APTX_HD,
-            #[cfg(feature = "ffmpeg4")]
+            #[cfg(feature = "ffmpeg_4_0")]
             Id::SBC => AV_CODEC_ID_SBC,
 
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             Id::AVS2 => AV_CODEC_ID_AVS2,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             Id::IMM4 => AV_CODEC_ID_IMM4,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             Id::PROSUMER => AV_CODEC_ID_PROSUMER,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             Id::MWSC => AV_CODEC_ID_MWSC,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             Id::WCMV => AV_CODEC_ID_WCMV,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             Id::RASC => AV_CODEC_ID_RASC,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             Id::PCM_VIDC => AV_CODEC_ID_PCM_VIDC,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             Id::ATRAC9 => AV_CODEC_ID_ATRAC9,
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             Id::TTML => AV_CODEC_ID_TTML,
 
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             Id::HYMT => AV_CODEC_ID_HYMT,
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             Id::ARBC => AV_CODEC_ID_ARBC,
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             Id::AGM => AV_CODEC_ID_AGM,
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             Id::LSCR => AV_CODEC_ID_LSCR,
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             Id::VP4 => AV_CODEC_ID_VP4,
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             Id::ADPCM_AGM => AV_CODEC_ID_ADPCM_AGM,
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             Id::HCOM => AV_CODEC_ID_HCOM,
-            #[cfg(feature = "ffmpeg42")]
+            #[cfg(feature = "ffmpeg_4_2")]
             Id::ARIB_CAPTION => AV_CODEC_ID_ARIB_CAPTION,
 
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::IMM5 => AV_CODEC_ID_IMM5,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::MVDV => AV_CODEC_ID_MVDV,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::MVHA => AV_CODEC_ID_MVHA,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::CDTOONS => AV_CODEC_ID_CDTOONS,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::MV30 => AV_CODEC_ID_MV30,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::NOTCHLC => AV_CODEC_ID_NOTCHLC,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::PFM => AV_CODEC_ID_PFM,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::ADPCM_ARGO => AV_CODEC_ID_ADPCM_ARGO,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::ADPCM_IMA_SSI => AV_CODEC_ID_ADPCM_IMA_SSI,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::ADPCM_ZORK => AV_CODEC_ID_ADPCM_ZORK,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::ADPCM_IMA_APM => AV_CODEC_ID_ADPCM_IMA_APM,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::ADPCM_IMA_ALP => AV_CODEC_ID_ADPCM_IMA_ALP,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::ADPCM_IMA_MTF => AV_CODEC_ID_ADPCM_IMA_MTF,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::ADPCM_IMA_CUNNING => AV_CODEC_ID_ADPCM_IMA_CUNNING,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::DERF_DPCM => AV_CODEC_ID_DERF_DPCM,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::ACELP_KELVIN => AV_CODEC_ID_ACELP_KELVIN,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::MPEGH_3D_AUDIO => AV_CODEC_ID_MPEGH_3D_AUDIO,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::SIREN => AV_CODEC_ID_SIREN,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::HCA => AV_CODEC_ID_HCA,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Id::EPG => AV_CODEC_ID_EPG,
         }
     }

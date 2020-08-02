@@ -17,9 +17,14 @@ categories    = ["multimedia"]
 [features]
 default = ["ffmpeg43", "codec", "device", "filter", "format", "software-resampling", "software-scaling"]
 
-ffmpeg43 = ["ffmpeg42"]
-ffmpeg42 = ["ffmpeg41"]
-ffmpeg41 = ["ffmpeg4"]
+# ffmpeg<xy> are obsolete features kept for backward compatibility purposes and
+# don't do anything anymore (equivalents are automatically specified through
+# compile-time detection in ffmpeg-sys-next). Deprecation plan: ffmpeg43 will be
+# dropped from default features come 4.4, and all these features will be removed
+# come 5.0.
+ffmpeg43 = []
+ffmpeg42 = []
+ffmpeg41 = []
 ffmpeg4 = []
 
 static = ["ffmpeg-sys-next/static"]
@@ -107,5 +112,5 @@ version  = "0.12"
 optional = true
 
 [dependencies.ffmpeg-sys-next]
-version = "4.3"
+version = "4.3.2"
 default-features = false

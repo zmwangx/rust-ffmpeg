@@ -8,7 +8,7 @@ bitflags! {
         const TRUNCATED           = AV_CODEC_CAP_TRUNCATED;
         const DELAY               = AV_CODEC_CAP_DELAY;
         const SMALL_LAST_FRAME    = AV_CODEC_CAP_SMALL_LAST_FRAME;
-        #[cfg(not(feature = "ffmpeg4"))]
+        #[cfg(not(feature = "ffmpeg_4_0"))]
         const HWACCEL_VDPAU       = AV_CODEC_CAP_HWACCEL_VDPAU;
         const SUBFRAMES           = AV_CODEC_CAP_SUBFRAMES;
         const EXPERIMENTAL        = AV_CODEC_CAP_EXPERIMENTAL;

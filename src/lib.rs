@@ -98,6 +98,13 @@ fn init_filter() {
 #[cfg(not(feature = "filter"))]
 fn init_filter() {}
 
+#[cfg_attr(
+    any(feature = "ffmpeg4", feature = "ffmpeg41", feature = "ffmpeg42"),
+    deprecated(
+        note = "features ffmpeg4/ffmpeg41/ffmpeg42/ffmpeg43 are now auto-detected \
+        and will be removed in a future version"
+    )
+)]
 pub fn init() -> Result<(), Error> {
     init_error();
     init_format();

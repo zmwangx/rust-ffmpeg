@@ -34,19 +34,19 @@ pub enum Type {
     ContentLightLevel,
     A53CC,
 
-    #[cfg(feature = "ffmpeg4")]
+    #[cfg(feature = "ffmpeg_4_0")]
     EncryptionInitInfo,
-    #[cfg(feature = "ffmpeg4")]
+    #[cfg(feature = "ffmpeg_4_0")]
     EncryptionInfo,
 
-    #[cfg(feature = "ffmpeg41")]
+    #[cfg(feature = "ffmpeg_4_1")]
     AFD,
 
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     PRFT,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     ICC_PROFILE,
-    #[cfg(feature = "ffmpeg43")]
+    #[cfg(feature = "ffmpeg_4_3")]
     DOVI_CONF,
 }
 
@@ -80,19 +80,19 @@ impl From<AVPacketSideDataType> for Type {
             AV_PKT_DATA_CONTENT_LIGHT_LEVEL => Type::ContentLightLevel,
             AV_PKT_DATA_A53_CC => Type::A53CC,
 
-            #[cfg(feature = "ffmpeg4")]
+            #[cfg(feature = "ffmpeg_4_0")]
             AV_PKT_DATA_ENCRYPTION_INIT_INFO => Type::EncryptionInitInfo,
-            #[cfg(feature = "ffmpeg4")]
+            #[cfg(feature = "ffmpeg_4_0")]
             AV_PKT_DATA_ENCRYPTION_INFO => Type::EncryptionInfo,
 
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             AV_PKT_DATA_AFD => Type::AFD,
 
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_PKT_DATA_PRFT => Type::PRFT,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_PKT_DATA_ICC_PROFILE => Type::ICC_PROFILE,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             AV_PKT_DATA_DOVI_CONF => Type::DOVI_CONF,
         }
     }
@@ -128,19 +128,19 @@ impl Into<AVPacketSideDataType> for Type {
             Type::ContentLightLevel => AV_PKT_DATA_CONTENT_LIGHT_LEVEL,
             Type::A53CC => AV_PKT_DATA_A53_CC,
 
-            #[cfg(feature = "ffmpeg4")]
+            #[cfg(feature = "ffmpeg_4_0")]
             Type::EncryptionInitInfo => AV_PKT_DATA_ENCRYPTION_INIT_INFO,
-            #[cfg(feature = "ffmpeg4")]
+            #[cfg(feature = "ffmpeg_4_0")]
             Type::EncryptionInfo => AV_PKT_DATA_ENCRYPTION_INFO,
 
-            #[cfg(feature = "ffmpeg41")]
+            #[cfg(feature = "ffmpeg_4_1")]
             Type::AFD => AV_PKT_DATA_AFD,
 
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Type::PRFT => AV_PKT_DATA_PRFT,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Type::ICC_PROFILE => AV_PKT_DATA_ICC_PROFILE,
-            #[cfg(feature = "ffmpeg43")]
+            #[cfg(feature = "ffmpeg_4_3")]
             Type::DOVI_CONF => AV_PKT_DATA_DOVI_CONF,
         }
     }

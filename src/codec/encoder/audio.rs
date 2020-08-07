@@ -140,6 +140,11 @@ impl AsMut<Context> for Audio {
 pub struct Encoder(pub Audio);
 
 impl Encoder {
+    #[deprecated(
+        since = "4.4.0",
+        note = "Underlying API avcodec_encode_audio2 has been deprecated since FFmpeg 3.1; \
+        consider switching to send_frame() and receive_packet()"
+    )]
     pub fn encode<P: packet::Mut>(
         &mut self,
         frame: &frame::Audio,
@@ -164,6 +169,11 @@ impl Encoder {
         }
     }
 
+    #[deprecated(
+        since = "4.4.0",
+        note = "Underlying API avcodec_encode_audio2 has been deprecated since FFmpeg 3.1; \
+        consider switching to send_eof() and receive_packet()"
+    )]
     pub fn flush<P: packet::Mut>(&mut self, out: &mut P) -> Result<bool, Error> {
         unsafe {
             let mut got: c_int = 0;

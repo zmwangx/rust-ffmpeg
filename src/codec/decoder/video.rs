@@ -14,6 +14,11 @@ use {packet, Error, FieldOrder, Rational};
 pub struct Video(pub Opened);
 
 impl Video {
+    #[deprecated(
+        since = "4.4.0",
+        note = "Underlying API avcodec_decode_video2 has been deprecated since FFmpeg 3.1; \
+        consider switching to send_packet() and receive_frame()"
+    )]
     pub fn decode<P: packet::Ref>(
         &mut self,
         packet: &P,

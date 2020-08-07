@@ -31,26 +31,27 @@ fn main() -> Result<(), ffmpeg::Error> {
         )?;
 
         let mut frame_index = 0;
-        for (stream, packet) in ictx.packets() {
-            if stream.index() != video_stream_index {
-                continue;
-            }
-            let mut frame = Video::empty();
-            match decoder.decode(&packet, &mut frame) {
-                Ok(_) => {
+
+        let mut receive_and_process_decoded_frames =
+            |decoder: &mut ffmpeg::decoder::Video| -> Result<(), ffmpeg::Error> {
+                let mut decoded = Video::empty();
+                while decoder.receive_frame(&mut decoded).is_ok() {
                     let mut rgb_frame = Video::empty();
-                    scaler.run(&frame, &mut rgb_frame)?;
-                    match save_file(&rgb_frame, frame_index) {
-                        Ok(_) => {}
-                        Err(e) => println!("Error occurred during file writing - {}", e),
-                    }
+                    scaler.run(&decoded, &mut rgb_frame)?;
+                    save_file(&rgb_frame, frame_index).unwrap();
                     frame_index += 1;
                 }
-                _ => {
-                    println!("Error occurred while decoding packet.");
-                }
+                Ok(())
+            };
+
+        for (stream, packet) in ictx.packets() {
+            if stream.index() == video_stream_index {
+                decoder.send_packet(&packet)?;
+                receive_and_process_decoded_frames(&mut decoder)?;
             }
         }
+        decoder.send_eof()?;
+        receive_and_process_decoded_frames(&mut decoder)?;
     }
 
     Ok(())

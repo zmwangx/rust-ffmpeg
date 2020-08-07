@@ -1,10 +1,10 @@
 use std::ops::{Deref, DerefMut};
+use std::ptr;
 
 use super::{Audio, Decoder, Subtitle, Video};
 use codec::{Context, Profile};
 use ffi::*;
-use media;
-use {Error, Rational};
+use {media, packet, Error, Frame, Rational};
 
 pub struct Opened(pub Decoder);
 
@@ -30,6 +30,35 @@ impl Opened {
             Ok(Subtitle(self))
         } else {
             Err(Error::InvalidData)
+        }
+    }
+
+    pub fn send_packet<P: packet::Ref>(&mut self, packet: &P) -> Result<(), Error> {
+        unsafe {
+            match avcodec_send_packet(self.as_mut_ptr(), packet.as_ptr()) {
+                e if e < 0 => Err(Error::from(e)),
+                _ => Ok(()),
+            }
+        }
+    }
+
+    /// Sends a NULL packet to the decoder to signal end of stream and enter
+    /// draining mode.
+    pub fn send_eof(&mut self) -> Result<(), Error> {
+        unsafe {
+            match avcodec_send_packet(self.as_mut_ptr(), ptr::null()) {
+                e if e < 0 => Err(Error::from(e)),
+                _ => Ok(()),
+            }
+        }
+    }
+
+    pub fn receive_frame(&mut self, frame: &mut Frame) -> Result<(), Error> {
+        unsafe {
+            match avcodec_receive_frame(self.as_mut_ptr(), frame.as_mut_ptr()) {
+                e if e < 0 => Err(Error::from(e)),
+                _ => Ok(()),
+            }
         }
     }
 

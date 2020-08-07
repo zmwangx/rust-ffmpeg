@@ -5,6 +5,7 @@ use format::context::common::Context;
 use libc::c_int;
 use {DictionaryRef, Discard, Rational};
 
+#[derive(Debug)]
 pub struct Stream<'a> {
     context: &'a Context,
     index: usize,

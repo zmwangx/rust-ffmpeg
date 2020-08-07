@@ -1,3 +1,4 @@
+use std::fmt;
 use std::iter::FromIterator;
 use std::ops::{Deref, DerefMut};
 use std::ptr;
@@ -124,5 +125,11 @@ impl<'a> Drop for Owned<'a> {
         unsafe {
             av_dict_free(&mut self.inner.as_mut_ptr());
         }
+    }
+}
+
+impl<'a> fmt::Debug for Owned<'a> {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        self.inner.fmt(fmt)
     }
 }

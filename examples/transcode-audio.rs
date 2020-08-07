@@ -58,6 +58,8 @@ struct Transcoder {
     filter: filter::Graph,
     decoder: codec::decoder::Audio,
     encoder: codec::encoder::Audio,
+    in_time_base: ffmpeg::Rational,
+    out_time_base: ffmpeg::Rational,
 }
 
 fn transcoder<P: AsRef<Path>>(
@@ -114,12 +116,77 @@ fn transcoder<P: AsRef<Path>>(
 
     let filter = filter(filter_spec, &decoder, &encoder)?;
 
+    let in_time_base = decoder.time_base();
+    let out_time_base = output.time_base();
+
     Ok(Transcoder {
         stream: input.index(),
         filter,
         decoder,
         encoder,
+        in_time_base,
+        out_time_base,
     })
+}
+
+impl Transcoder {
+    fn send_frame_to_encoder(&mut self, frame: &ffmpeg::Frame) {
+        self.encoder.send_frame(frame).unwrap();
+    }
+
+    fn send_eof_to_encoder(&mut self) {
+        self.encoder.send_eof().unwrap();
+    }
+
+    fn receive_and_process_encoded_packets(&mut self, octx: &mut format::context::Output) {
+        let mut encoded = ffmpeg::Packet::empty();
+        while self.encoder.receive_packet(&mut encoded).is_ok() {
+            encoded.set_stream(0);
+            encoded.rescale_ts(self.in_time_base, self.out_time_base);
+            encoded.write_interleaved(octx).unwrap();
+        }
+    }
+
+    fn add_frame_to_filter(&mut self, frame: &ffmpeg::Frame) {
+        self.filter.get("in").unwrap().source().add(frame).unwrap();
+    }
+
+    fn flush_filter(&mut self) {
+        self.filter.get("in").unwrap().source().flush().unwrap();
+    }
+
+    fn get_and_process_filtered_frames(&mut self, octx: &mut format::context::Output) {
+        let mut filtered = frame::Audio::empty();
+        while self
+            .filter
+            .get("out")
+            .unwrap()
+            .sink()
+            .frame(&mut filtered)
+            .is_ok()
+        {
+            self.send_frame_to_encoder(&filtered);
+            self.receive_and_process_encoded_packets(octx);
+        }
+    }
+
+    fn send_packet_to_decoder(&mut self, packet: &ffmpeg::Packet) {
+        self.decoder.send_packet(packet).unwrap();
+    }
+
+    fn send_eof_to_decoder(&mut self) {
+        self.decoder.send_eof().unwrap();
+    }
+
+    fn receive_and_process_decoded_frames(&mut self, octx: &mut format::context::Output) {
+        let mut decoded = frame::Audio::empty();
+        while self.decoder.receive_frame(&mut decoded).is_ok() {
+            let timestamp = decoded.timestamp();
+            decoded.set_pts(timestamp);
+            self.add_frame_to_filter(&decoded);
+            self.get_and_process_filtered_frames(octx);
+        }
+    }
 }
 
 // Transcode the `best` audio stream of the input file into a the output file while applying a
@@ -156,72 +223,22 @@ fn main() {
     octx.set_metadata(ictx.metadata().to_owned());
     octx.write_header().unwrap();
 
-    let in_time_base = transcoder.decoder.time_base();
-    let out_time_base = octx.stream(0).unwrap().time_base();
-
-    let mut decoded = frame::Audio::empty();
-    let mut encoded = ffmpeg::Packet::empty();
-
     for (stream, mut packet) in ictx.packets() {
         if stream.index() == transcoder.stream {
-            packet.rescale_ts(stream.time_base(), in_time_base);
-
-            if let Ok(true) = transcoder.decoder.decode(&packet, &mut decoded) {
-                let timestamp = decoded.timestamp();
-                decoded.set_pts(timestamp);
-
-                transcoder
-                    .filter
-                    .get("in")
-                    .unwrap()
-                    .source()
-                    .add(&decoded)
-                    .unwrap();
-
-                while let Ok(..) = transcoder
-                    .filter
-                    .get("out")
-                    .unwrap()
-                    .sink()
-                    .frame(&mut decoded)
-                {
-                    if let Ok(true) = transcoder.encoder.encode(&decoded, &mut encoded) {
-                        encoded.set_stream(0);
-                        encoded.rescale_ts(in_time_base, out_time_base);
-                        encoded.write_interleaved(&mut octx).unwrap();
-                    }
-                }
-            }
+            packet.rescale_ts(stream.time_base(), transcoder.in_time_base);
+            transcoder.send_packet_to_decoder(&packet);
+            transcoder.receive_and_process_decoded_frames(&mut octx);
         }
     }
 
-    transcoder
-        .filter
-        .get("in")
-        .unwrap()
-        .source()
-        .flush()
-        .unwrap();
+    transcoder.send_eof_to_decoder();
+    transcoder.receive_and_process_decoded_frames(&mut octx);
 
-    while let Ok(..) = transcoder
-        .filter
-        .get("out")
-        .unwrap()
-        .sink()
-        .frame(&mut decoded)
-    {
-        if let Ok(true) = transcoder.encoder.encode(&decoded, &mut encoded) {
-            encoded.set_stream(0);
-            encoded.rescale_ts(in_time_base, out_time_base);
-            encoded.write_interleaved(&mut octx).unwrap();
-        }
-    }
+    transcoder.flush_filter();
+    transcoder.get_and_process_filtered_frames(&mut octx);
 
-    if let Ok(true) = transcoder.encoder.flush(&mut encoded) {
-        encoded.set_stream(0);
-        encoded.rescale_ts(in_time_base, out_time_base);
-        encoded.write_interleaved(&mut octx).unwrap();
-    }
+    transcoder.send_eof_to_encoder();
+    transcoder.receive_and_process_encoded_packets(&mut octx);
 
     octx.write_trailer().unwrap();
 }

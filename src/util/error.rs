@@ -7,7 +7,21 @@ use std::str::from_utf8_unchecked;
 use ffi::*;
 use libc::{c_char, c_int};
 
-#[derive(Copy, Clone)]
+// Export POSIX error codes so that users can do something like `if error ==
+// Error::Other { errno: EAGAIN }`.
+pub use libc::{
+    E2BIG, EACCES, EADDRINUSE, EADDRNOTAVAIL, EAFNOSUPPORT, EAGAIN, EALREADY, EBADF, EBADMSG,
+    EBUSY, ECANCELED, ECHILD, ECONNABORTED, ECONNREFUSED, ECONNRESET, EDEADLK, EDESTADDRREQ, EDOM,
+    EDQUOT, EEXIST, EFAULT, EFBIG, EHOSTUNREACH, EIDRM, EILSEQ, EINPROGRESS, EINTR, EINVAL, EIO,
+    EISCONN, EISDIR, ELOOP, EMFILE, EMLINK, EMSGSIZE, EMULTIHOP, ENAMETOOLONG, ENETDOWN, ENETRESET,
+    ENETUNREACH, ENFILE, ENOBUFS, ENODATA, ENODEV, ENOENT, ENOEXEC, ENOLCK, ENOLINK, ENOMEM,
+    ENOMSG, ENOPROTOOPT, ENOSPC, ENOSR, ENOSTR, ENOSYS, ENOTCONN, ENOTDIR, ENOTEMPTY,
+    ENOTRECOVERABLE, ENOTSOCK, ENOTSUP, ENOTTY, ENXIO, EOPNOTSUPP, EOVERFLOW, EOWNERDEAD, EPERM,
+    EPIPE, EPROTO, EPROTONOSUPPORT, EPROTOTYPE, ERANGE, EROFS, ESPIPE, ESRCH, ESTALE, ETIME,
+    ETIMEDOUT, ETXTBSY, EWOULDBLOCK, EXDEV,
+};
+
+#[derive(Copy, Clone, PartialEq)]
 pub enum Error {
     Bug,
     Bug2,
@@ -39,6 +53,11 @@ pub enum Error {
     HttpNotFound,
     HttpOther4xx,
     HttpServerError,
+
+    /// For AVERROR(e) wrapping POSIX error codes, e.g. AVERROR(EAGAIN).
+    Other {
+        errno: c_int,
+    },
 }
 
 impl From<c_int> for Error {
@@ -71,8 +90,9 @@ impl From<c_int> for Error {
             AVERROR_HTTP_NOT_FOUND => Error::HttpNotFound,
             AVERROR_HTTP_OTHER_4XX => Error::HttpOther4xx,
             AVERROR_HTTP_SERVER_ERROR => Error::HttpServerError,
-
-            _ => Error::Unknown,
+            e => Error::Other {
+                errno: AVUNERROR(e),
+            },
         }
     }
 }
@@ -107,6 +127,7 @@ impl Into<c_int> for Error {
             Error::HttpNotFound => AVERROR_HTTP_NOT_FOUND,
             Error::HttpOther4xx => AVERROR_HTTP_OTHER_4XX,
             Error::HttpServerError => AVERROR_HTTP_SERVER_ERROR,
+            Error::Other { errno } => AVERROR(errno),
         }
     }
 }
@@ -122,7 +143,13 @@ impl From<Error> for io::Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         f.write_str(unsafe {
-            from_utf8_unchecked(CStr::from_ptr(STRINGS[index(self)].as_ptr()).to_bytes())
+            from_utf8_unchecked(
+                CStr::from_ptr(match *self {
+                    Error::Other { errno } => libc::strerror(errno),
+                    _ => STRINGS[index(self)].as_ptr(),
+                })
+                .to_bytes(),
+            )
         })
     }
 }
@@ -166,12 +193,13 @@ fn index(error: &Error) -> usize {
         Error::HttpNotFound => 24,
         Error::HttpOther4xx => 25,
         Error::HttpServerError => 26,
+        Error::Other { errno: _ } => (-1isize) as usize,
     }
 }
 
 // XXX: the length has to be synced with the number of errors
-static mut STRINGS: [[c_char; AV_ERROR_MAX_STRING_SIZE as usize]; 27] =
-    [[0 as c_char; AV_ERROR_MAX_STRING_SIZE as usize]; 27];
+static mut STRINGS: [[c_char; AV_ERROR_MAX_STRING_SIZE]; 27] =
+    [[0 as c_char; AV_ERROR_MAX_STRING_SIZE]; 27];
 
 pub fn register_all() {
     unsafe {
@@ -313,5 +341,29 @@ pub fn register_all() {
             STRINGS[index(&Error::HttpServerError)].as_mut_ptr(),
             AV_ERROR_MAX_STRING_SIZE,
         );
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_error_roundtrip() {
+        assert_eq!(Into::<c_int>::into(Error::from(AVERROR_EOF)), AVERROR_EOF);
+        assert_eq!(
+            Into::<c_int>::into(Error::from(AVERROR(EAGAIN))),
+            AVERROR(EAGAIN)
+        );
+        assert_eq!(Error::from(AVERROR(EAGAIN)), Error::Other { errno: EAGAIN });
+    }
+
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    #[test]
+    fn test_posix_error_string() {
+        assert_eq!(
+            Error::from(AVERROR(EAGAIN)).to_string(),
+            "Resource temporarily unavailable"
+        )
     }
 }

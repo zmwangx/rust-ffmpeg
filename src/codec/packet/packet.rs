@@ -226,15 +226,14 @@ impl Packet {
     }
 
     #[inline]
-    pub fn write_interleaved(&self, format: &mut format::context::Output) -> Result<bool, Error> {
+    pub fn write_interleaved(&self, format: &mut format::context::Output) -> Result<(), Error> {
         unsafe {
             if self.is_empty() {
                 return Err(Error::InvalidData);
             }
 
             match av_interleaved_write_frame(format.as_mut_ptr(), self.as_ptr() as *mut _) {
-                1 => Ok(true),
-                0 => Ok(false),
+                0 => Ok(()),
                 e => Err(Error::from(e)),
             }
         }

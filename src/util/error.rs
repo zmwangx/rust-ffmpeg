@@ -7,8 +7,11 @@ use std::str::from_utf8_unchecked;
 use ffi::*;
 use libc::{c_char, c_int};
 
-// Export POSIX error codes so that users can do something like `if error ==
-// Error::Other { errno: EAGAIN }`.
+// Export POSIX error codes so that users can do something like
+//
+//   if error == (Error::Other { errno: EAGAIN }) {
+//       ...
+//   }
 pub use libc::{
     E2BIG, EACCES, EADDRINUSE, EADDRNOTAVAIL, EAFNOSUPPORT, EAGAIN, EALREADY, EBADF, EBADMSG,
     EBUSY, ECANCELED, ECHILD, ECONNABORTED, ECONNREFUSED, ECONNRESET, EDEADLK, EDESTADDRREQ, EDOM,

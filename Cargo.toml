@@ -112,5 +112,5 @@ version  = "0.12"
 optional = true
 
 [dependencies.ffmpeg-sys-next]
-version = "4.3.2"
+version = "4.3.4"
 default-features = false

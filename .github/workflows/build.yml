@@ -11,20 +11,8 @@ jobs:
     container: jrottenberg/ffmpeg:${{ matrix.ffmpeg_version }}-ubuntu
     strategy:
       matrix:
-        include:
-          - ffmpeg_version: '3.4'
-            ffmpeg_version_feature:
-          - ffmpeg_version: '4.0'
-            ffmpeg_version_feature: ffmpeg4
-          - ffmpeg_version: '4.1'
-            ffmpeg_version_feature: ffmpeg41
-          - ffmpeg_version: '4.2'
-            ffmpeg_version_feature: ffmpeg42
-          - ffmpeg_version: '4.3'
-            ffmpeg_version_feature: ffmpeg43
+        ffmpeg_version: ["3.4", "4.0", "4.1", "4.2", "4.3"]
       fail-fast: false
-    env:
-      FEATURES: ${{ matrix.ffmpeg_version_feature }},codec,device,filter,format,postprocessing,software-resampling,software-scaling
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
@@ -39,13 +27,13 @@ jobs:
           components: rustfmt, clippy
       - name: Build
         run: |
-          cargo build --no-default-features --features $FEATURES
+          cargo build --examples
       - name: Test
         run: |
-          cargo test --no-default-features --features $FEATURES
+          cargo test --examples
       - name: Lint
         run: |
-          cargo clippy --no-default-features --features $FEATURES -- -D warnings
+          cargo clippy --examples -- -D warnings
       - name: Check format
         run: |
           cargo fmt -- --check

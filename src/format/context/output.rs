@@ -174,7 +174,7 @@ pub fn dump(ctx: &Output, index: i32, url: Option<&str>) {
         av_dump_format(
             ctx.as_ptr() as *mut _,
             index,
-            url.map(|u| u.as_ptr()).unwrap_or(ptr::null()),
+            url.unwrap_or_else(|| CString::new("").unwrap()).as_ptr(),
             1,
         );
     }

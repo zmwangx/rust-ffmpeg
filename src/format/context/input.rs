@@ -1,7 +1,6 @@
 use std::ffi::CString;
 use std::mem;
 use std::ops::{Deref, DerefMut};
-use std::ptr;
 
 use super::common::Context;
 use super::destructor;
@@ -183,7 +182,7 @@ pub fn dump(ctx: &Input, index: i32, url: Option<&str>) {
         av_dump_format(
             ctx.as_ptr() as *mut _,
             index,
-            url.map(|u| u.as_ptr()).unwrap_or(ptr::null()),
+            url.unwrap_or_else(|| CString::new("").unwrap()).as_ptr(),
             0,
         );
     }

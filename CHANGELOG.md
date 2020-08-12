@@ -1,3 +1,8 @@
+4.3.6
+-----
+
+- util: fix Windows compatibility due to unavailable errnos. (#30)
+
 4.3.5
 -----
 

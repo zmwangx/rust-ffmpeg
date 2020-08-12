@@ -5,8 +5,8 @@ on:
   schedule:
     - cron: "0 0 * * *"
 jobs:
-  build-test-lint:
-    name: FFmpeg ${{ matrix.ffmpeg_version }} - build, test and lint
+  build-test-lint-linux:
+    name: Linux - FFmpeg ${{ matrix.ffmpeg_version }} - build, test and lint
     runs-on: ubuntu-latest
     container: jrottenberg/ffmpeg:${{ matrix.ffmpeg_version }}-ubuntu
     strategy:
@@ -19,6 +19,69 @@ jobs:
         run: |
           apt update
           apt install -y --no-install-recommends clang curl pkg-config
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+      - name: Build
+        run: |
+          cargo build --examples
+      - name: Test
+        run: |
+          cargo test --examples
+      - name: Lint
+        run: |
+          cargo clippy --examples -- -D warnings
+      - name: Check format
+        run: |
+          cargo fmt -- --check
+
+  build-test-lint-macos:
+    name: macOS - FFmpeg latest - build, test and lint
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          brew install ffmpeg pkg-config
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+      - name: Build
+        run: |
+          cargo build --examples
+      - name: Test
+        run: |
+          cargo test --examples
+      - name: Lint
+        run: |
+          cargo clippy --examples -- -D warnings
+      - name: Check format
+        run: |
+          cargo fmt -- --check
+
+  build-test-lint-windows:
+    name: Windows - FFmpeg ${{ matrix.ffmpeg_version }} - build, test and lint
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        ffmpeg_version: ["4.3.1"]
+      fail-fast: false
+    env:
+      FFMPEG_VERSION: ${{ matrix.ffmpeg_version }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          choco install -y llvm
+          Invoke-WebRequest "https://ffmpeg.zeranoe.com/builds/win64/dev/ffmpeg-$($env:FFMPEG_VERSION)-win64-dev.zip" -OutFile "ffmpeg-$($env:FFMPEG_VERSION)-win64-dev.zip"
+          Expand-Archive -Path "ffmpeg-$($env:FFMPEG_VERSION)-win64-dev.zip" -DestinationPath .
+          Write-Output "::set-env name=FFMPEG_DIR::$(pwd)\ffmpeg-$($env:FFMPEG_VERSION)-win64-dev"
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:

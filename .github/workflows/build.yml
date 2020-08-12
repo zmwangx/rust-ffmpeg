@@ -78,10 +78,11 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install dependencies
         run: |
-          choco install -y llvm
-          Invoke-WebRequest "https://ffmpeg.zeranoe.com/builds/win64/dev/ffmpeg-$($env:FFMPEG_VERSION)-win64-dev.zip" -OutFile "ffmpeg-$($env:FFMPEG_VERSION)-win64-dev.zip"
-          Expand-Archive -Path "ffmpeg-$($env:FFMPEG_VERSION)-win64-dev.zip" -DestinationPath .
-          Write-Output "::set-env name=FFMPEG_DIR::$(pwd)\ffmpeg-$($env:FFMPEG_VERSION)-win64-dev"
+          $VCINSTALLDIR = $(& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath)
+          Write-Output "::set-env name=LIBCLANG_PATH::${VCINSTALLDIR}\VC\Tools\LLVM\x64\bin"
+          Invoke-WebRequest "https://ffmpeg.zeranoe.com/builds/win64/dev/ffmpeg-${env:FFMPEG_VERSION}-win64-dev.zip" -OutFile "ffmpeg-${env:FFMPEG_VERSION}-win64-dev.zip"
+          Expand-Archive -Path "ffmpeg-${env:FFMPEG_VERSION}-win64-dev.zip" -DestinationPath .
+          Write-Output "::set-env name=FFMPEG_DIR::${pwd}\ffmpeg-${env:FFMPEG_VERSION}-win64-dev"
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:

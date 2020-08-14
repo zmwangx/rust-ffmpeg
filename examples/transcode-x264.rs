@@ -246,6 +246,7 @@ fn main() {
                 // Do stream copy on non-video streams.
                 packet.rescale_ts(ist_time_bases[ist_index], ost_time_base);
                 packet.set_position(-1);
+                packet.set_stream(ost_index as _);
                 packet.write_interleaved(&mut octx).unwrap();
             }
         }

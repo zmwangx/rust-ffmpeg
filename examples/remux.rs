@@ -51,6 +51,7 @@ fn main() {
         let ost = octx.stream(ost_index as _).unwrap();
         packet.rescale_ts(ist_time_bases[ist_index], ost.time_base());
         packet.set_position(-1);
+        packet.set_stream(ost_index as _);
         packet.write_interleaved(&mut octx).unwrap();
     }
 

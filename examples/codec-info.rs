@@ -10,7 +10,10 @@ fn main() {
             println!("type: decoder");
             println!("\t id: {:?}", codec.id());
             println!("\t name: {}", codec.name());
-            println!("\t description: {}", codec.description());
+            println!(
+                "\t description: {}",
+                codec.description().unwrap_or("Unknown")
+            );
             println!("\t medium: {:?}", codec.medium());
             println!("\t capabilities: {:?}", codec.capabilities());
 
@@ -62,7 +65,10 @@ fn main() {
             println!("type: encoder");
             println!("\t id: {:?}", codec.id());
             println!("\t name: {}", codec.name());
-            println!("\t description: {}", codec.description());
+            println!(
+                "\t description: {}",
+                codec.description().unwrap_or("Unknown")
+            );
             println!("\t medium: {:?}", codec.medium());
             println!("\t capabilities: {:?}", codec.capabilities());
 

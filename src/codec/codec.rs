@@ -40,8 +40,17 @@ impl Codec {
         unsafe { from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).name).to_bytes()) }
     }
 
-    pub fn description(&self) -> &str {
-        unsafe { from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).long_name).to_bytes()) }
+    pub fn description(&self) -> Option<&str> {
+        unsafe {
+            let long_name = (*self.as_ptr()).long_name;
+            if !long_name.is_null() {
+                let long_name =
+                    from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).long_name).to_bytes());
+                Some(long_name)
+            } else {
+                None
+            }
+        }
     }
 
     pub fn medium(&self) -> media::Type {

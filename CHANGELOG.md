@@ -1,3 +1,8 @@
+4.3.7
+-----
+
+- codec:  fix codec description potential null ptr issue. (#36)
+
 4.3.6
 -----
 

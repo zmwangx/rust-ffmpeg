@@ -7,6 +7,11 @@
 
 - codec: fix signature of `Packet::write_interleaved`; previously `Result<bool, Error>`, now `Result<(), Error>`. (#25)
 
+4.3.7
+-----
+
+- codec:  fix codec description potential null ptr issue. (#36)
+
 4.3.6
 -----
 

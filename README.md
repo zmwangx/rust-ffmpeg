@@ -14,7 +14,7 @@ Documentation:
 - [FFmpeg user manual](https://ffmpeg.org/ffmpeg-all.html);
 - [FFmpeg Doxygen](https://ffmpeg.org/doxygen/trunk/).
 
-*Note on upgrading to v4.3.4 or later: v4.3.4 introduced automatic FFmpeg version detection, obseleting feature flags `ffmpeg4`, `ffmpeg41`, `ffmpeg42` and `ffmpeg43`. If you manually specify any of these features, now is the time to remove them; if you use `ffmpeg43` through the `default` feature, it's still on for backward-compatibility but it has turned into a no-op, and you don't need to do anything. Deprecation plan: `ffmpeg43` will be dropped from default features come 4.4, and all these features will be removed come 5.0.*
+*Note on upgrading to v4.3.4 or later: v4.3.4 introduced automatic FFmpeg version detection, obsoleting feature flags `ffmpeg4`, `ffmpeg41`, `ffmpeg42` and `ffmpeg43`. If you manually specify any of these features, now is the time to remove them; if you use `ffmpeg43` through the `default` feature, it's still on for backward-compatibility but it has turned into a no-op, and you don't need to do anything. Deprecation plan: `ffmpeg43` will be dropped from default features come 4.4, and all these features will be removed come 5.0.*
 
 *See [CHANGELOG.md](CHANGELOG.md) for other information on version upgrades.*
 

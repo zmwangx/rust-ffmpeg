@@ -19,11 +19,7 @@ unsafe impl Send for Context {}
 
 impl Context {
     pub fn is_input(&self) -> bool {
-        if let Context::Input(..) = *self {
-            true
-        } else {
-            false
-        }
+        matches!(*self, Context::Input(..))
     }
 
     pub fn input(self) -> Input {
@@ -35,11 +31,7 @@ impl Context {
     }
 
     pub fn is_output(&self) -> bool {
-        if let Context::Output(..) = *self {
-            true
-        } else {
-            false
-        }
+        matches!(*self, Context::Output(..))
     }
 
     pub fn output(self) -> Output {

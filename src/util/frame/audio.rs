@@ -249,11 +249,7 @@ pub unsafe trait Sample {
 unsafe impl Sample for u8 {
     #[inline(always)]
     fn is_valid(format: format::Sample, _channels: u16) -> bool {
-        if let format::Sample::U8(..) = format {
-            true
-        } else {
-            false
-        }
+        matches!(format, format::Sample::U8(..))
     }
 }
 
@@ -302,11 +298,7 @@ unsafe impl Sample for (u8, u8, u8, u8, u8, u8, u8) {
 unsafe impl Sample for i16 {
     #[inline(always)]
     fn is_valid(format: format::Sample, _channels: u16) -> bool {
-        if let format::Sample::I16(..) = format {
-            true
-        } else {
-            false
-        }
+        matches!(format, format::Sample::I16(..))
     }
 }
 
@@ -355,11 +347,7 @@ unsafe impl Sample for (i16, i16, i16, i16, i16, i16, i16) {
 unsafe impl Sample for i32 {
     #[inline(always)]
     fn is_valid(format: format::Sample, _channels: u16) -> bool {
-        if let format::Sample::I32(..) = format {
-            true
-        } else {
-            false
-        }
+        matches!(format, format::Sample::I32(..))
     }
 }
 
@@ -408,11 +396,7 @@ unsafe impl Sample for (i32, i32, i32, i32, i32, i32, i32) {
 unsafe impl Sample for f32 {
     #[inline(always)]
     fn is_valid(format: format::Sample, _channels: u16) -> bool {
-        if let format::Sample::F32(..) = format {
-            true
-        } else {
-            false
-        }
+        matches!(format, format::Sample::F32(..))
     }
 }
 
@@ -461,11 +445,7 @@ unsafe impl Sample for (f32, f32, f32, f32, f32, f32, f32) {
 unsafe impl Sample for f64 {
     #[inline(always)]
     fn is_valid(format: format::Sample, _channels: u16) -> bool {
-        if let format::Sample::F64(..) = format {
-            true
-        } else {
-            false
-        }
+        matches!(format, format::Sample::F64(..))
     }
 }
 

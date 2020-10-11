@@ -15,7 +15,7 @@ fn main() -> Result<(), ffmpeg::Error> {
         let input = ictx
             .streams()
             .best(Type::Video)
-            .ok_or_else(|| ffmpeg::Error::StreamNotFound)?;
+            .ok_or(ffmpeg::Error::StreamNotFound)?;
         let video_stream_index = input.index();
 
         let mut decoder = input.codec().decoder().video()?;

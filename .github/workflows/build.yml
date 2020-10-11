@@ -84,10 +84,10 @@ jobs:
       - name: Install dependencies
         run: |
           $VCINSTALLDIR = $(& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath)
-          Write-Output "::set-env name=LIBCLANG_PATH::${VCINSTALLDIR}\VC\Tools\LLVM\x64\bin"
+          Add-Content $env:GITHUB_ENV "LIBCLANG_PATH=${VCINSTALLDIR}\VC\Tools\LLVM\x64\bin`n"
           Invoke-WebRequest "${env:FFMPEG_DOWNLOAD_URL}" -OutFile "${env:FFMPEG_DIRECTORY_NAME}.zip"
           Expand-Archive -Path "${env:FFMPEG_DIRECTORY_NAME}.zip" -DestinationPath .
-          Write-Output "::set-env name=FFMPEG_DIR::${pwd}\${env:FFMPEG_DIRECTORY_NAME}"
+          Add-Content $env:GITHUB_ENV "FFMPEG_DIR=${pwd}\${env:FFMPEG_DIRECTORY_NAME}`n"
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:

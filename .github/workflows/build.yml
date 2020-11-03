@@ -72,8 +72,8 @@ jobs:
       matrix:
         include:
           - ffmpeg_version: "4.3.1"
-            ffmpeg_download_url: https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-4.3.1-2020-09-21-full_build-shared.zip
-            ffmpeg_directory_name: ffmpeg-4.3.1-2020-09-21-full_build-shared
+            ffmpeg_download_url: https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-4.3.1-2020-10-28-full_build-shared.7z
+            ffmpeg_directory_name: ffmpeg-4.3.1-2020-10-28-full_build-shared
       fail-fast: false
     env:
       FFMPEG_VERSION: ${{ matrix.ffmpeg_version }}
@@ -85,8 +85,8 @@ jobs:
         run: |
           $VCINSTALLDIR = $(& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath)
           Add-Content $env:GITHUB_ENV "LIBCLANG_PATH=${VCINSTALLDIR}\VC\Tools\LLVM\x64\bin`n"
-          Invoke-WebRequest "${env:FFMPEG_DOWNLOAD_URL}" -OutFile "${env:FFMPEG_DIRECTORY_NAME}.zip"
-          Expand-Archive -Path "${env:FFMPEG_DIRECTORY_NAME}.zip" -DestinationPath .
+          Invoke-WebRequest "${env:FFMPEG_DOWNLOAD_URL}" -OutFile "${env:FFMPEG_DIRECTORY_NAME}.7z"
+          7z x "${env:FFMPEG_DIRECTORY_NAME}.7z"
           Add-Content $env:GITHUB_ENV "FFMPEG_DIR=${pwd}\${env:FFMPEG_DIRECTORY_NAME}`n"
       - name: Set up Rust
         uses: actions-rs/toolchain@v1

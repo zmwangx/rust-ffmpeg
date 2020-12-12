@@ -3,10 +3,10 @@ use std::ptr;
 use super::Delay;
 use ffi::*;
 use libc::c_int;
-use util::format;
-use {frame, ChannelLayout, Error};
-use Dictionary;
 use std::ffi::c_void;
+use util::format;
+use Dictionary;
+use {frame, ChannelLayout, Error};
 
 #[derive(Eq, PartialEq, Copy, Clone)]
 pub struct Definition {
@@ -46,7 +46,15 @@ impl Context {
         dst_channel_layout: ChannelLayout,
         dst_rate: u32,
     ) -> Result<Self, Error> {
-        Self::get_with(src_format, src_channel_layout, src_rate, dst_format, dst_channel_layout, dst_rate, Dictionary::new())
+        Self::get_with(
+            src_format,
+            src_channel_layout,
+            src_rate,
+            dst_format,
+            dst_channel_layout,
+            dst_rate,
+            Dictionary::new(),
+        )
     }
 
     /// Create a resampler with the given definitions and custom options dictionary.

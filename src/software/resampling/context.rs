@@ -5,6 +5,8 @@ use ffi::*;
 use libc::c_int;
 use util::format;
 use {frame, ChannelLayout, Error};
+use Dictionary;
+use std::ffi::c_void;
 
 #[derive(Eq, PartialEq, Copy, Clone)]
 pub struct Definition {
@@ -44,6 +46,19 @@ impl Context {
         dst_channel_layout: ChannelLayout,
         dst_rate: u32,
     ) -> Result<Self, Error> {
+        Self::get_with(src_format, src_channel_layout, src_rate, dst_format, dst_channel_layout, dst_rate, Dictionary::new())
+    }
+
+    /// Create a resampler with the given definitions and custom options dictionary.
+    pub fn get_with(
+        src_format: format::Sample,
+        src_channel_layout: ChannelLayout,
+        src_rate: u32,
+        dst_format: format::Sample,
+        dst_channel_layout: ChannelLayout,
+        dst_rate: u32,
+        options: Dictionary,
+    ) -> Result<Self, Error> {
         unsafe {
             let ptr = swr_alloc_set_opts(
                 ptr::null_mut(),
@@ -56,6 +71,14 @@ impl Context {
                 0,
                 ptr::null_mut(),
             );
+
+            let mut opts = options.disown();
+            let res = av_opt_set_dict(ptr as *mut c_void, &mut opts);
+            Dictionary::own(opts);
+
+            if res != 0 {
+                return Err(Error::from(res));
+            }
 
             if !ptr.is_null() {
                 match swr_init(ptr) {

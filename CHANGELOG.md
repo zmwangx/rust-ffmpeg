@@ -7,6 +7,10 @@
 
 - codec: fix signature of `Packet::write_interleaved`; previously `Result<bool, Error>`, now `Result<(), Error>`. (#25)
 
+4.3.8
+-----
+- software::resampling: add Context::get_with for specifying additional options. (#41)
+
 4.3.7
 -----
 

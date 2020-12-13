@@ -1,3 +1,7 @@
+4.3.8
+-----
+- software::resampling: add Context::get_with for specifying additional options. (#41)
+
 4.3.7
 -----
 

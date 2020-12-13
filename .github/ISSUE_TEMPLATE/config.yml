@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+
+contact_links:
+- name: Questions about usage
+  url: https://github.com/zmwangx/rust-ffmpeg/discussions
+  about: If you have a question about usage, please use discussions instead of opening a (non-)issue. Note that I (solo maintainer short on time) unfortunately might not be able to respond, though I try to be helpful when time permits.

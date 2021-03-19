@@ -6,11 +6,14 @@ use super::common::Context;
 use super::destructor;
 use ffi::*;
 use util::range::Range;
-use {format, Codec, Error, Packet, Stream};
+use Codec, Error, Packet, Stream;
+use crate::format;
+use crate::format::io::Io;
 
 pub struct Input {
     ptr: *mut AVFormatContext,
     ctx: Context,
+    _io: Option<Io>,
 }
 
 unsafe impl Send for Input {}
@@ -20,6 +23,15 @@ impl Input {
         Input {
             ptr,
             ctx: Context::wrap(ptr, destructor::Mode::Input),
+            _io: None,
+        }
+    }
+
+    pub unsafe fn wrap_with(ptr: *mut AVFormatContext, io: Io) -> Self {
+        Input {
+            ptr,
+            ctx: Context::wrap(ptr, destructor::Mode::Input),
+            _io: Some(io),
         }
     }
 

@@ -566,6 +566,35 @@ pub enum Id {
     HCA,
     #[cfg(feature = "ffmpeg_4_3")]
     EPG,
+
+    #[cfg(feature = "ffmpeg_4_4")]
+    AVS3,
+    #[cfg(feature = "ffmpeg_4_4")]
+    PGX,
+    #[cfg(feature = "ffmpeg_4_4")]
+    MSP2,
+    #[cfg(feature = "ffmpeg_4_4")]
+    VVC,
+    #[cfg(feature = "ffmpeg_4_4")]
+    MOBICLIP,
+    #[cfg(feature = "ffmpeg_4_4")]
+    PHOTOCD,
+    #[cfg(feature = "ffmpeg_4_4")]
+    ARGO,
+    #[cfg(feature = "ffmpeg_4_4")]
+    CRI,
+    #[cfg(feature = "ffmpeg_4_4")]
+    IPU,
+    #[cfg(feature = "ffmpeg_4_4")]
+    SIMBIOSIS_IMX,
+    #[cfg(feature = "ffmpeg_4_4")]
+    SGA_VIDEO,
+    #[cfg(feature = "ffmpeg_4_4")]
+    PCM_SGA,
+    #[cfg(feature = "ffmpeg_4_4")]
+    ADPCM_IMA_MOFLEX,
+    #[cfg(feature = "ffmpeg_4_4")]
+    FASTAUDIO
 }
 
 impl Id {
@@ -1139,6 +1168,35 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_HCA => Id::HCA,
             #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_EPG => Id::EPG,
+
+            #[cfg(feature = "ffmpeg_4_4")]
+            AV_CODEC_ID_PGX => Id::PGX,
+            #[cfg(feature = "ffmpeg_4_4")]
+            AV_CODEC_ID_AVS3 => Id::AVS3,
+            #[cfg(feature = "ffmpeg_4_4")]
+            AV_CODEC_ID_MSP2 => Id::MSP2,
+            #[cfg(feature = "ffmpeg_4_4")]
+            AV_CODEC_ID_VVC => Id::VVC,
+            #[cfg(feature = "ffmpeg_4_4")]
+            AV_CODEC_ID_MOBICLIP => Id::MOBICLIP,
+            #[cfg(feature = "ffmpeg_4_4")]
+            AV_CODEC_ID_PHOTOCD => Id::PHOTOCD,
+            #[cfg(feature = "ffmpeg_4_4")]
+            AV_CODEC_ID_IPU => Id::IPU,
+            #[cfg(feature = "ffmpeg_4_4")]
+            AV_CODEC_ID_ARGO => Id::ARGO,
+            #[cfg(feature = "ffmpeg_4_4")]
+            AV_CODEC_ID_CRI => Id::CRI,
+            #[cfg(feature = "ffmpeg_4_4")]
+            AV_CODEC_ID_SIMBIOSIS_IMX => Id::SIMBIOSIS_IMX,
+            #[cfg(feature = "ffmpeg_4_4")]
+            AV_CODEC_ID_SGA_VIDEO => Id::SGA_VIDEO,
+            #[cfg(feature = "ffmpeg_4_4")]
+            AV_CODEC_ID_PCM_SGA => Id::PCM_SGA,
+            #[cfg(feature = "ffmpeg_4_4")]
+            AV_CODEC_ID_ADPCM_IMA_MOFLEX => Id::ADPCM_IMA_MOFLEX,
+            #[cfg(feature = "ffmpeg_4_4")]
+            AV_CODEC_ID_FASTAUDIO => Id::FASTAUDIO
         }
     }
 }
@@ -1704,6 +1762,35 @@ impl Into<AVCodecID> for Id {
             Id::HCA => AV_CODEC_ID_HCA,
             #[cfg(feature = "ffmpeg_4_3")]
             Id::EPG => AV_CODEC_ID_EPG,
+
+            #[cfg(feature = "ffmpeg_4_4")]
+            Id::PGX => AV_CODEC_ID_PGX,
+            #[cfg(feature = "ffmpeg_4_4")]
+            Id::AVS3 => AV_CODEC_ID_AVS3,
+            #[cfg(feature = "ffmpeg_4_4")]
+            Id::MSP2 => AV_CODEC_ID_MSP2,
+            #[cfg(feature = "ffmpeg_4_4")]
+            Id::VVC => AV_CODEC_ID_VVC,
+            #[cfg(feature = "ffmpeg_4_4")]
+            Id::MOBICLIP => AV_CODEC_ID_MOBICLIP,
+            #[cfg(feature = "ffmpeg_4_4")]
+            Id::PHOTOCD => AV_CODEC_ID_PHOTOCD,
+            #[cfg(feature = "ffmpeg_4_4")]
+            Id::IPU => AV_CODEC_ID_IPU,
+            #[cfg(feature = "ffmpeg_4_4")]
+            Id::ARGO => AV_CODEC_ID_ARGO,
+            #[cfg(feature = "ffmpeg_4_4")]
+            Id::CRI => AV_CODEC_ID_CRI,
+            #[cfg(feature = "ffmpeg_4_4")]
+            Id::SIMBIOSIS_IMX => AV_CODEC_ID_SIMBIOSIS_IMX,
+            #[cfg(feature = "ffmpeg_4_4")]
+            Id::SGA_VIDEO => AV_CODEC_ID_SGA_VIDEO,
+            #[cfg(feature = "ffmpeg_4_4")]
+            Id::PCM_SGA => AV_CODEC_ID_PCM_SGA,
+            #[cfg(feature = "ffmpeg_4_4")]
+            Id::ADPCM_IMA_MOFLEX => AV_CODEC_ID_ADPCM_IMA_MOFLEX,
+            #[cfg(feature = "ffmpeg_4_4")]
+            Id::FASTAUDIO => AV_CODEC_ID_FASTAUDIO
         }
     }
 }

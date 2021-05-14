@@ -1139,6 +1139,8 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_HCA => Id::HCA,
             #[cfg(feature = "ffmpeg_4_3")]
             AV_CODEC_ID_EPG => Id::EPG,
+            #[allow(unreachable_pattern)]
+            _ => unimplemented!(),
         }
     }
 }
@@ -1704,6 +1706,8 @@ impl Into<AVCodecID> for Id {
             Id::HCA => AV_CODEC_ID_HCA,
             #[cfg(feature = "ffmpeg_4_3")]
             Id::EPG => AV_CODEC_ID_EPG,
+            #[allow(unreachable_patterns)]
+            _ => unimplemented!(),
         }
     }
 }

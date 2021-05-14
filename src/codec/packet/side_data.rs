@@ -94,6 +94,8 @@ impl From<AVPacketSideDataType> for Type {
             AV_PKT_DATA_ICC_PROFILE => Type::ICC_PROFILE,
             #[cfg(feature = "ffmpeg_4_3")]
             AV_PKT_DATA_DOVI_CONF => Type::DOVI_CONF,
+            #[allow(unreachable_patterns)]
+            _ => unimplemented!(),
         }
     }
 }
@@ -142,6 +144,8 @@ impl Into<AVPacketSideDataType> for Type {
             Type::ICC_PROFILE => AV_PKT_DATA_ICC_PROFILE,
             #[cfg(feature = "ffmpeg_4_3")]
             Type::DOVI_CONF => AV_PKT_DATA_DOVI_CONF,
+            #[allow(unreachable_patterns)]
+            _ => unimplemented!(),
         }
     }
 }

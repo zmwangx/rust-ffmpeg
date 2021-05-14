@@ -91,6 +91,8 @@ impl From<AVFrameSideDataType> for Type {
 
             #[cfg(feature = "ffmpeg_4_3")]
             AV_FRAME_DATA_VIDEO_ENC_PARAMS => Type::VIDEO_ENC_PARAMS,
+            #[allow(unreachable_patterns)]
+            _ => unimplemented!(),
         }
     }
 }
@@ -132,6 +134,8 @@ impl Into<AVFrameSideDataType> for Type {
 
             #[cfg(feature = "ffmpeg_4_3")]
             Type::VIDEO_ENC_PARAMS => AV_FRAME_DATA_VIDEO_ENC_PARAMS,
+            #[allow(unreachable_patterns)]
+            _ => unimplemented!(),
         }
     }
 }

@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 use super::{Sink, Source};
 use ffi::*;
 use libc::c_void;
-use {format, option, ChannelLayout};
+use {format, option, ChannelLayout, Error};
 
 pub struct Context<'a> {
     ptr: *mut AVFilterContext,
@@ -51,6 +51,23 @@ impl<'a> Context<'a> {
 
     pub fn set_channel_layout(&mut self, value: ChannelLayout) {
         let _ = option::Settable::set(self, "channel_layouts", &value.bits());
+    }
+
+    /// Links this filter context to another one.
+    ///
+    /// For more info view [ffmpeg's documentation](
+    /// https://ffmpeg.org/doxygen/3.4/group__lavfi.html#gabc6247ebae2c591e768c8555174402f1).
+    pub fn link<'b, 'c>(&mut self, other: &'b mut Context<'c>) -> Result<&'b mut Context<'c>, Error>
+    where
+        'a: 'b,
+        'b: 'c,
+    {
+        unsafe {
+            match sys::avfilter_link(self.as_mut_ptr(), 0, other.as_mut_ptr(), 0) {
+                s if s >= 0 => Ok(other),
+                e => Err(Error::from(e)),
+            }
+        }
     }
 }
 

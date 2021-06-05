@@ -117,6 +117,46 @@ impl Graph {
     pub fn parse(&mut self, spec: &str) -> Result<(), Error> {
         Parser::new(self).parse(spec)
     }
+
+    /// Links one filter in the graph with another. Filters are specified by name. If you want to
+    /// link two [Contexts] together, see the [`crate::filters::context::Context::link`] method.
+    ///
+    /// [Contexts]: crate::filters::context::Context
+    pub fn link(&mut self, from: &str, to: &str) -> Result<(), Error> {
+        unsafe {
+            let from_s = CString::new(from).unwrap();
+            let ff_ptr = sys::avfilter_graph_get_filter(self.as_mut_ptr(), from_s.as_ptr());
+
+            let ff = if ff_ptr.is_null() {
+                return Err(Error::FilterNotFound);
+            } else {
+                ff_ptr
+            };
+            let to_s = CString::new(to).unwrap();
+            let tf_ptr = sys::avfilter_graph_get_filter(self.as_mut_ptr(), to_s.as_ptr());
+
+            let tf = if tf_ptr.is_null() {
+                return Err(Error::FilterNotFound);
+            } else {
+                tf_ptr
+            };
+            match sys::avfilter_link(ff, 0, tf, 0) {
+                s if s >= 0 => Ok(()),
+                e => Err(Error::from(e)),
+            }
+        }
+    }
+
+    /// Links multiple filters in the graph together. The first filter will be link to the second
+    /// one and then the second one to the third one, and so on.
+    ///
+    /// All filters must already exist within the graph and sshould be specified by name.
+    pub fn chain_link<'a, N: AsRef<[&'a str]>>(&mut self, filters: N) -> Result<(), Error> {
+        for (from, to) in filters.as_ref().iter().zip(filters.as_ref().iter().skip(1)) {
+            self.link(from, to)?;
+        }
+        Ok(())
+    }
 }
 
 impl Drop for Graph {
@@ -220,5 +260,34 @@ impl<'a> Parser<'a> {
 impl Default for Graph {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::filter::find;
+
+    fn make_graph() -> Graph {
+        let mut graph = Graph::new();
+        graph.add(
+            &find("buffer").unwrap(), "in",
+            "width=320:height=240:pix_fmt=yuv410p:time_base=1/24:sar=1").unwrap();
+        graph.add(
+            &find("scale").unwrap(), "scale", "w=50:h=50:eval=frame:flags=fast_bilinear").unwrap();
+        graph.add(&find("buffersink").unwrap(), "out", "").unwrap();
+        graph
+    }
+
+    #[test]
+    fn test_link() {
+        let mut graph = make_graph();
+        assert!(matches!(graph.link("in", "scale"), Ok(_)));
+    }
+
+    #[test]
+    fn test_chain_link() {
+        let mut graph = make_graph();
+        assert!(matches!(graph.chain_link(&["in", "scale", "out"]), Ok(_)));
     }
 }

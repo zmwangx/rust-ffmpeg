@@ -94,6 +94,8 @@ impl From<AVPacketSideDataType> for Type {
             AV_PKT_DATA_ICC_PROFILE => Type::ICC_PROFILE,
             #[cfg(feature = "ffmpeg_4_3")]
             AV_PKT_DATA_DOVI_CONF => Type::DOVI_CONF,
+
+            _ => panic!("Unknown AVPacketSideDataType value. You maybe using an incompatible version of FFMpeg."),
         }
     }
 }

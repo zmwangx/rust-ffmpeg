@@ -687,6 +687,8 @@ impl From<AVPixelFormat> for Pixel {
             AV_PIX_FMT_RPI4_8 => Pixel::RPI4_8,
             #[cfg(feature = "rpi")]
             AV_PIX_FMT_RPI4_10 => Pixel::RPI4_10,
+
+            _ => panic!("Unknown AVPixelFormat value. You maybe using an incompatible version of FFMpeg."),
         }
     }
 }

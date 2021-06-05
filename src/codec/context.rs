@@ -112,6 +112,22 @@ impl Context {
             }
         }
     }
+
+    pub fn width(&self) -> u32 {
+        unsafe { (*self.as_ptr()).width as u32 }
+    }
+
+    pub fn height(&self) -> u32 {
+        unsafe { (*self.as_ptr()).height as u32 }
+    }
+
+    pub fn coded_width(&self) -> u32 {
+        unsafe { (*self.as_ptr()).coded_width as u32 }
+    }
+
+    pub fn coded_height(&self) -> u32 {
+        unsafe { (*self.as_ptr()).coded_height as u32 }
+    }
 }
 
 impl Default for Context {

@@ -50,7 +50,7 @@ pub enum Type {
     DOVI_CONF,
 
     #[cfg(feature = "ffmpeg_4_4")]
-    S12M_TIMECODE
+    S12M_TIMECODE,
 }
 
 impl From<AVPacketSideDataType> for Type {
@@ -99,14 +99,14 @@ impl From<AVPacketSideDataType> for Type {
             AV_PKT_DATA_DOVI_CONF => Type::DOVI_CONF,
 
             #[cfg(feature = "ffmpeg_4_4")]
-            AV_PKT_DATA_S12M_TIMECODE => Type::S12M_TIMECODE
+            AV_PKT_DATA_S12M_TIMECODE => Type::S12M_TIMECODE,
         }
     }
 }
 
-impl Into<AVPacketSideDataType> for Type {
-    fn into(self) -> AVPacketSideDataType {
-        match self {
+impl From<Type> for AVPacketSideDataType {
+    fn from(value: Type) -> AVPacketSideDataType {
+        match value {
             Type::Palette => AV_PKT_DATA_PALETTE,
             Type::NewExtraData => AV_PKT_DATA_NEW_EXTRADATA,
             Type::ParamChange => AV_PKT_DATA_PARAM_CHANGE,
@@ -150,7 +150,7 @@ impl Into<AVPacketSideDataType> for Type {
             Type::DOVI_CONF => AV_PKT_DATA_DOVI_CONF,
 
             #[cfg(feature = "ffmpeg_4_4")]
-            Type::S12M_TIMECODE => AV_PKT_DATA_S12M_TIMECODE
+            Type::S12M_TIMECODE => AV_PKT_DATA_S12M_TIMECODE,
         }
     }
 }

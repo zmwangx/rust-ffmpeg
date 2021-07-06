@@ -31,9 +31,9 @@ impl From<AVAudioServiceType> for AudioService {
     }
 }
 
-impl Into<AVAudioServiceType> for AudioService {
-    fn into(self) -> AVAudioServiceType {
-        match self {
+impl From<AudioService> for AVAudioServiceType {
+    fn from(value: AudioService) -> AVAudioServiceType {
+        match value {
             AudioService::Main => AV_AUDIO_SERVICE_TYPE_MAIN,
             AudioService::Effects => AV_AUDIO_SERVICE_TYPE_EFFECTS,
             AudioService::VisuallyImpaired => AV_AUDIO_SERVICE_TYPE_VISUALLY_IMPAIRED,

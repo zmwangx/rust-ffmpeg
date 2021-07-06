@@ -29,10 +29,10 @@ impl From<AVPictureType> for Type {
     }
 }
 
-impl Into<AVPictureType> for Type {
+impl From<Type> for AVPictureType {
     #[inline(always)]
-    fn into(self) -> AVPictureType {
-        match self {
+    fn from(value: Type) -> AVPictureType {
+        match value {
             Type::None => AV_PICTURE_TYPE_NONE,
             Type::I => AV_PICTURE_TYPE_I,
             Type::P => AV_PICTURE_TYPE_P,

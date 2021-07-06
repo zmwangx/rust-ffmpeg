@@ -18,9 +18,9 @@ impl From<SwrFilterType> for Filter {
     }
 }
 
-impl Into<SwrFilterType> for Filter {
-    fn into(self) -> SwrFilterType {
-        match self {
+impl From<Filter> for SwrFilterType {
+    fn from(value: Filter) -> SwrFilterType {
+        match value {
             Filter::Cubic => SWR_FILTER_TYPE_CUBIC,
             Filter::BlackmanNuttall => SWR_FILTER_TYPE_BLACKMAN_NUTTALL,
             Filter::Kaiser => SWR_FILTER_TYPE_KAISER,

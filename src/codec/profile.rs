@@ -279,9 +279,9 @@ impl From<(Id, c_int)> for Profile {
     }
 }
 
-impl Into<c_int> for Profile {
-    fn into(self) -> c_int {
-        match self {
+impl From<Profile> for c_int {
+    fn from(value: Profile) -> c_int {
+        match value {
             Profile::Unknown => FF_PROFILE_UNKNOWN,
             Profile::Reserved => FF_PROFILE_RESERVED,
 

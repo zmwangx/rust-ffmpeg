@@ -24,9 +24,9 @@ impl From<AVFieldOrder> for FieldOrder {
     }
 }
 
-impl Into<AVFieldOrder> for FieldOrder {
-    fn into(self) -> AVFieldOrder {
-        match self {
+impl From<FieldOrder> for AVFieldOrder {
+    fn from(value: FieldOrder) -> AVFieldOrder {
+        match value {
             FieldOrder::Unknown => AV_FIELD_UNKNOWN,
             FieldOrder::Progressive => AV_FIELD_PROGRESSIVE,
             FieldOrder::TT => AV_FIELD_TT,

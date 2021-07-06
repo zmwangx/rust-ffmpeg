@@ -702,10 +702,10 @@ impl From<AVPixelFormat> for Pixel {
     }
 }
 
-impl Into<AVPixelFormat> for Pixel {
+impl From<Pixel> for AVPixelFormat {
     #[inline]
-    fn into(self) -> AVPixelFormat {
-        match self {
+    fn from(value: Pixel) -> AVPixelFormat {
+        match value {
             Pixel::None => AV_PIX_FMT_NONE,
 
             Pixel::YUV420P => AV_PIX_FMT_YUV420P,

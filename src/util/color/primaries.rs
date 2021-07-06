@@ -70,9 +70,9 @@ impl From<AVColorPrimaries> for Primaries {
     }
 }
 
-impl Into<AVColorPrimaries> for Primaries {
-    fn into(self) -> AVColorPrimaries {
-        match self {
+impl From<Primaries> for AVColorPrimaries {
+    fn from(value: Primaries) -> AVColorPrimaries {
+        match value {
             Primaries::Reserved0 => AVCOL_PRI_RESERVED0,
             Primaries::BT709 => AVCOL_PRI_BT709,
             Primaries::Unspecified => AVCOL_PRI_UNSPECIFIED,

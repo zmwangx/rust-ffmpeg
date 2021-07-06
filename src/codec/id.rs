@@ -594,7 +594,7 @@ pub enum Id {
     #[cfg(feature = "ffmpeg_4_4")]
     ADPCM_IMA_MOFLEX,
     #[cfg(feature = "ffmpeg_4_4")]
-    FASTAUDIO
+    FASTAUDIO,
 }
 
 impl Id {
@@ -1196,14 +1196,14 @@ impl From<AVCodecID> for Id {
             #[cfg(feature = "ffmpeg_4_4")]
             AV_CODEC_ID_ADPCM_IMA_MOFLEX => Id::ADPCM_IMA_MOFLEX,
             #[cfg(feature = "ffmpeg_4_4")]
-            AV_CODEC_ID_FASTAUDIO => Id::FASTAUDIO
+            AV_CODEC_ID_FASTAUDIO => Id::FASTAUDIO,
         }
     }
 }
 
-impl Into<AVCodecID> for Id {
-    fn into(self) -> AVCodecID {
-        match self {
+impl From<Id> for AVCodecID {
+    fn from(value: Id) -> AVCodecID {
+        match value {
             Id::None => AV_CODEC_ID_NONE,
 
             /* video codecs */
@@ -1790,7 +1790,7 @@ impl Into<AVCodecID> for Id {
             #[cfg(feature = "ffmpeg_4_4")]
             Id::ADPCM_IMA_MOFLEX => AV_CODEC_ID_ADPCM_IMA_MOFLEX,
             #[cfg(feature = "ffmpeg_4_4")]
-            Id::FASTAUDIO => AV_CODEC_ID_FASTAUDIO
+            Id::FASTAUDIO => AV_CODEC_ID_FASTAUDIO,
         }
     }
 }

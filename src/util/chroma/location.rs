@@ -27,9 +27,9 @@ impl From<AVChromaLocation> for Location {
     }
 }
 
-impl Into<AVChromaLocation> for Location {
-    fn into(self) -> AVChromaLocation {
-        match self {
+impl From<Location> for AVChromaLocation {
+    fn from(value: Location) -> AVChromaLocation {
+        match value {
             Location::Unspecified => AVCHROMA_LOC_UNSPECIFIED,
             Location::Left => AVCHROMA_LOC_LEFT,
             Location::Center => AVCHROMA_LOC_CENTER,

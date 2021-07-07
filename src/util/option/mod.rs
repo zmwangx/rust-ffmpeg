@@ -55,9 +55,9 @@ impl From<AVOptionType> for Type {
     }
 }
 
-impl Into<AVOptionType> for Type {
-    fn into(self) -> AVOptionType {
-        match self {
+impl From<Type> for AVOptionType {
+    fn from(value: Type) -> AVOptionType {
+        match value {
             Type::Flags => AV_OPT_TYPE_FLAGS,
             Type::Int => AV_OPT_TYPE_INT,
             Type::Int64 => AV_OPT_TYPE_INT64,

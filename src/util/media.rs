@@ -26,10 +26,10 @@ impl From<AVMediaType> for Type {
     }
 }
 
-impl Into<AVMediaType> for Type {
+impl From<Type> for AVMediaType {
     #[inline(always)]
-    fn into(self) -> AVMediaType {
-        match self {
+    fn from(value: Type) -> AVMediaType {
+        match value {
             Type::Unknown => AVMEDIA_TYPE_UNKNOWN,
             Type::Video => AVMEDIA_TYPE_VIDEO,
             Type::Audio => AVMEDIA_TYPE_AUDIO,

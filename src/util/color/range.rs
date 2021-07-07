@@ -35,9 +35,9 @@ impl From<AVColorRange> for Range {
     }
 }
 
-impl Into<AVColorRange> for Range {
-    fn into(self) -> AVColorRange {
-        match self {
+impl From<Range> for AVColorRange {
+    fn from(value: Range) -> AVColorRange {
+        match value {
             Range::Unspecified => AVCOL_RANGE_UNSPECIFIED,
             Range::MPEG => AVCOL_RANGE_MPEG,
             Range::JPEG => AVCOL_RANGE_JPEG,

@@ -46,9 +46,9 @@ impl From<c_int> for Comparison {
     }
 }
 
-impl Into<c_int> for Comparison {
-    fn into(self) -> c_int {
-        match self {
+impl From<Comparison> for c_int {
+    fn from(value: Comparison) -> c_int {
+        match value {
             Comparison::SAD => FF_CMP_SAD,
             Comparison::SSE => FF_CMP_SSE,
             Comparison::SATD => FF_CMP_SATD,

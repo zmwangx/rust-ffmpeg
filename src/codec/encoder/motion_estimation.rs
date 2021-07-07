@@ -33,9 +33,9 @@ impl From<c_int> for MotionEstimation {
     }
 }
 
-impl Into<c_int> for MotionEstimation {
-    fn into(self) -> c_int {
-        match self {
+impl From<MotionEstimation> for c_int {
+    fn from(value: MotionEstimation) -> c_int {
+        match value {
             MotionEstimation::Zero => 1,
             MotionEstimation::Full => 2,
             MotionEstimation::Log => 3,

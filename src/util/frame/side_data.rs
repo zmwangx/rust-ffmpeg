@@ -47,7 +47,7 @@ pub enum Type {
     #[cfg(feature = "ffmpeg_4_4")]
     SEI_UNREGISTERED,
     #[cfg(feature = "ffmpeg_4_4")]
-    FILM_GRAIN_PARAMS
+    FILM_GRAIN_PARAMS,
 }
 
 impl Type {
@@ -100,15 +100,15 @@ impl From<AVFrameSideDataType> for Type {
             #[cfg(feature = "ffmpeg_4_4")]
             AV_FRAME_DATA_SEI_UNREGISTERED => Type::SEI_UNREGISTERED,
             #[cfg(feature = "ffmpeg_4_4")]
-            AV_FRAME_DATA_FILM_GRAIN_PARAMS => Type::FILM_GRAIN_PARAMS
+            AV_FRAME_DATA_FILM_GRAIN_PARAMS => Type::FILM_GRAIN_PARAMS,
         }
     }
 }
 
-impl Into<AVFrameSideDataType> for Type {
+impl From<Type> for AVFrameSideDataType {
     #[inline(always)]
-    fn into(self) -> AVFrameSideDataType {
-        match self {
+    fn from(value: Type) -> AVFrameSideDataType {
+        match value {
             Type::PanScan => AV_FRAME_DATA_PANSCAN,
             Type::A53CC => AV_FRAME_DATA_A53_CC,
             Type::Stereo3D => AV_FRAME_DATA_STEREO3D,
@@ -146,7 +146,7 @@ impl Into<AVFrameSideDataType> for Type {
             #[cfg(feature = "ffmpeg_4_4")]
             Type::SEI_UNREGISTERED => AV_FRAME_DATA_SEI_UNREGISTERED,
             #[cfg(feature = "ffmpeg_4_4")]
-            Type::FILM_GRAIN_PARAMS => AV_FRAME_DATA_FILM_GRAIN_PARAMS
+            Type::FILM_GRAIN_PARAMS => AV_FRAME_DATA_FILM_GRAIN_PARAMS,
         }
     }
 }

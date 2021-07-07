@@ -11,7 +11,7 @@ jobs:
     container: jrottenberg/ffmpeg:${{ matrix.ffmpeg_version }}-ubuntu
     strategy:
       matrix:
-        ffmpeg_version: ["3.4", "4.0", "4.1", "4.2", "4.3"]
+        ffmpeg_version: ["3.4", "4.0", "4.1", "4.2", "4.3", "4.4"]
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
@@ -87,6 +87,7 @@ jobs:
           mkdir ffmpeg
           mv ffmpeg-*/* ffmpeg/
           Add-Content $env:GITHUB_ENV "FFMPEG_DIR=${pwd}\ffmpeg`n"
+          Add-Content $env:GITHUB_PATH "${pwd}\ffmpeg\bin`n"
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:

@@ -101,10 +101,10 @@ impl From<&'static str> for Sample {
     }
 }
 
-impl Into<AVSampleFormat> for Sample {
+impl From<Sample> for AVSampleFormat {
     #[inline]
-    fn into(self) -> AVSampleFormat {
-        match self {
+    fn from(value: Sample) -> AVSampleFormat {
+        match value {
             Sample::None => AV_SAMPLE_FMT_NONE,
 
             Sample::U8(Type::Packed) => AV_SAMPLE_FMT_U8,

@@ -24,9 +24,9 @@ impl From<c_int> for Compliance {
     }
 }
 
-impl Into<c_int> for Compliance {
-    fn into(self) -> c_int {
-        match self {
+impl From<Compliance> for c_int {
+    fn from(value: Compliance) -> c_int {
+        match value {
             Compliance::VeryStrict => FF_COMPLIANCE_VERY_STRICT,
             Compliance::Strict => FF_COMPLIANCE_STRICT,
             Compliance::Normal => FF_COMPLIANCE_NORMAL,

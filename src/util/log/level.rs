@@ -37,9 +37,9 @@ impl TryFrom<c_int> for Level {
     }
 }
 
-impl Into<c_int> for Level {
-    fn into(self) -> c_int {
-        match self {
+impl From<Level> for c_int {
+    fn from(value: Level) -> c_int {
+        match value {
             Level::Quiet => AV_LOG_QUIET,
             Level::Panic => AV_LOG_PANIC,
             Level::Fatal => AV_LOG_FATAL,

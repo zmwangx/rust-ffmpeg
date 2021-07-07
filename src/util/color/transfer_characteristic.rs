@@ -67,9 +67,9 @@ impl From<AVColorTransferCharacteristic> for TransferCharacteristic {
     }
 }
 
-impl Into<AVColorTransferCharacteristic> for TransferCharacteristic {
-    fn into(self) -> AVColorTransferCharacteristic {
-        match self {
+impl From<TransferCharacteristic> for AVColorTransferCharacteristic {
+    fn from(value: TransferCharacteristic) -> AVColorTransferCharacteristic {
+        match value {
             TransferCharacteristic::Reserved0 => AVCOL_TRC_RESERVED0,
             TransferCharacteristic::BT709 => AVCOL_TRC_BT709,
             TransferCharacteristic::Unspecified => AVCOL_TRC_UNSPECIFIED,

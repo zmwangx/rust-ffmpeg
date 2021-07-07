@@ -4,7 +4,7 @@
 
 This is a fork of the abandoned [ffmpeg](https://crates.io/crates/ffmpeg) crate by [meh.](https://github.com/meh/rust-ffmpeg).
 
-Currently supported FFmpeg versions: 3.4.x through 4.3.x.
+Currently supported FFmpeg versions: 3.4.x through 4.4.x.
 
 Build instructions can be found on the [wiki](https://github.com/zmwangx/rust-ffmpeg/wiki/Notes-on-building).
 

@@ -6,11 +6,14 @@ use super::common::Context;
 use super::destructor;
 use ffi::*;
 use util::range::Range;
-use {format, Codec, Error, Packet, Stream};
+use Codec, Error, Packet, Stream;
+use crate::format;
+use crate::format::io::Io;
 
 pub struct Input {
     ptr: *mut AVFormatContext,
     ctx: Context,
+    _io: Option<Io>,
 }
 
 unsafe impl Send for Input {}
@@ -20,6 +23,15 @@ impl Input {
         Input {
             ptr,
             ctx: Context::wrap(ptr, destructor::Mode::Input),
+            _io: None,
+        }
+    }
+
+    pub unsafe fn wrap_with(ptr: *mut AVFormatContext, io: Io) -> Self {
+        Input {
+            ptr,
+            ctx: Context::wrap(ptr, destructor::Mode::Input),
+            _io: Some(io),
         }
     }
 
@@ -153,24 +165,22 @@ impl<'a> PacketIter<'a> {
 }
 
 impl<'a> Iterator for PacketIter<'a> {
-    type Item = (Stream<'a>, Packet);
+    type Item = Result<(Stream<'a>, Packet), Error>;
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         let mut packet = Packet::empty();
 
-        loop {
-            match packet.read(self.context) {
-                Ok(..) => unsafe {
-                    return Some((
-                        Stream::wrap(mem::transmute_copy(&self.context), packet.stream()),
-                        packet,
-                    ));
-                },
+        match packet.read(self.context) {
+            Err(Error::Eof) => None,
 
-                Err(Error::Eof) => return None,
+            Ok(..) => unsafe {
+                Some(Ok((
+                    Stream::wrap(mem::transmute_copy(&self.context), packet.stream()),
+                    packet,
+                )))
+            },
 
-                Err(..) => (),
-            }
+            Err(err) => Some(Err(err)),
         }
     }
 }

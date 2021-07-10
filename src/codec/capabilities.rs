@@ -18,7 +18,9 @@ bitflags! {
         const PARAM_CHANGE        = AV_CODEC_CAP_PARAM_CHANGE;
         const AUTO_THREADS        = AV_CODEC_CAP_AUTO_THREADS;
         const VARIABLE_FRAME_SIZE = AV_CODEC_CAP_VARIABLE_FRAME_SIZE;
+        #[cfg_attr(feature = "ffmpeg_4_3", deprecated)]
         const INTRA_ONLY          = AV_CODEC_CAP_INTRA_ONLY;
+        #[cfg_attr(feature = "ffmpeg_4_3", deprecated)]
         const LOSSLESS            = AV_CODEC_CAP_LOSSLESS;
     }
 }

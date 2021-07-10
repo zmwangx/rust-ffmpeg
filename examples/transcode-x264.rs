@@ -229,7 +229,8 @@ fn main() {
         ost_time_bases[ost_index] = octx.stream(ost_index as _).unwrap().time_base();
     }
 
-    for (stream, mut packet) in ictx.packets() {
+    for res in ictx.packets() {
+        let (stream, mut packet) = res.unwrap();
         let ist_index = stream.index();
         let ost_index = stream_mapping[ist_index];
         if ost_index < 0 {

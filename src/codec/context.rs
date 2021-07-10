@@ -40,6 +40,15 @@ impl Context {
         }
     }
 
+    pub fn new_with_codec(codec: Codec) -> Self {
+        unsafe {
+            Context {
+                ptr: avcodec_alloc_context3(codec.as_ptr()),
+                owner: None,
+            }
+        }
+    }
+
     pub fn decoder(self) -> Decoder {
         Decoder(self)
     }

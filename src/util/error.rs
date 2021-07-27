@@ -201,8 +201,7 @@ fn index(error: &Error) -> usize {
 }
 
 // XXX: the length has to be synced with the number of errors
-static mut STRINGS: [[c_char; AV_ERROR_MAX_STRING_SIZE]; 27] =
-    [[0_i8; AV_ERROR_MAX_STRING_SIZE]; 27];
+static mut STRINGS: [[c_char; AV_ERROR_MAX_STRING_SIZE]; 27] = [[0; AV_ERROR_MAX_STRING_SIZE]; 27];
 
 pub fn register_all() {
     unsafe {

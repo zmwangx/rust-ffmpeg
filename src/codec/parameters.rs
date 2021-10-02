@@ -1,3 +1,4 @@
+use std::any::Any;
 use std::rc::Rc;
 
 use super::{Context, Id};
@@ -6,13 +7,13 @@ use media;
 
 pub struct Parameters {
     ptr: *mut AVCodecParameters,
-    owner: Option<Rc<dyn Drop>>,
+    owner: Option<Rc<dyn Any>>,
 }
 
 unsafe impl Send for Parameters {}
 
 impl Parameters {
-    pub unsafe fn wrap(ptr: *mut AVCodecParameters, owner: Option<Rc<dyn Drop>>) -> Self {
+    pub unsafe fn wrap(ptr: *mut AVCodecParameters, owner: Option<Rc<dyn Any>>) -> Self {
         Parameters { ptr, owner }
     }
 

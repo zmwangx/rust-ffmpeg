@@ -50,10 +50,12 @@ build-lib-ass        = ["ffmpeg-sys-next/build-lib-ass"]
 build-lib-freetype   = ["ffmpeg-sys-next/build-lib-freetype"]
 build-lib-freebidi   = ["ffmpeg-sys-next/build-lib-freebidi"]
 build-lib-opencv     = ["ffmpeg-sys-next/build-lib-opencv"]
+build-lib-vmaf       = ["ffmpeg-sys-next/build-lib-vmaf"]
 
 # encoders/decoders
 build-lib-aacplus          = ["ffmpeg-sys-next/build-lib-aacplus"]
 build-lib-celt             = ["ffmpeg-sys-next/build-lib-celt"]
+build-lib-dav1d            = ["ffmpeg-sys-next/build-lib-dav1d"]
 build-lib-dcadec           = ["ffmpeg-sys-next/build-lib-dcadec"]
 build-lib-faac             = ["ffmpeg-sys-next/build-lib-faac"]
 build-lib-fdk-aac          = ["ffmpeg-sys-next/build-lib-fdk-aac"]

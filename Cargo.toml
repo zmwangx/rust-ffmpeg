@@ -1,6 +1,6 @@
 [package]
 name    = "ffmpeg-next"
-version = "4.4.0-next.1"
+version = "4.4.0-next.2"
 build   = "build.rs"
 
 authors = ["meh. <meh@schizofreni.co>", "Zhiming Wang <i@zhimingwang.org>"]
@@ -109,9 +109,9 @@ libc     = "0.2"
 bitflags = "1.2"
 
 [dependencies.image]
-version  = "0.12"
+version  = "0.23"
 optional = true
 
 [dependencies.ffmpeg-sys-next]
-version = "4.4.0-next.1"
+version = "4.4.0-next.2"
 default-features = false

@@ -67,12 +67,12 @@ impl From<AVRational> for Rational {
     }
 }
 
-impl Into<AVRational> for Rational {
+impl From<Rational> for AVRational {
     #[inline]
-    fn into(self) -> AVRational {
+    fn from(value: Rational) -> AVRational {
         AVRational {
-            num: self.0,
-            den: self.1,
+            num: value.0,
+            den: value.1,
         }
     }
 }

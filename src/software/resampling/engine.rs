@@ -17,9 +17,9 @@ impl From<SwrEngine> for Engine {
     }
 }
 
-impl Into<SwrEngine> for Engine {
-    fn into(self) -> SwrEngine {
-        match self {
+impl From<Engine> for SwrEngine {
+    fn from(value: Engine) -> SwrEngine {
+        match value {
             Engine::Software => SWR_ENGINE_SWR,
             Engine::SoundExchange => SWR_ENGINE_SOXR,
         }

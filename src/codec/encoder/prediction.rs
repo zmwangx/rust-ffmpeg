@@ -20,9 +20,9 @@ impl From<c_int> for Prediction {
     }
 }
 
-impl Into<c_int> for Prediction {
-    fn into(self) -> c_int {
-        match self {
+impl From<Prediction> for c_int {
+    fn from(value: Prediction) -> c_int {
+        match value {
             Prediction::Left => FF_PRED_LEFT,
             Prediction::Plane => FF_PRED_PLANE,
             Prediction::Median => FF_PRED_MEDIAN,

@@ -63,9 +63,9 @@ impl From<AVColorSpace> for Space {
     }
 }
 
-impl Into<AVColorSpace> for Space {
-    fn into(self) -> AVColorSpace {
-        match self {
+impl From<Space> for AVColorSpace {
+    fn from(value: Space) -> AVColorSpace {
+        match value {
             Space::RGB => AVCOL_SPC_RGB,
             Space::BT709 => AVCOL_SPC_BT709,
             Space::Unspecified => AVCOL_SPC_UNSPECIFIED,

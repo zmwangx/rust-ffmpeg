@@ -38,9 +38,9 @@ impl From<SwrDitherType> for Dither {
     }
 }
 
-impl Into<SwrDitherType> for Dither {
-    fn into(self) -> SwrDitherType {
-        match self {
+impl From<Dither> for SwrDitherType {
+    fn from(value: Dither) -> SwrDitherType {
+        match value {
             Dither::None => SWR_DITHER_NONE,
             Dither::Rectangular => SWR_DITHER_RECTANGULAR,
             Dither::Triangular => SWR_DITHER_TRIANGULAR,

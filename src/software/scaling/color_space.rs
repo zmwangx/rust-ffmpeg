@@ -26,9 +26,9 @@ impl From<c_int> for ColorSpace {
     }
 }
 
-impl Into<c_int> for ColorSpace {
-    fn into(self) -> c_int {
-        match self {
+impl From<ColorSpace> for c_int {
+    fn from(value: ColorSpace) -> c_int {
+        match value {
             ColorSpace::Default => SWS_CS_DEFAULT,
             ColorSpace::ITU709 => SWS_CS_ITU709,
             ColorSpace::FCC => SWS_CS_FCC,

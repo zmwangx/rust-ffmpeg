@@ -26,9 +26,9 @@ impl From<AVDiscard> for Discard {
     }
 }
 
-impl Into<AVDiscard> for Discard {
-    fn into(self) -> AVDiscard {
-        match self {
+impl From<Discard> for AVDiscard {
+    fn from(value: Discard) -> AVDiscard {
+        match value {
             Discard::None => AVDISCARD_NONE,
             Discard::Default => AVDISCARD_DEFAULT,
             Discard::NonReference => AVDISCARD_NONREF,

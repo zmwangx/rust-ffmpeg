@@ -33,9 +33,9 @@ impl From<AVSubtitleType> for Type {
     }
 }
 
-impl Into<AVSubtitleType> for Type {
-    fn into(self) -> AVSubtitleType {
-        match self {
+impl From<Type> for AVSubtitleType {
+    fn from(value: Type) -> AVSubtitleType {
+        match value {
             Type::None => SUBTITLE_NONE,
             Type::Bitmap => SUBTITLE_BITMAP,
             Type::Text => SUBTITLE_TEXT,

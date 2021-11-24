@@ -59,9 +59,9 @@ impl From<c_int> for Type {
     }
 }
 
-impl Into<c_int> for Type {
-    fn into(self) -> c_int {
-        match self {
+impl From<Type> for c_int {
+    fn from(value: Type) -> c_int {
+        match value {
             Type::None => 0,
             Type::Frame => FF_THREAD_FRAME,
             Type::Slice => FF_THREAD_SLICE,

@@ -25,10 +25,10 @@ impl From<AVRounding> for Rounding {
     }
 }
 
-impl Into<AVRounding> for Rounding {
+impl From<Rounding> for AVRounding {
     #[inline(always)]
-    fn into(self) -> AVRounding {
-        match self {
+    fn from(value: Rounding) -> AVRounding {
+        match value {
             Rounding::Zero => AV_ROUND_ZERO,
             Rounding::Infinity => AV_ROUND_INF,
             Rounding::Down => AV_ROUND_DOWN,

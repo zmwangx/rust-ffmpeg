@@ -100,9 +100,9 @@ impl From<c_int> for Error {
     }
 }
 
-impl Into<c_int> for Error {
-    fn into(self) -> c_int {
-        match self {
+impl From<Error> for c_int {
+    fn from(value: Error) -> c_int {
+        match value {
             Error::BsfNotFound => AVERROR_BSF_NOT_FOUND,
             Error::Bug => AVERROR_BUG,
             Error::BufferTooSmall => AVERROR_BUFFER_TOO_SMALL,
@@ -201,8 +201,7 @@ fn index(error: &Error) -> usize {
 }
 
 // XXX: the length has to be synced with the number of errors
-static mut STRINGS: [[c_char; AV_ERROR_MAX_STRING_SIZE]; 27] =
-    [[0 as c_char; AV_ERROR_MAX_STRING_SIZE]; 27];
+static mut STRINGS: [[c_char; AV_ERROR_MAX_STRING_SIZE]; 27] = [[0; AV_ERROR_MAX_STRING_SIZE]; 27];
 
 pub fn register_all() {
     unsafe {

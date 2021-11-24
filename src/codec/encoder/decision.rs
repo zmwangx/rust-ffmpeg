@@ -20,9 +20,9 @@ impl From<c_int> for Decision {
     }
 }
 
-impl Into<c_int> for Decision {
-    fn into(self) -> c_int {
-        match self {
+impl From<Decision> for c_int {
+    fn from(value: Decision) -> c_int {
+        match value {
             Decision::Simple => FF_MB_DECISION_SIMPLE,
             Decision::Bits => FF_MB_DECISION_BITS,
             Decision::RateDistortion => FF_MB_DECISION_RD,

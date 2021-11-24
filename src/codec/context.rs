@@ -1,3 +1,4 @@
+use std::any::Any;
 use std::ptr;
 use std::rc::Rc;
 
@@ -11,13 +12,13 @@ use {Codec, Error};
 
 pub struct Context {
     ptr: *mut AVCodecContext,
-    owner: Option<Rc<dyn Drop>>,
+    owner: Option<Rc<dyn Any>>,
 }
 
 unsafe impl Send for Context {}
 
 impl Context {
-    pub unsafe fn wrap(ptr: *mut AVCodecContext, owner: Option<Rc<dyn Drop>>) -> Self {
+    pub unsafe fn wrap(ptr: *mut AVCodecContext, owner: Option<Rc<dyn Any>>) -> Self {
         Context { ptr, owner }
     }
 

@@ -17,14 +17,17 @@ use std::ffi::{CStr, CString};
 use std::str::from_utf8_unchecked;
 
 use ffi::*;
+#[cfg(not(feature = "ffmpeg_5_0"))]
 use Error;
 
+#[cfg(not(feature = "ffmpeg_5_0"))]
 pub fn register_all() {
     unsafe {
         avfilter_register_all();
     }
 }
 
+#[cfg(not(feature = "ffmpeg_5_0"))]
 pub fn register(filter: &Filter) -> Result<(), Error> {
     unsafe {
         match avfilter_register(filter.as_ptr() as *mut _) {
@@ -65,6 +68,7 @@ mod tests {
 
     #[test]
     fn test_paditer() {
+        #[cfg(not(feature = "ffmpeg_5_0"))]
         register_all();
         assert_eq!(
             find("overlay")

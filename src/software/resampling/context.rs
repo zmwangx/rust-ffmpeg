@@ -142,7 +142,9 @@ impl Context {
         input: &frame::Audio,
         output: &mut frame::Audio,
     ) -> Result<Option<Delay>, Error> {
-        output.set_rate(self.output.rate);
+        unsafe {
+            (*output.as_mut_ptr()).sample_rate = self.output.rate as i32;
+        }
 
         unsafe {
             if output.is_empty() {
@@ -165,7 +167,9 @@ impl Context {
     ///
     /// When there are no more internal frames `Ok(None)` will be returned.
     pub fn flush(&mut self, output: &mut frame::Audio) -> Result<Option<Delay>, Error> {
-        output.set_rate(self.output.rate);
+        unsafe {
+            (*output.as_mut_ptr()).sample_rate = self.output.rate as i32;
+        }
 
         unsafe {
             match swr_convert_frame(self.as_mut_ptr(), output.as_mut_ptr(), ptr::null()) {

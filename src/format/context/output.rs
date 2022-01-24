@@ -37,7 +37,7 @@ impl Output {
 
 impl Output {
     pub fn format(&self) -> format::Output {
-        unsafe { format::Output::wrap((*self.as_ptr()).oformat) }
+        unsafe { format::Output::wrap((*self.as_ptr()).oformat as *mut AVOutputFormat) }
     }
 
     pub fn write_header(&mut self) -> Result<(), Error> {
@@ -88,7 +88,7 @@ impl Output {
 
     pub fn add_chapter<R: Into<Rational>, S: AsRef<str>>(
         &mut self,
-        id: i32,
+        id: i64,
         time_base: R,
         start: i64,
         end: i64,

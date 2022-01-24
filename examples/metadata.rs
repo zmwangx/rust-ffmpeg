@@ -2,7 +2,7 @@ extern crate ffmpeg_next as ffmpeg;
 
 use std::env;
 
-fn main() {
+fn main() -> Result<(), ffmpeg::Error> {
     ffmpeg::init().unwrap();
 
     match ffmpeg::format::input(&env::args().nth(1).expect("missing file")) {
@@ -42,7 +42,7 @@ fn main() {
                 println!("\tdiscard: {:?}", stream.discard());
                 println!("\trate: {}", stream.rate());
 
-                let codec = stream.codec();
+                let codec = ffmpeg::codec::context::Context::from_parameters(stream.parameters())?;
                 println!("\tmedium: {:?}", codec.medium());
                 println!("\tid: {:?}", codec.id());
 
@@ -78,7 +78,6 @@ fn main() {
                         println!("\taudio.frames: {}", audio.frames());
                         println!("\taudio.align: {}", audio.align());
                         println!("\taudio.channel_layout: {:?}", audio.channel_layout());
-                        println!("\taudio.frame_start: {:?}", audio.frame_start());
                     }
                 }
             }
@@ -86,4 +85,5 @@ fn main() {
 
         Err(error) => println!("error: {}", error),
     }
+    Ok(())
 }

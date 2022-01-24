@@ -47,9 +47,13 @@ impl Transcoder {
         enable_logging: bool,
     ) -> Result<Self, ffmpeg::Error> {
         let global_header = octx.format().flags().contains(format::Flags::GLOBAL_HEADER);
-        let decoder = ist.codec().decoder().video()?;
+        let decoder = ffmpeg::codec::context::Context::from_parameters(ist.parameters())?
+            .decoder()
+            .video()?;
         let mut ost = octx.add_stream(encoder::find(codec::Id::H264))?;
-        let mut encoder = ost.codec().encoder().video()?;
+        let mut encoder = codec::context::Context::from_parameters(ost.parameters())?
+            .encoder()
+            .video()?;
         encoder.set_height(decoder.height());
         encoder.set_width(decoder.width());
         encoder.set_aspect_ratio(decoder.aspect_ratio());
@@ -59,15 +63,20 @@ impl Transcoder {
         if global_header {
             encoder.set_flags(codec::Flags::GLOBAL_HEADER);
         }
+
         encoder
             .open_with(x264_opts)
             .expect("error opening libx264 encoder with supplied settings");
-        encoder = ost.codec().encoder().video()?;
-        ost.set_parameters(encoder);
+        encoder = codec::context::Context::from_parameters(ost.parameters())?
+            .encoder()
+            .video()?;
+        ost.set_parameters(&encoder);
         Ok(Self {
             ost_index,
             decoder,
-            encoder: ost.codec().encoder().video()?,
+            encoder: codec::context::Context::from_parameters(ost.parameters())?
+                .encoder()
+                .video()?,
             logging_enabled: enable_logging,
             frame_count: 0,
             last_log_frame_count: 0,
@@ -184,7 +193,7 @@ fn main() {
     let mut transcoders = HashMap::new();
     let mut ost_index = 0;
     for (ist_index, ist) in ictx.streams().enumerate() {
-        let ist_medium = ist.codec().medium();
+        let ist_medium = ist.parameters().medium();
         if ist_medium != media::Type::Audio
             && ist_medium != media::Type::Video
             && ist_medium != media::Type::Subtitle

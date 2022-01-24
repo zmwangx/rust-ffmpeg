@@ -50,6 +50,7 @@ impl<'a> Vector<'a> {
         }
     }
 
+    #[cfg(not(feature = "ffmpeg_5_0"))]
     pub fn value(value: f64, length: usize) -> Self {
         unsafe {
             Vector {
@@ -60,6 +61,7 @@ impl<'a> Vector<'a> {
         }
     }
 
+    #[cfg(not(feature = "ffmpeg_5_0"))]
     pub fn identity() -> Self {
         unsafe {
             Vector {
@@ -82,24 +84,28 @@ impl<'a> Vector<'a> {
         }
     }
 
+    #[cfg(not(feature = "ffmpeg_5_0"))]
     pub fn conv(&mut self, other: &Vector) {
         unsafe {
             sws_convVec(self.as_mut_ptr(), other.as_ptr() as *mut _);
         }
     }
 
+    #[cfg(not(feature = "ffmpeg_5_0"))]
     pub fn add(&mut self, other: &Vector) {
         unsafe {
             sws_addVec(self.as_mut_ptr(), other.as_ptr() as *mut _);
         }
     }
 
+    #[cfg(not(feature = "ffmpeg_5_0"))]
     pub fn sub(&mut self, other: &Vector) {
         unsafe {
             sws_subVec(self.as_mut_ptr(), other.as_ptr() as *mut _);
         }
     }
 
+    #[cfg(not(feature = "ffmpeg_5_0"))]
     pub fn shift(&mut self, value: usize) {
         unsafe {
             sws_shiftVec(self.as_mut_ptr(), value as c_int);
@@ -117,6 +123,7 @@ impl<'a> Vector<'a> {
     }
 }
 
+#[cfg(not(feature = "ffmpeg_5_0"))]
 impl<'a> Clone for Vector<'a> {
     fn clone(&self) -> Self {
         unsafe {

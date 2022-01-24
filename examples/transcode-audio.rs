@@ -72,7 +72,8 @@ fn transcoder<P: AsRef<Path>>(
         .streams()
         .best(media::Type::Audio)
         .expect("could not find best audio stream");
-    let mut decoder = input.codec().decoder().audio()?;
+    let context = ffmpeg::codec::context::Context::from_parameters(input.parameters())?;
+    let mut decoder = context.decoder().audio()?;
     let codec = ffmpeg::encoder::find(octx.format().codec(path, media::Type::Audio))
         .expect("failed to find encoder")
         .audio()?;
@@ -84,7 +85,8 @@ fn transcoder<P: AsRef<Path>>(
     decoder.set_parameters(input.parameters())?;
 
     let mut output = octx.add_stream(codec)?;
-    let mut encoder = output.codec().encoder().audio()?;
+    let context = ffmpeg::codec::context::Context::from_parameters(output.parameters())?;
+    let mut encoder = context.encoder().audio()?;
 
     let channel_layout = codec
         .channel_layouts()

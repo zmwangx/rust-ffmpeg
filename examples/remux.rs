@@ -18,7 +18,7 @@ fn main() {
     let mut ist_time_bases = vec![Rational(0, 1); ictx.nb_streams() as _];
     let mut ost_index = 0;
     for (ist_index, ist) in ictx.streams().enumerate() {
-        let ist_medium = ist.codec().medium();
+        let ist_medium = ist.parameters().medium();
         if ist_medium != media::Type::Audio
             && ist_medium != media::Type::Video
             && ist_medium != media::Type::Subtitle

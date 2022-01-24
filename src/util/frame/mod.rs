@@ -11,7 +11,6 @@ pub mod flag;
 pub use self::flag::Flags;
 
 use ffi::*;
-use libc::c_int;
 use {Dictionary, DictionaryRef};
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
@@ -20,6 +19,7 @@ pub struct Packet {
     pub position: i64,
     pub size: usize,
 
+    #[cfg(not(feature = "ffmpeg_5_0"))]
     pub pts: i64,
     pub dts: i64,
 }
@@ -79,10 +79,11 @@ impl Frame {
     pub fn packet(&self) -> Packet {
         unsafe {
             Packet {
-                duration: av_frame_get_pkt_duration(self.as_ptr()) as i64,
-                position: av_frame_get_pkt_pos(self.as_ptr()) as i64,
-                size: av_frame_get_pkt_size(self.as_ptr()) as usize,
+                duration: (*self.as_ptr()).pkt_duration as i64,
+                position: (*self.as_ptr()).pkt_pos as i64,
+                size: (*self.as_ptr()).pkt_size as usize,
 
+                #[cfg(not(feature = "ffmpeg_5_0"))]
                 pts: (*self.as_ptr()).pkt_pts,
                 dts: (*self.as_ptr()).pkt_dts,
             }
@@ -109,7 +110,7 @@ impl Frame {
     #[inline]
     pub fn timestamp(&self) -> Option<i64> {
         unsafe {
-            match av_frame_get_best_effort_timestamp(self.as_ptr()) {
+            match (*self.as_ptr()).best_effort_timestamp {
                 AV_NOPTS_VALUE => None,
                 t => Some(t as i64),
             }
@@ -128,14 +129,12 @@ impl Frame {
 
     #[inline]
     pub fn metadata(&self) -> DictionaryRef {
-        unsafe { DictionaryRef::wrap(av_frame_get_metadata(self.as_ptr())) }
+        unsafe { DictionaryRef::wrap((*self.as_ptr()).metadata) }
     }
 
     #[inline]
     pub fn set_metadata(&mut self, value: Dictionary) {
-        unsafe {
-            av_frame_set_metadata(self.as_mut_ptr(), value.disown());
-        }
+        unsafe { (*self.as_mut_ptr()).metadata = value.disown() }
     }
 
     #[inline]
@@ -154,7 +153,7 @@ impl Frame {
     #[inline]
     pub fn new_side_data(&mut self, kind: side_data::Type, size: usize) -> Option<SideData> {
         unsafe {
-            let ptr = av_frame_new_side_data(self.as_mut_ptr(), kind.into(), size as c_int);
+            let ptr = av_frame_new_side_data(self.as_mut_ptr(), kind.into(), size as _);
 
             if ptr.is_null() {
                 None

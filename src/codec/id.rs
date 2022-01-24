@@ -595,6 +595,13 @@ pub enum Id {
     ADPCM_IMA_MOFLEX,
     #[cfg(feature = "ffmpeg_4_4")]
     FASTAUDIO,
+
+    #[cfg(feature = "ffmpeg_5_0")]
+    GEM,
+    #[cfg(feature = "ffmpeg_5_0")]
+    ADPCM_IMA_ACORN,
+    #[cfg(feature = "ffmpeg_5_0")]
+    MSNSIREN,
 }
 
 impl Id {
@@ -1197,6 +1204,13 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_ADPCM_IMA_MOFLEX => Id::ADPCM_IMA_MOFLEX,
             #[cfg(feature = "ffmpeg_4_4")]
             AV_CODEC_ID_FASTAUDIO => Id::FASTAUDIO,
+
+            #[cfg(feature = "ffmpeg_5_0")]
+            AV_CODEC_ID_GEM => Id::GEM,
+            #[cfg(feature = "ffmpeg_5_0")]
+            AV_CODEC_ID_ADPCM_IMA_ACORN => Id::ADPCM_IMA_ACORN,
+            #[cfg(feature = "ffmpeg_5_0")]
+            AV_CODEC_ID_MSNSIREN => Id::MSNSIREN,
         }
     }
 }
@@ -1791,6 +1805,13 @@ impl From<Id> for AVCodecID {
             Id::ADPCM_IMA_MOFLEX => AV_CODEC_ID_ADPCM_IMA_MOFLEX,
             #[cfg(feature = "ffmpeg_4_4")]
             Id::FASTAUDIO => AV_CODEC_ID_FASTAUDIO,
+
+            #[cfg(feature = "ffmpeg_5_0")]
+            Id::GEM => AV_CODEC_ID_GEM,
+            #[cfg(feature = "ffmpeg_5_0")]
+            Id::ADPCM_IMA_ACORN => AV_CODEC_ID_ADPCM_IMA_ACORN,
+            #[cfg(feature = "ffmpeg_5_0")]
+            Id::MSNSIREN => AV_CODEC_ID_MSNSIREN,
         }
     }
 }

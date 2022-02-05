@@ -7,6 +7,9 @@ pub use self::flag::Flags;
 use ffi::*;
 use std::convert::TryInto;
 
+#[cfg(all(target_arch = "x86_64", any(target_family = "windows", target_family = "unix")))]
+pub mod callback;
+
 pub fn set_level(value: Level) {
     unsafe { av_log_set_level(value.into()) }
 }

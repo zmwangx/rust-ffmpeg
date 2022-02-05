@@ -107,6 +107,8 @@ rpi = []
 [dependencies]
 libc     = "0.2"
 bitflags = "1.2"
+log      = "0.4"
+vsprintf = "2.0"
 
 [dependencies.image]
 version  = "0.23"

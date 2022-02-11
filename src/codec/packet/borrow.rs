@@ -45,7 +45,7 @@ impl<'a> Drop for Borrow<'a> {
             self.packet.data = ptr::null_mut();
             self.packet.size = 0;
 
-            av_free_packet(&mut self.packet);
+            av_packet_unref(&mut self.packet);
         }
     }
 }

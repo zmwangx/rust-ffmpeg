@@ -13,7 +13,9 @@ pub use self::subtitle::Encoder as Subtitle;
 pub mod motion_estimation;
 pub use self::motion_estimation::MotionEstimation;
 
+#[cfg(not(feature = "ffmpeg_5_0"))]
 pub mod prediction;
+#[cfg(not(feature = "ffmpeg_5_0"))]
 pub use self::prediction::Prediction;
 
 pub mod comparison;
@@ -35,7 +37,7 @@ pub fn new() -> Encoder {
 
 pub fn find(id: Id) -> Option<Codec> {
     unsafe {
-        let ptr = avcodec_find_encoder(id.into());
+        let ptr = avcodec_find_encoder(id.into()) as *mut AVCodec;
 
         if ptr.is_null() {
             None
@@ -48,7 +50,7 @@ pub fn find(id: Id) -> Option<Codec> {
 pub fn find_by_name(name: &str) -> Option<Codec> {
     unsafe {
         let name = CString::new(name).unwrap();
-        let ptr = avcodec_find_encoder_by_name(name.as_ptr());
+        let ptr = avcodec_find_encoder_by_name(name.as_ptr()) as *mut AVCodec;
 
         if ptr.is_null() {
             None

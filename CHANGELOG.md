@@ -1,5 +1,16 @@
-4.4.0 (planned)
----------------
+5.0.0
+-----
+
+- Introduce conditional compilation flags to preserve functions that are
+  removed from ffmpeg 5.0 and onwards.
+- Fix examples so they are using the ffmpeg-sanctionned way of doing
+  things. More specifically, AVStream.codec has been removed, and the
+  correct way of getting the codec from a stream is to use
+  Context::from_parameters(stream.parameters()) and then that context's
+  encoder / decoder.
+
+4.4.0
+-----
 
 - crate: `ffmpeg43` feature flag (noop since 4.3.4) has been dropped from default features.
 

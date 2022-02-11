@@ -18,7 +18,8 @@ fn main() -> Result<(), ffmpeg::Error> {
             .ok_or(ffmpeg::Error::StreamNotFound)?;
         let video_stream_index = input.index();
 
-        let mut decoder = input.codec().decoder().video()?;
+        let context_decoder = ffmpeg::codec::context::Context::from_parameters(input.parameters())?;
+        let mut decoder = context_decoder.decoder().video()?;
 
         let mut scaler = Context::get(
             decoder.format(),

@@ -13,7 +13,7 @@ impl frame::Audio {
         Context::get(
             self.format(),
             self.channel_layout(),
-            self.rate(),
+            unsafe { (*self.as_ptr()).sample_rate as u32 },
             format,
             channel_layout,
             rate,

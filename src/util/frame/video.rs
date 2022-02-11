@@ -117,25 +117,25 @@ impl Video {
 
     #[inline]
     pub fn color_space(&self) -> color::Space {
-        unsafe { color::Space::from(av_frame_get_colorspace(self.as_ptr())) }
+        unsafe { color::Space::from((*self.as_ptr()).colorspace) }
     }
 
     #[inline]
     pub fn set_color_space(&mut self, value: color::Space) {
         unsafe {
-            av_frame_set_colorspace(self.as_mut_ptr(), value.into());
+            (*self.as_mut_ptr()).colorspace = value.into();
         }
     }
 
     #[inline]
     pub fn color_range(&self) -> color::Range {
-        unsafe { color::Range::from(av_frame_get_color_range(self.as_ptr())) }
+        unsafe { color::Range::from((*self.as_ptr()).color_range) }
     }
 
     #[inline]
     pub fn set_color_range(&mut self, value: color::Range) {
         unsafe {
-            av_frame_set_color_range(self.as_mut_ptr(), value.into());
+            (*self.as_mut_ptr()).color_range = value.into();
         }
     }
 

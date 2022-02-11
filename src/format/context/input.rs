@@ -6,7 +6,9 @@ use super::common::Context;
 use super::destructor;
 use ffi::*;
 use util::range::Range;
-use {format, Codec, Error, Packet, Stream};
+#[cfg(not(feature = "ffmpeg_5_0"))]
+use Codec;
+use {format, Error, Packet, Stream};
 
 pub struct Input {
     ptr: *mut AVFormatContext,
@@ -34,12 +36,13 @@ impl Input {
 
 impl Input {
     pub fn format(&self) -> format::Input {
-        unsafe { format::Input::wrap((*self.as_ptr()).iformat) }
+        unsafe { format::Input::wrap((*self.as_ptr()).iformat as *mut AVInputFormat) }
     }
 
+    #[cfg(not(feature = "ffmpeg_5_0"))]
     pub fn video_codec(&self) -> Option<Codec> {
         unsafe {
-            let ptr = av_format_get_video_codec(self.as_ptr());
+            let ptr = (*self.as_ptr()).video_codec;
 
             if ptr.is_null() {
                 None
@@ -49,9 +52,10 @@ impl Input {
         }
     }
 
+    #[cfg(not(feature = "ffmpeg_5_0"))]
     pub fn audio_codec(&self) -> Option<Codec> {
         unsafe {
-            let ptr = av_format_get_audio_codec(self.as_ptr());
+            let ptr = (*self.as_ptr()).audio_codec;
 
             if ptr.is_null() {
                 None
@@ -61,9 +65,10 @@ impl Input {
         }
     }
 
+    #[cfg(not(feature = "ffmpeg_5_0"))]
     pub fn subtitle_codec(&self) -> Option<Codec> {
         unsafe {
-            let ptr = av_format_get_subtitle_codec(self.as_ptr());
+            let ptr = (*self.as_ptr()).subtitle_codec;
 
             if ptr.is_null() {
                 None
@@ -73,9 +78,10 @@ impl Input {
         }
     }
 
+    #[cfg(not(feature = "ffmpeg_5_0"))]
     pub fn data_codec(&self) -> Option<Codec> {
         unsafe {
-            let ptr = av_format_get_data_codec(self.as_ptr());
+            let ptr = (*self.as_ptr()).data_codec;
 
             if ptr.is_null() {
                 None
@@ -86,7 +92,7 @@ impl Input {
     }
 
     pub fn probe_score(&self) -> i32 {
-        unsafe { av_format_get_probe_score(self.as_ptr()) }
+        unsafe { (*self.as_ptr()).probe_score }
     }
 
     pub fn packets(&mut self) -> PacketIter {

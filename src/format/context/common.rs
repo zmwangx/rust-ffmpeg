@@ -166,13 +166,13 @@ impl<'a> Best<'a> {
         'a: 'b,
     {
         unsafe {
-            let mut decoder = ptr::null_mut();
+            let decoder = ptr::null_mut();
             let index = av_find_best_stream(
                 self.context.ptr,
                 kind.into(),
                 self.wanted as c_int,
                 self.related as c_int,
-                &mut decoder,
+                decoder,
                 0,
             );
 

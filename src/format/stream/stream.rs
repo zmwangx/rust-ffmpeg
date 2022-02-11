@@ -26,6 +26,7 @@ impl<'a> Stream<'a> {
         unsafe { (*self.as_ptr()).id }
     }
 
+    #[cfg(not(feature = "ffmpeg_5_0"))]
     pub fn codec(&self) -> codec::Context {
         unsafe { codec::Context::wrap((*self.as_ptr()).codec, Some(self.context.destructor())) }
     }
@@ -69,7 +70,7 @@ impl<'a> Stream<'a> {
     }
 
     pub fn rate(&self) -> Rational {
-        unsafe { Rational::from(av_stream_get_r_frame_rate(self.as_ptr())) }
+        unsafe { Rational::from((*self.as_ptr()).r_frame_rate) }
     }
 
     pub fn avg_frame_rate(&self) -> Rational {

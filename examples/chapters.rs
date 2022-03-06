@@ -20,8 +20,7 @@ fn main() {
                 }
             }
 
-            let mut octx =
-                ffmpeg::format::output(&"test.mkv".to_owned()).expect("Couldn't open test file");
+            let mut octx = ffmpeg::format::output(&"test.mkv").expect("Couldn't open test file");
 
             for chapter in ictx.chapters() {
                 let title = match chapter.metadata().get("title") {

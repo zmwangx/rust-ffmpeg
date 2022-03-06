@@ -176,7 +176,7 @@ impl<'a> Best<'a> {
                 0,
             );
 
-            if index >= 0 && !decoder.is_null() {
+            if index >= 0 {
                 Some(Stream::wrap(self.context, index as usize))
             } else {
                 None

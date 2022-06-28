@@ -74,6 +74,12 @@ impl Encoder {
         unsafe { self.send_frame(&Frame::wrap(ptr::null_mut())) }
     }
 
+    pub fn flush_buffers(&mut self) {
+        unsafe {
+            avcodec_flush_buffers(self.as_mut_ptr());
+        }
+    }
+
     pub fn receive_packet<P: packet::Mut>(&mut self, packet: &mut P) -> Result<(), Error> {
         unsafe {
             match avcodec_receive_packet(self.as_mut_ptr(), packet.as_mut_ptr()) {

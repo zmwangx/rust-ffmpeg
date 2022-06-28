@@ -26,7 +26,7 @@ impl Video {
         self.set_width(width);
         self.set_height(height);
 
-        av_frame_get_buffer(self.as_mut_ptr(), 32);
+        av_frame_get_buffer(self.as_mut_ptr(), 0);
     }
 }
 

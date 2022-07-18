@@ -22,11 +22,16 @@ impl Video {
 
     #[inline]
     pub unsafe fn alloc(&mut self, format: format::Pixel, width: u32, height: u32) {
+        self.alloc_with_align(format, width, height, 0);
+    }
+
+    #[inline]
+    pub unsafe fn alloc_with_align(&mut self, format: format::Pixel, width: u32, height: u32, align: i32) {
         self.set_format(format);
         self.set_width(width);
         self.set_height(height);
 
-        av_frame_get_buffer(self.as_mut_ptr(), 0);
+        av_frame_get_buffer(self.as_mut_ptr(), align);
     }
 }
 

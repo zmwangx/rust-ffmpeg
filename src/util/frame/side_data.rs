@@ -55,6 +55,9 @@ pub enum Type {
     DOVI_RPU_BUFFER,
     #[cfg(feature = "ffmpeg_5_0")]
     DOVI_METADATA,
+
+    #[cfg(feature = "ffmpeg_5_1")]
+    DYNAMIC_HDR_VIVID,
 }
 
 impl Type {
@@ -114,6 +117,9 @@ impl From<AVFrameSideDataType> for Type {
             AV_FRAME_DATA_DOVI_RPU_BUFFER => Type::DOVI_RPU_BUFFER,
             #[cfg(feature = "ffmpeg_5_0")]
             AV_FRAME_DATA_DOVI_METADATA => Type::DOVI_METADATA,
+
+            #[cfg(feature = "ffmpeg_5_1")]
+            AV_FRAME_DATA_DYNAMIC_HDR_VIVID => Type::DYNAMIC_HDR_VIVID,
         }
     }
 }
@@ -166,6 +172,9 @@ impl From<Type> for AVFrameSideDataType {
             Type::DOVI_RPU_BUFFER => AV_FRAME_DATA_DOVI_RPU_BUFFER,
             #[cfg(feature = "ffmpeg_5_0")]
             Type::DOVI_METADATA => AV_FRAME_DATA_DOVI_METADATA,
+
+            #[cfg(feature = "ffmpeg_5_1")]
+            Type::DYNAMIC_HDR_VIVID => AV_FRAME_DATA_DYNAMIC_HDR_VIVID,
         }
     }
 }

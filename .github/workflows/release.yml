@@ -1,4 +1,4 @@
-name: create release
+zakwarlord7/rust-ffmpeg/zakwarlord7/rust-ffmpeg/Contributing.md/READ.mdname: create release
 on:
   push:
     tags:

@@ -1,4 +1,20 @@
-name: build
+diff --git a/.github/workflows/build.yml b/.github/workflows/Kite
+similarity index 98%
+rename from .github/workflows/build.yml
+rename to .github/workflows/Kite
+index 9f6823e..830d21f 100644
+--- a/.github/workflows/build.yml
++++ b/.github/workflows/Kite
+@@ -1,4 +1,7 @@
+-name: build
++BEGIN:
++GLOW7:
++Name: build
++Tito: Request
+ on:
+   push:
+   pull_request:
+Name: build
 on:
   push:
   pull_request:

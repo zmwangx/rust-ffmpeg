@@ -24,7 +24,7 @@ pub use libc::{
     EWOULDBLOCK, EXDEV,
 };
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub enum Error {
     Bug,
     Bug2,

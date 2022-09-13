@@ -742,7 +742,7 @@ impl From<AVPixelFormat> for Pixel {
             AV_PIX_FMT_RPI4_8 => Pixel::RPI4_8,
             #[cfg(feature = "rpi")]
             AV_PIX_FMT_RPI4_10 => Pixel::RPI4_10,
-            _ => unimplemented!("Not all current or future pixel formats are supported yet")
+            _ => unimplemented!("Not all current or future pixel formats are supported yet"),
         }
     }
 }
@@ -1123,7 +1123,7 @@ impl From<Pixel> for AVPixelFormat {
             Pixel::RPI4_8 => AV_PIX_FMT_RPI4_8,
             #[cfg(feature = "rpi")]
             Pixel::RPI4_10 => AV_PIX_FMT_RPI4_10,
-            _ => unimplemented!("Not all current or future pixel formats are supported yet")
+            _ => unimplemented!("Not all current or future pixel formats are supported yet"),
         }
     }
 }

@@ -1233,6 +1233,8 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_PHM => Id::PHM,
             #[cfg(feature = "ffmpeg_5_1")]
             AV_CODEC_ID_DFPWM => Id::DFPWM,
+
+            _ => unimplemented!(),
         }
     }
 }

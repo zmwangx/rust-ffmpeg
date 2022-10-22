@@ -120,6 +120,8 @@ impl From<AVFrameSideDataType> for Type {
 
             #[cfg(feature = "ffmpeg_5_1")]
             AV_FRAME_DATA_DYNAMIC_HDR_VIVID => Type::DYNAMIC_HDR_VIVID,
+
+            _ => unimplemented!(),
         }
     }
 }

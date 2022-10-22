@@ -53,6 +53,8 @@ impl From<AVOptionType> for Type {
             AV_OPT_TYPE_CHANNEL_LAYOUT => Type::ChannelLayout,
             #[cfg(feature = "ffmpeg_5_1")]
             AV_OPT_TYPE_CHLAYOUT => Type::ChannelLayout,
+
+            _ => unimplemented!(),
         }
     }
 }

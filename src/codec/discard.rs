@@ -22,6 +22,8 @@ impl From<AVDiscard> for Discard {
             AVDISCARD_NONINTRA => Discard::NonIntra,
             AVDISCARD_NONKEY => Discard::NonKey,
             AVDISCARD_ALL => Discard::All,
+
+            _ => unimplemented!(),
         }
     }
 }

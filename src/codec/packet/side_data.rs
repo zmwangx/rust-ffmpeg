@@ -107,6 +107,7 @@ impl From<AVPacketSideDataType> for Type {
             #[cfg(feature = "ffmpeg_5_0")]
             AV_PKT_DATA_DYNAMIC_HDR10_PLUS => Type::DYNAMIC_HDR10_PLUS,
 
+            #[cfg(feature = "non-exhaustive-enums")]
             _ => unimplemented!(),
         }
     }

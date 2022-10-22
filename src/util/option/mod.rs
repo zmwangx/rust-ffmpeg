@@ -54,6 +54,7 @@ impl From<AVOptionType> for Type {
             #[cfg(feature = "ffmpeg_5_1")]
             AV_OPT_TYPE_CHLAYOUT => Type::ChannelLayout,
 
+            #[cfg(feature = "non-exhaustive-enums")]
             _ => unimplemented!(),
         }
     }

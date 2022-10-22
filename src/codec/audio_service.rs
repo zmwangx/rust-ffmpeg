@@ -28,6 +28,7 @@ impl From<AVAudioServiceType> for AudioService {
             AV_AUDIO_SERVICE_TYPE_KARAOKE => AudioService::Karaoke,
             AV_AUDIO_SERVICE_TYPE_NB => AudioService::Main,
 
+            #[cfg(feature = "non-exhaustive-enums")]
             _ => unimplemented!(),
         }
     }

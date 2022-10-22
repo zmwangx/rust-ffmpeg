@@ -32,6 +32,7 @@ impl From<AVColorRange> for Range {
             AVCOL_RANGE_JPEG => Range::JPEG,
             AVCOL_RANGE_NB => Range::Unspecified,
 
+            #[cfg(feature = "non-exhaustive-enums")]
             _ => unimplemented!(),
         }
     }

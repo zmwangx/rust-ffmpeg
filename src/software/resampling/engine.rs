@@ -14,6 +14,7 @@ impl From<SwrEngine> for Engine {
             SWR_ENGINE_SOXR => Engine::SoundExchange,
             SWR_ENGINE_NB => Engine::Software,
 
+            #[cfg(feature = "non-exhaustive-enums")]
             _ => unimplemented!(),
         }
     }

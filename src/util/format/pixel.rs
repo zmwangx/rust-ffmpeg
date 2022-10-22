@@ -743,6 +743,7 @@ impl From<AVPixelFormat> for Pixel {
             #[cfg(feature = "rpi")]
             AV_PIX_FMT_RPI4_10 => Pixel::RPI4_10,
 
+            #[cfg(feature = "non-exhaustive-enums")]
             _ => unimplemented!(),
         }
     }

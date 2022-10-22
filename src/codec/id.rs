@@ -1234,6 +1234,7 @@ impl From<AVCodecID> for Id {
             #[cfg(feature = "ffmpeg_5_1")]
             AV_CODEC_ID_DFPWM => Id::DFPWM,
 
+            #[cfg(feature = "non-exhaustive-enums")]
             _ => unimplemented!(),
         }
     }

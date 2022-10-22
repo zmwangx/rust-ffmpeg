@@ -25,6 +25,8 @@ impl From<AVPictureType> for Type {
             AV_PICTURE_TYPE_SI => Type::SI,
             AV_PICTURE_TYPE_SP => Type::SP,
             AV_PICTURE_TYPE_BI => Type::BI,
+
+            _ => unimplemented!(),
         }
     }
 }

@@ -31,6 +31,8 @@ impl From<AVColorRange> for Range {
             AVCOL_RANGE_MPEG => Range::MPEG,
             AVCOL_RANGE_JPEG => Range::JPEG,
             AVCOL_RANGE_NB => Range::Unspecified,
+
+            _ => unimplemented!(),
         }
     }
 }

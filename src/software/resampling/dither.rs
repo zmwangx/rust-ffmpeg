@@ -34,6 +34,8 @@ impl From<SwrDitherType> for Dither {
             SWR_DITHER_NS_LOW_SHIBATA => Dither::NoiseShapingLowShibata,
             SWR_DITHER_NS_HIGH_SHIBATA => Dither::NoiseShapingHighShibata,
             SWR_DITHER_NB => Dither::None,
+
+            _ => unimplemented!(),
         }
     }
 }

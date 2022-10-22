@@ -63,6 +63,8 @@ impl From<AVColorTransferCharacteristic> for TransferCharacteristic {
             AVCOL_TRC_SMPTE2084 => TransferCharacteristic::SMPTE2084,
             AVCOL_TRC_SMPTE428 => TransferCharacteristic::SMPTE428,
             AVCOL_TRC_ARIB_STD_B67 => TransferCharacteristic::ARIB_STD_B67,
+
+            _ => unimplemented!(),
         }
     }
 }

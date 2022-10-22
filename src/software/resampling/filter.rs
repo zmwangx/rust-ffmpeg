@@ -14,6 +14,8 @@ impl From<SwrFilterType> for Filter {
             SWR_FILTER_TYPE_CUBIC => Filter::Cubic,
             SWR_FILTER_TYPE_BLACKMAN_NUTTALL => Filter::BlackmanNuttall,
             SWR_FILTER_TYPE_KAISER => Filter::Kaiser,
+
+            _ => unimplemented!(),
         }
     }
 }

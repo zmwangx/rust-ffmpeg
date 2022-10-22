@@ -66,6 +66,8 @@ impl From<AVColorPrimaries> for Primaries {
             AVCOL_PRI_JEDEC_P22 => Primaries::JEDEC_P22,
             #[cfg(feature = "ffmpeg_4_3")]
             AVCOL_PRI_EBU3213 => Primaries::EBU3213,
+
+            _ => unimplemented!(),
         }
     }
 }

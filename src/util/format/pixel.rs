@@ -426,6 +426,10 @@ impl Descriptor {
     pub fn log2_chroma_h(self) -> u8 {
         unsafe { (*self.as_ptr()).log2_chroma_h }
     }
+
+    pub fn bits_per_pixel(&self) -> i32 {
+        unsafe { av_get_bits_per_pixel(self.as_ptr()) }
+    }
 }
 
 impl From<AVPixelFormat> for Pixel {

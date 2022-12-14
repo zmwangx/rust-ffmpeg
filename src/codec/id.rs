@@ -1233,7 +1233,7 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_PHM => Id::PHM,
             #[cfg(feature = "ffmpeg_5_1")]
             AV_CODEC_ID_DFPWM => Id::DFPWM,
-            v => unimplemented!("{v:?} is not supported yet"),
+            v => { eprintln!("{v:?} is not supported yet"); Id::None },
         }
     }
 }

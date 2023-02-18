@@ -28,7 +28,7 @@ fn main() -> Result<(), ffmpeg::Error> {
             Pixel::RGB24,
             decoder.width(),
             decoder.height(),
-            Flags::BILINEAR,
+            Flags::BICUBIC,
         )?;
 
         let mut frame_index = 0;
@@ -62,5 +62,15 @@ fn save_file(frame: &Video, index: usize) -> std::result::Result<(), std::io::Er
     let mut file = File::create(format!("frame{}.ppm", index))?;
     file.write_all(format!("P6\n{} {}\n255\n", frame.width(), frame.height()).as_bytes())?;
     file.write_all(frame.data(0))?;
+    let data = frame.data(0);
+    let stride = frame.stride(0);
+    let byte_width: usize = 3 * frame.width() as usize;
+    let height: usize = frame.height() as usize;
+    for line in 0..height {
+        let begin = line * stride;
+        let end = begin + byte_width;
+        file.write_all(&data[begin..end])?;
+    }
+
     Ok(())
 }

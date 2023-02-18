@@ -6,3 +6,4 @@ Cargo.lock
 *.swp
 *.swo
 *.swn
+bindings.rs

@@ -121,7 +121,7 @@ impl Packet {
     pub fn pts(&self) -> Option<i64> {
         match self.0.pts {
             AV_NOPTS_VALUE => None,
-            pts => Some(pts as i64),
+            pts => Some(pts),
         }
     }
 
@@ -134,7 +134,7 @@ impl Packet {
     pub fn dts(&self) -> Option<i64> {
         match self.0.dts {
             AV_NOPTS_VALUE => None,
-            dts => Some(dts as i64),
+            dts => Some(dts),
         }
     }
 
@@ -150,7 +150,7 @@ impl Packet {
 
     #[inline]
     pub fn duration(&self) -> i64 {
-        self.0.duration as i64
+        self.0.duration
     }
 
     #[inline]

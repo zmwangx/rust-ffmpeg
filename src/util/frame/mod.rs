@@ -79,8 +79,8 @@ impl Frame {
     pub fn packet(&self) -> Packet {
         unsafe {
             Packet {
-                duration: (*self.as_ptr()).pkt_duration as i64,
-                position: (*self.as_ptr()).pkt_pos as i64,
+                duration: (*self.as_ptr()).pkt_duration,
+                position: (*self.as_ptr()).pkt_pos,
                 size: (*self.as_ptr()).pkt_size as usize,
 
                 #[cfg(not(feature = "ffmpeg_5_0"))]
@@ -95,7 +95,7 @@ impl Frame {
         unsafe {
             match (*self.as_ptr()).pts {
                 AV_NOPTS_VALUE => None,
-                pts => Some(pts as i64),
+                pts => Some(pts),
             }
         }
     }
@@ -112,7 +112,7 @@ impl Frame {
         unsafe {
             match (*self.as_ptr()).best_effort_timestamp {
                 AV_NOPTS_VALUE => None,
-                t => Some(t as i64),
+                t => Some(t),
             }
         }
     }

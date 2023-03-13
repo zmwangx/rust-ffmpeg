@@ -368,6 +368,39 @@ pub enum Pixel {
     #[cfg(feature = "ffmpeg_5_0")]
     P416LE,
 
+    #[cfg(feature = "ffmpeg_6_0")]
+    VUYA,
+    #[cfg(feature = "ffmpeg_6_0")]
+    RGBAF16BE,
+    #[cfg(feature = "ffmpeg_6_0")]
+    RGBAF16LE,
+    #[cfg(feature = "ffmpeg_6_0")]
+    VUYX,
+    #[cfg(feature = "ffmpeg_6_0")]
+    P012LE,
+    #[cfg(feature = "ffmpeg_6_0")]
+    P012BE,
+    #[cfg(feature = "ffmpeg_6_0")]
+    Y212BE,
+    #[cfg(feature = "ffmpeg_6_0")]
+    Y212LE,
+    #[cfg(feature = "ffmpeg_6_0")]
+    XV30BE,
+    #[cfg(feature = "ffmpeg_6_0")]
+    XV30LE,
+    #[cfg(feature = "ffmpeg_6_0")]
+    XV36BE,
+    #[cfg(feature = "ffmpeg_6_0")]
+    XV36LE,
+    #[cfg(feature = "ffmpeg_6_0")]
+    RGBF32BE,
+    #[cfg(feature = "ffmpeg_6_0")]
+    RGBF32LE,
+    #[cfg(feature = "ffmpeg_6_0")]
+    RGBAF32BE,
+    #[cfg(feature = "ffmpeg_6_0")]
+    RGBAF32LE,
+
     #[cfg(feature = "rpi")]
     RPI,
     #[cfg(feature = "rpi")]
@@ -729,6 +762,39 @@ impl From<AVPixelFormat> for Pixel {
             AV_PIX_FMT_P416BE => Pixel::P416BE,
             #[cfg(feature = "ffmpeg_5_0")]
             AV_PIX_FMT_P416LE => Pixel::P416LE,
+
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_VUYA => Pixel::VUYA,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_RGBAF16BE => Pixel::RGBAF16BE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_RGBAF16LE => Pixel::RGBAF16LE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_VUYX => Pixel::VUYX,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_P012LE => Pixel::P012LE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_P012BE => Pixel::P012BE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_Y212BE => Pixel::Y212BE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_Y212LE => Pixel::Y212LE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_XV30BE => Pixel::XV30BE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_XV30LE => Pixel::XV30LE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_XV36BE => Pixel::XV36BE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_XV36LE => Pixel::XV36LE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_RGBF32BE => Pixel::RGBF32BE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_RGBF32LE => Pixel::RGBF32LE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_RGBAF32BE => Pixel::RGBAF32BE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_PIX_FMT_RGBAF32LE => Pixel::RGBAF32LE,
 
             #[cfg(feature = "rpi")]
             AV_PIX_FMT_RPI => Pixel::RPI,
@@ -1109,6 +1175,39 @@ impl From<Pixel> for AVPixelFormat {
             Pixel::P416BE => AV_PIX_FMT_P416BE,
             #[cfg(feature = "ffmpeg_5_0")]
             Pixel::P416LE => AV_PIX_FMT_P416LE,
+
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::VUYA => AV_PIX_FMT_VUYA,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::RGBAF16BE => AV_PIX_FMT_RGBAF16BE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::RGBAF16LE => AV_PIX_FMT_RGBAF16LE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::VUYX => AV_PIX_FMT_VUYX,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::P012LE => AV_PIX_FMT_P012LE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::P012BE => AV_PIX_FMT_P012BE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::Y212BE => AV_PIX_FMT_Y212BE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::Y212LE => AV_PIX_FMT_Y212LE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::XV30BE => AV_PIX_FMT_XV30BE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::XV30LE => AV_PIX_FMT_XV30LE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::XV36BE => AV_PIX_FMT_XV36BE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::XV36LE => AV_PIX_FMT_XV36LE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::RGBF32BE => AV_PIX_FMT_RGBF32BE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::RGBF32LE => AV_PIX_FMT_RGBF32LE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::RGBAF32BE => AV_PIX_FMT_RGBAF32BE,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Pixel::RGBAF32LE => AV_PIX_FMT_RGBAF32LE,
 
             #[cfg(feature = "rpi")]
             Pixel::RPI => AV_PIX_FMT_RPI,

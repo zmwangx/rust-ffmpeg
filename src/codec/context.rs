@@ -102,7 +102,9 @@ impl Context {
             (*self.as_mut_ptr()).thread_type = config.kind.into();
             (*self.as_mut_ptr()).thread_count = config.count as c_int;
             #[cfg(not(feature = "ffmpeg_6_0"))]
-            { (*self.as_mut_ptr()).thread_safe_callbacks = if config.safe { 1 } else { 0 }; }
+            {
+                (*self.as_mut_ptr()).thread_safe_callbacks = if config.safe { 1 } else { 0 };
+            }
         }
     }
 

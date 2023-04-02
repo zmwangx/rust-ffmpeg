@@ -17,12 +17,13 @@ pub use libc::{
     EBUSY, ECANCELED, ECHILD, ECONNABORTED, ECONNREFUSED, ECONNRESET, EDEADLK, EDESTADDRREQ, EDOM,
     EEXIST, EFAULT, EFBIG, EHOSTUNREACH, EIDRM, EILSEQ, EINPROGRESS, EINTR, EINVAL, EIO, EISCONN,
     EISDIR, ELOOP, EMFILE, EMLINK, EMSGSIZE, ENAMETOOLONG, ENETDOWN, ENETRESET, ENETUNREACH,
-    ENFILE, ENOBUFS, ENODATA, ENODEV, ENOENT, ENOEXEC, ENOLCK, ENOLINK, ENOMEM, ENOMSG,
-    ENOPROTOOPT, ENOSPC, ENOSR, ENOSTR, ENOSYS, ENOTCONN, ENOTDIR, ENOTEMPTY, ENOTRECOVERABLE,
-    ENOTSOCK, ENOTSUP, ENOTTY, ENXIO, EOPNOTSUPP, EOVERFLOW, EOWNERDEAD, EPERM, EPIPE, EPROTO,
-    EPROTONOSUPPORT, EPROTOTYPE, ERANGE, EROFS, ESPIPE, ESRCH, ETIME, ETIMEDOUT, ETXTBSY,
-    EWOULDBLOCK, EXDEV,
+    ENFILE, ENOBUFS, ENODEV, ENOENT, ENOEXEC, ENOLCK, ENOLINK, ENOMEM, ENOMSG, ENOPROTOOPT, ENOSPC,
+    ENOSYS, ENOTCONN, ENOTDIR, ENOTEMPTY, ENOTRECOVERABLE, ENOTSOCK, ENOTSUP, ENOTTY, ENXIO,
+    EOPNOTSUPP, EOVERFLOW, EOWNERDEAD, EPERM, EPIPE, EPROTO, EPROTONOSUPPORT, EPROTOTYPE, ERANGE,
+    EROFS, ESPIPE, ESRCH, ETIMEDOUT, ETXTBSY, EWOULDBLOCK, EXDEV,
 };
+#[cfg(not(all(target_arch = "wasm32", target_os = "wasi")))]
+pub use libc::{ENODATA, ENOSR, ENOSTR, ETIME};
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum Error {
@@ -59,7 +60,7 @@ pub enum Error {
 
     /// For AVERROR(e) wrapping POSIX error codes, e.g. AVERROR(EAGAIN).
     Other {
-        errno: c_int,
+        c_errno: c_int,
     },
 }
 
@@ -94,7 +95,7 @@ impl From<c_int> for Error {
             AVERROR_HTTP_OTHER_4XX => Error::HttpOther4xx,
             AVERROR_HTTP_SERVER_ERROR => Error::HttpServerError,
             e => Error::Other {
-                errno: AVUNERROR(e),
+                c_errno: AVUNERROR(e),
             },
         }
     }
@@ -130,7 +131,7 @@ impl From<Error> for c_int {
             Error::HttpNotFound => AVERROR_HTTP_NOT_FOUND,
             Error::HttpOther4xx => AVERROR_HTTP_OTHER_4XX,
             Error::HttpServerError => AVERROR_HTTP_SERVER_ERROR,
-            Error::Other { errno } => AVERROR(errno),
+            Error::Other { c_errno } => AVERROR(c_errno),
         }
     }
 }
@@ -148,7 +149,7 @@ impl fmt::Display for Error {
         f.write_str(unsafe {
             from_utf8_unchecked(
                 CStr::from_ptr(match *self {
-                    Error::Other { errno } => libc::strerror(errno),
+                    Error::Other { c_errno } => libc::strerror(c_errno),
                     _ => STRINGS[index(self)].as_ptr(),
                 })
                 .to_bytes(),
@@ -196,7 +197,7 @@ fn index(error: &Error) -> usize {
         Error::HttpNotFound => 24,
         Error::HttpOther4xx => 25,
         Error::HttpServerError => 26,
-        Error::Other { errno: _ } => (-1isize) as usize,
+        Error::Other { c_errno: _ } => (-1isize) as usize,
     }
 }
 

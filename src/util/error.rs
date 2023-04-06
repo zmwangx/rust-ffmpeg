@@ -4,12 +4,21 @@ use std::fmt;
 use std::io;
 use std::str::from_utf8_unchecked;
 
-use ffi::*;
+use ffi::{
+    av_strerror, AVERROR, AVERROR_BSF_NOT_FOUND, AVERROR_BUFFER_TOO_SMALL, AVERROR_BUG,
+    AVERROR_BUG2, AVERROR_DECODER_NOT_FOUND, AVERROR_DEMUXER_NOT_FOUND, AVERROR_ENCODER_NOT_FOUND,
+    AVERROR_EOF, AVERROR_EXIT, AVERROR_EXPERIMENTAL, AVERROR_EXTERNAL, AVERROR_FILTER_NOT_FOUND,
+    AVERROR_HTTP_BAD_REQUEST, AVERROR_HTTP_FORBIDDEN, AVERROR_HTTP_NOT_FOUND,
+    AVERROR_HTTP_OTHER_4XX, AVERROR_HTTP_SERVER_ERROR, AVERROR_HTTP_UNAUTHORIZED,
+    AVERROR_INPUT_CHANGED, AVERROR_INVALIDDATA, AVERROR_MUXER_NOT_FOUND, AVERROR_OPTION_NOT_FOUND,
+    AVERROR_OUTPUT_CHANGED, AVERROR_PATCHWELCOME, AVERROR_PROTOCOL_NOT_FOUND,
+    AVERROR_STREAM_NOT_FOUND, AVERROR_UNKNOWN, AVUNERROR, AV_ERROR_MAX_STRING_SIZE,
+};
 use libc::{c_char, c_int};
 
 // Export POSIX error codes so that users can do something like
 //
-//   if error == (Error::Other { c_errno: EAGAIN }) {
+//   if error == (Error::Other { errno: EAGAIN }) {
 //       ...
 //   }
 pub use libc::{
@@ -60,7 +69,7 @@ pub enum Error {
 
     /// For AVERROR(e) wrapping POSIX error codes, e.g. AVERROR(EAGAIN).
     Other {
-        c_errno: c_int,
+        errno: c_int,
     },
 }
 
@@ -95,7 +104,7 @@ impl From<c_int> for Error {
             AVERROR_HTTP_OTHER_4XX => Error::HttpOther4xx,
             AVERROR_HTTP_SERVER_ERROR => Error::HttpServerError,
             e => Error::Other {
-                c_errno: AVUNERROR(e),
+                errno: AVUNERROR(e),
             },
         }
     }
@@ -131,7 +140,7 @@ impl From<Error> for c_int {
             Error::HttpNotFound => AVERROR_HTTP_NOT_FOUND,
             Error::HttpOther4xx => AVERROR_HTTP_OTHER_4XX,
             Error::HttpServerError => AVERROR_HTTP_SERVER_ERROR,
-            Error::Other { c_errno } => AVERROR(c_errno),
+            Error::Other { errno } => AVERROR(errno),
         }
     }
 }
@@ -149,7 +158,7 @@ impl fmt::Display for Error {
         f.write_str(unsafe {
             from_utf8_unchecked(
                 CStr::from_ptr(match *self {
-                    Error::Other { c_errno } => libc::strerror(c_errno),
+                    Error::Other { errno } => libc::strerror(errno),
                     _ => STRINGS[index(self)].as_ptr(),
                 })
                 .to_bytes(),
@@ -197,7 +206,7 @@ fn index(error: &Error) -> usize {
         Error::HttpNotFound => 24,
         Error::HttpOther4xx => 25,
         Error::HttpServerError => 26,
-        Error::Other { c_errno: _ } => (-1isize) as usize,
+        Error::Other { errno: _ } => (-1isize) as usize,
     }
 }
 
@@ -358,10 +367,7 @@ mod tests {
             Into::<c_int>::into(Error::from(AVERROR(EAGAIN))),
             AVERROR(EAGAIN)
         );
-        assert_eq!(
-            Error::from(AVERROR(EAGAIN)),
-            Error::Other { c_errno: EAGAIN }
-        );
+        assert_eq!(Error::from(AVERROR(EAGAIN)), Error::Other { errno: EAGAIN });
     }
 
     #[cfg(any(target_os = "linux", target_os = "macos"))]

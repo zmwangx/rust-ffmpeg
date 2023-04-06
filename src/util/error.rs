@@ -9,7 +9,7 @@ use libc::{c_char, c_int};
 
 // Export POSIX error codes so that users can do something like
 //
-//   if error == (Error::Other { errno: EAGAIN }) {
+//   if error == (Error::Other { c_errno: EAGAIN }) {
 //       ...
 //   }
 pub use libc::{
@@ -22,7 +22,7 @@ pub use libc::{
     EOPNOTSUPP, EOVERFLOW, EOWNERDEAD, EPERM, EPIPE, EPROTO, EPROTONOSUPPORT, EPROTOTYPE, ERANGE,
     EROFS, ESPIPE, ESRCH, ETIMEDOUT, ETXTBSY, EWOULDBLOCK, EXDEV,
 };
-#[cfg(not(all(target_arch = "wasm32", target_os = "wasi")))]
+#[cfg(not(any(target_os = "freebsd", target_os = "wasi")))]
 pub use libc::{ENODATA, ENOSR, ENOSTR, ETIME};
 
 #[derive(Copy, Clone, PartialEq, Eq)]
@@ -358,7 +358,10 @@ mod tests {
             Into::<c_int>::into(Error::from(AVERROR(EAGAIN))),
             AVERROR(EAGAIN)
         );
-        assert_eq!(Error::from(AVERROR(EAGAIN)), Error::Other { errno: EAGAIN });
+        assert_eq!(
+            Error::from(AVERROR(EAGAIN)),
+            Error::Other { c_errno: EAGAIN }
+        );
     }
 
     #[cfg(any(target_os = "linux", target_os = "macos"))]

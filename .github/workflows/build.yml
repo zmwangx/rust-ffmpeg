@@ -11,7 +11,7 @@ jobs:
     container: jrottenberg/ffmpeg:${{ matrix.ffmpeg_version }}-ubuntu
     strategy:
       matrix:
-        ffmpeg_version: ["3.4", "4.0", "4.1", "4.2", "4.3", "4.4", "5.0", "5.1"]
+        ffmpeg_version: ["3.4", "4.0", "4.1", "4.2", "4.3", "4.4", "5.0", "5.1", "6.0"]
       fail-fast: false
     steps:
       - uses: actions/checkout@v2

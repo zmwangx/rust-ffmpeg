@@ -1,6 +1,6 @@
 [package]
 name    = "ffmpeg-next"
-version = "5.1.1"
+version = "6.0.0"
 build   = "build.rs"
 
 authors = ["meh. <meh@schizofreni.co>", "Zhiming Wang <i@zhimingwang.org>"]
@@ -114,5 +114,5 @@ optional = true
 
 [dependencies.ffmpeg-sys-next]
 git = "https://github.com/remotion-dev/rust-ffmpeg-sys"
-rev = "930bbd3e5836b71a5251d6473c440e29f0f07352"
+rev = "eed7d621d5e1517471ca49daf70d7e00c6322ad7"
 default-features = false

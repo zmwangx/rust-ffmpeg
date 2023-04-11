@@ -117,7 +117,7 @@ impl Input {
         }
     }
 
-    pub fn seek<R: Range<i64>>(
+    pub fn seek(
         &mut self,
         stream_index: i32,
         min_ts: i64,

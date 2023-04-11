@@ -119,11 +119,11 @@ impl Input {
 
     pub fn seek<R: Range<i64>>(
         &mut self,
-        stream_index: i8,
+        stream_index: i32,
         min_ts: i64,
         max_ts: i64,
         ts: i64,
-        flags: i8,
+        flags: i32,
     ) -> Result<(), Error> {
         unsafe {
             match avformat_seek_file(self.as_mut_ptr(), stream_index, min_ts, ts, max_ts, flags) {

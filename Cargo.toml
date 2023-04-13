@@ -15,7 +15,7 @@ keywords      = ["ffmpeg", "multimedia", "video", "audio"]
 categories    = ["multimedia"]
 
 [features]
-default = ["codec", "device", "filter", "format", "software-resampling", "software-scaling"]
+default = ["codec", "device", "filter", "format", "software-resampling", "software-scaling", "ffmpeg_6_0"]
 
 # ffmpeg<xy> are obsolete features kept for backward compatibility purposes and
 # don't do anything anymore (equivalents are automatically specified through
@@ -25,6 +25,7 @@ ffmpeg43 = []
 ffmpeg42 = []
 ffmpeg41 = []
 ffmpeg4 = []
+ffmpeg_6_0 = []
 
 static = ["ffmpeg-sys-next/static"]
 build  = ["static", "ffmpeg-sys-next/build"]

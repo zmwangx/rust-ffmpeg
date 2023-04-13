@@ -5,7 +5,6 @@ use std::ops::{Deref, DerefMut};
 use super::common::Context;
 use super::destructor;
 use ffi::*;
-use util::range::Range;
 #[cfg(not(feature = "ffmpeg_5_0"))]
 use Codec;
 use {format, Error, Packet, Stream};

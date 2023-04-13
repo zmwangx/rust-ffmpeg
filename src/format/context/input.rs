@@ -94,8 +94,23 @@ impl Input {
         unsafe { (*self.as_ptr()).probe_score }
     }
 
-    pub fn packets(&mut self) -> PacketIter {
-        PacketIter::new(self)
+    pub fn get_next_packet(&mut self) -> Option<(Stream, Packet)> {
+        let mut packet = Packet::empty();
+
+        loop {
+            match packet.read(self) {
+                Ok(..) => unsafe {
+                    return Some((
+                        Stream::wrap(mem::transmute_copy(&self), packet.stream()),
+                        packet,
+                    ));
+                },
+
+                Err(Error::Eof) => return None,
+
+                Err(..) => (),
+            }
+        }
     }
 
     pub fn pause(&mut self) -> Result<(), Error> {
@@ -144,39 +159,6 @@ impl Deref for Input {
 impl DerefMut for Input {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.ctx
-    }
-}
-
-pub struct PacketIter<'a> {
-    context: &'a mut Input,
-}
-
-impl<'a> PacketIter<'a> {
-    pub fn new(context: &mut Input) -> PacketIter {
-        PacketIter { context }
-    }
-}
-
-impl<'a> Iterator for PacketIter<'a> {
-    type Item = (Stream<'a>, Packet);
-
-    fn next(&mut self) -> Option<<Self as Iterator>::Item> {
-        let mut packet = Packet::empty();
-
-        loop {
-            match packet.read(self.context) {
-                Ok(..) => unsafe {
-                    return Some((
-                        Stream::wrap(mem::transmute_copy(&self.context), packet.stream()),
-                        packet,
-                    ));
-                },
-
-                Err(Error::Eof) => return None,
-
-                Err(..) => (),
-            }
-        }
     }
 }
 

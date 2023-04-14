@@ -138,7 +138,7 @@ impl Context {
         unsafe {
             sws_scale(
                 self.as_mut_ptr(),
-                data.as_ptr() as *const *const _,
+                data,
                 stride,
                 0,
                 height,

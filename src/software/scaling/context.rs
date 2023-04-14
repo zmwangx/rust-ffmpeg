@@ -129,7 +129,7 @@ impl Context {
 
     pub fn run(
         &mut self,
-        data: &[u8],
+        data: *const *const u8,
         stride: *const i32,
         output_data: *const *mut u8,
         output_stride: *const i32,

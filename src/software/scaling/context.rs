@@ -4,7 +4,7 @@ use super::Flags;
 use ffi::*;
 use libc::c_int;
 use util::format;
-use {frame, Error};
+use Error;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub struct Definition {
@@ -127,36 +127,23 @@ impl Context {
         &self.output
     }
 
-    pub fn run(&mut self, input: &frame::Video, output: &mut frame::Video) -> Result<(), Error> {
-        if input.format() != self.input.format
-            || input.width() != self.input.width
-            || input.height() != self.input.height
-        {
-            return Err(Error::InputChanged);
-        }
-
-        unsafe {
-            if output.is_empty() {
-                output.alloc(self.output.format, self.output.width, self.output.height);
-            }
-        }
-
-        if output.format() != self.output.format
-            || output.width() != self.output.width
-            || output.height() != self.output.height
-        {
-            return Err(Error::OutputChanged);
-        }
-
+    pub fn run(
+        &mut self,
+        data: &[u8],
+        stride: *const i32,
+        output_data: *const *mut u8,
+        output_stride: *const i32,
+        height: i32,
+    ) -> Result<(), Error> {
         unsafe {
             sws_scale(
                 self.as_mut_ptr(),
-                (*input.as_ptr()).data.as_ptr() as *const *const _,
-                (*input.as_ptr()).linesize.as_ptr() as *const _,
+                data.as_ptr() as *const *const _,
+                stride,
                 0,
-                self.input.height as c_int,
-                (*output.as_mut_ptr()).data.as_ptr() as *const *mut _,
-                (*output.as_mut_ptr()).linesize.as_ptr() as *mut _,
+                height,
+                output_data,
+                output_stride,
             );
         }
 

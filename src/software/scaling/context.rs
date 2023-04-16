@@ -134,9 +134,9 @@ impl Context {
         output_data: *const *mut u8,
         output_stride: *const i32,
         height: i32,
-    ) -> Result<(), Error> {
+    ) -> Result<i32, Error> {
         unsafe {
-            sws_scale(
+            let res = sws_scale(
                 self.as_mut_ptr(),
                 data,
                 stride,
@@ -145,9 +145,8 @@ impl Context {
                 output_data,
                 output_stride,
             );
+            Ok(res)
         }
-
-        Ok(())
     }
 }
 

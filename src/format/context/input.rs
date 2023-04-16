@@ -94,22 +94,18 @@ impl Input {
         unsafe { (*self.as_ptr()).probe_score }
     }
 
-    pub fn get_next_packet(&mut self) -> Option<(Stream, Packet)> {
+    pub fn get_next_packet(&mut self) -> Result<(Stream, Packet), Error> {
         let mut packet = Packet::empty();
 
-        loop {
-            match packet.read(self) {
-                Ok(..) => unsafe {
-                    return Some((
-                        Stream::wrap(mem::transmute_copy(&self), packet.stream()),
-                        packet,
-                    ));
-                },
+        match packet.read(self) {
+            Ok(..) => unsafe {
+                return Ok((
+                    Stream::wrap(mem::transmute_copy(&self), packet.stream()),
+                    packet,
+                ));
+            },
 
-                Err(Error::Eof) => return None,
-
-                Err(..) => (),
-            }
+            Err(err) => Err(err),
         }
     }
 

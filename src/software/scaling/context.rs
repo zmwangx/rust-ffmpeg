@@ -127,10 +127,18 @@ impl Context {
         &self.output
     }
 
-    pub fn run(&mut self, input: &frame::Video, output: &mut frame::Video) -> Result<(), Error> {
-        if input.format() != self.input.format
-            || input.width() != self.input.width
-            || input.height() != self.input.height
+    pub fn run(
+        &mut self,
+        input_format: format::Pixel,
+        input_width: u32,
+        input_height: u32,
+        input_data_pointer: *const *const u8,
+        input_data_linesize: *const i32,
+        output: &mut frame::Video,
+    ) -> Result<(), Error> {
+        if input_format != self.input.format
+            || input_width != self.input.width
+            || input_height != self.input.height
         {
             return Err(Error::InputChanged);
         }
@@ -151,8 +159,8 @@ impl Context {
         unsafe {
             sws_scale(
                 self.as_mut_ptr(),
-                (*input.as_ptr()).data.as_ptr() as *const *const _,
-                (*input.as_ptr()).linesize.as_ptr() as *const _,
+                input_data_pointer,
+                input_data_linesize,
                 0,
                 self.input.height as c_int,
                 (*output.as_mut_ptr()).data.as_ptr() as *const *mut _,

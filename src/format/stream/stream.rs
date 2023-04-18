@@ -77,6 +77,24 @@ impl<'a> Stream<'a> {
         unsafe { Rational::from((*self.as_ptr()).avg_frame_rate) }
     }
 
+    pub unsafe fn get_display_aspect_ratio(&self) -> f64 {
+        let sample_aspect_ratio = (*self.as_ptr()).sample_aspect_ratio;
+        let codec_aspect_ratio = (*(*self.as_ptr()).codecpar).sample_aspect_ratio;
+        let dar;
+
+        // If the sample aspect ratio is undefined or 1:1, use the codec aspect ratio
+        if sample_aspect_ratio.num == 0 || av_cmp_q(sample_aspect_ratio, av_make_q(1, 1)) == 0 {
+            dar = av_q2d(codec_aspect_ratio);
+        }
+        // Otherwise, calculate the display aspect ratio as the codec aspect ratio multiplied by the sample aspect ratio
+        else {
+            let display_aspect_ratio = av_mul_q(codec_aspect_ratio, sample_aspect_ratio);
+            dar = av_q2d(display_aspect_ratio);
+        }
+
+        return dar;
+    }
+
     pub fn metadata(&self) -> DictionaryRef {
         unsafe { DictionaryRef::wrap((*self.as_ptr()).metadata) }
     }

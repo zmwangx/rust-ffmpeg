@@ -1,3 +1,5 @@
+use crate::rational;
+
 use super::Disposition;
 use codec::{self, packet};
 use ffi::*;
@@ -77,16 +79,14 @@ impl<'a> Stream<'a> {
         unsafe { Rational::from((*self.as_ptr()).avg_frame_rate) }
     }
 
-    pub unsafe fn get_display_aspect_ratio(&self) -> Rational {
+    pub unsafe fn get_display_aspect_ratio(&self) -> (Rational, Rational) {
         let sample_aspect_ratio = (*self.as_ptr()).sample_aspect_ratio;
         let codec_aspect_ratio = (*(*self.as_ptr()).codecpar).sample_aspect_ratio;
 
-        // If the sample aspect ratio is undefined or 1:1, use the codec aspect ratio
-        if sample_aspect_ratio.num == 0 || av_cmp_q(sample_aspect_ratio, av_make_q(1, 1)) == 0 {
-            return Rational::from(codec_aspect_ratio);
-        }
-
-        return Rational::from(av_mul_q(codec_aspect_ratio, sample_aspect_ratio));
+        return (
+            Rational::from(sample_aspect_ratio),
+            Rational::from(codec_aspect_ratio),
+        );
     }
 
     pub fn metadata(&self) -> DictionaryRef {

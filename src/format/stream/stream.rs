@@ -77,7 +77,7 @@ impl<'a> Stream<'a> {
         unsafe { Rational::from((*self.as_ptr()).avg_frame_rate) }
     }
 
-    pub unsafe fn get_display_aspect_ratio(&self) -> (Rational, i32, i32) {
+    pub unsafe fn get_display_aspect_ratio(&self) -> Rational {
         let sample_aspect_ratio = (*self.as_ptr()).sample_aspect_ratio;
         let codec_width = (*(*self.as_ptr()).codecpar).width;
         let codec_height = (*(*self.as_ptr()).codecpar).height;
@@ -93,7 +93,7 @@ impl<'a> Stream<'a> {
             1024 * 1024,
         );
 
-        return (Rational::new(num, den), codec_width, codec_height);
+        return Rational::new(num, den);
     }
 
     pub fn metadata(&self) -> DictionaryRef {

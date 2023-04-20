@@ -812,6 +812,10 @@ impl From<AVPixelFormat> for Pixel {
     }
 }
 
+pub fn to_av_pixel_format(pixel: Pixel) -> AVPixelFormat {
+    AVPixelFormat::from(pixel)
+}
+
 impl From<Pixel> for AVPixelFormat {
     #[inline]
     fn from(value: Pixel) -> AVPixelFormat {

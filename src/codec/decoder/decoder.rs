@@ -61,6 +61,14 @@ impl Decoder {
         }
     }
 
+    pub fn video_with_codec(self, name: String) -> Result<Video, Error> {
+        if let Some(codec) = super::find_by_name(&name) {
+            self.open_as(codec).and_then(|o| o.video())
+        } else {
+            Err(Error::DecoderNotFound)
+        }
+    }
+
     pub fn audio(self) -> Result<Audio, Error> {
         if let Some(codec) = super::find(self.id()) {
             self.open_as(codec).and_then(|o| o.audio())

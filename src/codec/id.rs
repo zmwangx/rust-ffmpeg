@@ -1299,6 +1299,10 @@ impl From<AVCodecID> for Id {
     }
 }
 
+pub fn get_av_codec_id(id: Id) -> AVCodecID {
+    id.into()
+}
+
 impl From<Id> for AVCodecID {
     fn from(value: Id) -> AVCodecID {
         match value {

@@ -36,14 +36,11 @@ const INITIAL_BUFFER_SIZE: usize = 512;
 #[cfg(all(target_arch = "aarch64", target_os = "macos"))]
 type Arg = __builtin_va_list;
 
-#[cfg(all(target_arch = "x86_64", target_os = "macos"))]
+#[cfg(all(target_arch = "x86_64", target_family = "unix"))]
 type Arg = *mut __va_list_tag;
-
-#[cfg(all(target_arch = "x86_64", target_os = "linux"))]
-type Arg = va_list;
 
 #[cfg(all(target_arch = "aarch64", target_os = "linux"))]
-type Arg = *mut __va_list_tag;
+type Arg = va_list;
 
 #[cfg(target_os = "windows")]
 type Arg = va_list;

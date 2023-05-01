@@ -49,12 +49,18 @@ unsafe extern "C" fn log_callback(_arg1: *mut c_void, level: c_int, fmt: *const 
     let mut buffer = Vec::with_capacity(INITIAL_BUFFER_SIZE);
     buffer.resize(INITIAL_BUFFER_SIZE, 0 as c_char);
 
+    #[cfg(target_os = "windows")]
+    let result = vsnprintf_s(buffer.as_mut_ptr(), buffer.len() as u64, fmt, list);
+    #[cfg(not(target_os = "windows"))]
     let result = vsnprintf(buffer.as_mut_ptr(), buffer.len() as u64, fmt, list);
 
     if result >= 0 {
         let len = result as usize;
         if len > buffer.capacity() {
             buffer.reserve(len - buffer.capacity());
+            #[cfg(target_os = "windows")]
+            let result = vsnprintf_s(buffer.as_mut_ptr(), buffer.len() as u64, fmt, list);
+            #[cfg(not(target_os = "windows"))]
             let result = vsnprintf(buffer.as_mut_ptr(), buffer.len() as u64, fmt, list);
             assert!(result >= 0);
         }

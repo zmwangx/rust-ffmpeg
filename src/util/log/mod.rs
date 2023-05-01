@@ -33,12 +33,13 @@ use std::os::raw::{c_char, c_int, c_void};
 
 const INITIAL_BUFFER_SIZE: usize = 512;
 
-unsafe extern "C" fn log_callback(
-    _arg1: *mut c_void,
-    level: c_int,
-    fmt: *const c_char,
-    list: va_list,
-) {
+#[cfg(all(target_arch = "x86_64", target_family = "macos"))]
+type Arg = *mut __va_list_tag;
+
+#[cfg(not(all(target_arch = "x86_64", target_family = "macos")))]
+type Arg = va_list;
+
+unsafe extern "C" fn log_callback(_arg1: *mut c_void, level: c_int, fmt: *const c_char, list: Arg) {
     let mut buffer = Vec::with_capacity(INITIAL_BUFFER_SIZE);
     buffer.resize(INITIAL_BUFFER_SIZE, 0 as c_char);
 

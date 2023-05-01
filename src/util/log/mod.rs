@@ -31,35 +31,28 @@ pub fn set_callback() {
 
 use std::os::raw::{c_char, c_int, c_void};
 
+const INITIAL_BUFFER_SIZE: usize = 512;
+
 unsafe extern "C" fn log_callback(
     _arg1: *mut c_void,
     level: c_int,
     fmt: *const c_char,
     list: va_list,
 ) {
-    let mut buffer = vec![0u8; 256];
+    let mut buffer = Vec::with_capacity(INITIAL_BUFFER_SIZE);
+    buffer.resize(INITIAL_BUFFER_SIZE, 0 as c_char);
 
-    let result = vsnprintf(
-        buffer.as_mut_ptr() as *mut i8,
-        (buffer.capacity() as usize).try_into().unwrap(),
-        fmt,
-        list,
-    );
+    let result = vsnprintf(buffer.as_mut_ptr(), buffer.len() as u64, fmt, list);
 
     if result >= 0 {
         let len = result as usize;
         if len > buffer.capacity() {
             buffer.reserve(len - buffer.capacity());
-            let result = vsnprintf(
-                buffer.as_mut_ptr() as *mut i8,
-                buffer.capacity().try_into().unwrap(),
-                fmt,
-                list,
-            );
+            let result = vsnprintf(buffer.as_mut_ptr(), buffer.len() as u64, fmt, list);
             assert!(result >= 0);
         }
         unsafe { buffer.set_len(len) };
-        let cstring = CString::from_vec_unchecked(buffer);
+        let cstring = CString::from_vec_unchecked(buffer.iter().map(|&x| x as u8).collect());
         let log_message = cstring.to_string_lossy().into_owned();
         println!("Level {}: {}", level, log_message);
     } else {

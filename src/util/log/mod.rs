@@ -1,6 +1,6 @@
 pub mod level;
 pub use self::level::Level;
-
+use std::ffi::CString;
 pub mod flag;
 pub use self::flag::Flags;
 
@@ -23,17 +23,46 @@ pub fn get_flags() -> Flags {
     unsafe { Flags::from_bits_truncate(av_log_get_flags()) }
 }
 
-pub fn set_callback(
-    callback: ::std::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut libc::c_void,
-            arg2: libc::c_int,
-            arg3: *const libc::c_char,
-            arg4: va_list,
-        ),
-    >,
-) {
+pub fn set_callback() {
     unsafe {
-        av_log_set_callback(callback);
+        av_log_set_callback(Some(log_callback));
+    }
+}
+
+use std::os::raw::{c_char, c_int, c_void};
+
+unsafe extern "C" fn log_callback(
+    _arg1: *mut c_void,
+    level: c_int,
+    fmt: *const c_char,
+    list: va_list,
+) {
+    let mut buffer = vec![0u8; 256];
+
+    let result = vsnprintf(
+        buffer.as_mut_ptr() as *mut i8,
+        (buffer.capacity() as usize).try_into().unwrap(),
+        fmt,
+        list,
+    );
+
+    if result >= 0 {
+        let len = result as usize;
+        if len > buffer.capacity() {
+            buffer.reserve(len - buffer.capacity());
+            let result = vsnprintf(
+                buffer.as_mut_ptr() as *mut i8,
+                buffer.capacity().try_into().unwrap(),
+                fmt,
+                list,
+            );
+            assert!(result >= 0);
+        }
+        unsafe { buffer.set_len(len) };
+        let cstring = CString::from_vec_unchecked(buffer);
+        let log_message = cstring.to_string_lossy().into_owned();
+        println!("Level {}: {}", level, log_message);
+    } else {
+        eprintln!("Error formatting log message");
     }
 }

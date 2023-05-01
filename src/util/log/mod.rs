@@ -33,10 +33,19 @@ use std::os::raw::{c_char, c_int, c_void};
 
 const INITIAL_BUFFER_SIZE: usize = 512;
 
-#[cfg(all(target_arch = "x86_64", target_family = "macos"))]
+#[cfg(all(target_arch = "aarch64", target_os = "macos"))]
+type Arg = __builtin_va_list;
+
+#[cfg(all(target_arch = "x86_64", target_os = "macos"))]
 type Arg = *mut __va_list_tag;
 
-#[cfg(not(all(target_arch = "x86_64", target_family = "macos")))]
+#[cfg(all(target_arch = "x86_64", target_os = "linux"))]
+type Arg = va_list;
+
+#[cfg(all(target_arch = "aarch64", target_os = "linux"))]
+type Arg = *mut __va_list_tag;
+
+#[cfg(target_os = "windows")]
 type Arg = va_list;
 
 unsafe extern "C" fn log_callback(_arg1: *mut c_void, level: c_int, fmt: *const c_char, list: Arg) {

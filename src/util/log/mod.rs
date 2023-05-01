@@ -3,9 +3,12 @@ pub use self::level::Level;
 use std::ffi::CString;
 pub mod flag;
 pub use self::flag::Flags;
+use std::os::raw::c_char;
 
 use ffi::*;
 use std::convert::TryInto;
+
+const INITIAL_BUFFER_SIZE: usize = 512;
 
 pub fn set_level(value: Level) {
     unsafe { av_log_set_level(value.into()) }
@@ -23,29 +26,37 @@ pub fn get_flags() -> Flags {
     unsafe { Flags::from_bits_truncate(av_log_get_flags()) }
 }
 
-pub fn set_callback() {
+pub fn set_callback(
+    callback: ::std::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut libc::c_void,
+            arg2: libc::c_int,
+            arg3: *const libc::c_char,
+            arg4: VaListLoggerArg,
+        ),
+    >,
+) {
     unsafe {
-        av_log_set_callback(Some(log_callback));
+        av_log_set_callback(callback);
     }
 }
 
-use std::os::raw::{c_char, c_int, c_void};
-
-const INITIAL_BUFFER_SIZE: usize = 512;
-
 #[cfg(all(target_arch = "aarch64", target_os = "macos"))]
-type Arg = __builtin_va_list;
+pub type VaListLoggerArg = __builtin_va_list;
 
 #[cfg(all(target_arch = "x86_64", target_family = "unix"))]
-type Arg = *mut __va_list_tag;
+pub type VaListLoggerArg = *mut __va_list_tag;
 
 #[cfg(all(target_arch = "aarch64", target_os = "linux"))]
-type Arg = va_list;
+pub type VaListLoggerArg = va_list;
 
 #[cfg(target_os = "windows")]
-type Arg = va_list;
+pub type VaListLoggerArg = va_list;
 
-unsafe extern "C" fn log_callback(_arg1: *mut c_void, level: c_int, fmt: *const c_char, list: Arg) {
+pub unsafe fn make_log_message(
+    fmt: *const c_char,
+    list: VaListLoggerArg,
+) -> Result<String, std::io::Error> {
     let mut buffer = Vec::with_capacity(INITIAL_BUFFER_SIZE);
     buffer.resize(INITIAL_BUFFER_SIZE, 0 as c_char);
 
@@ -62,13 +73,20 @@ unsafe extern "C" fn log_callback(_arg1: *mut c_void, level: c_int, fmt: *const 
             let result = vsnprintf_s(buffer.as_mut_ptr(), buffer.len(), 1000, fmt, list);
             #[cfg(not(target_os = "windows"))]
             let result = vsnprintf(buffer.as_mut_ptr(), buffer.len() as u64, fmt, list);
-            assert!(result >= 0);
+
+            if result < 0 {
+                let err = std::io::Error::new(std::io::ErrorKind::Other, "prevented overflow");
+                Err::<String, std::io::Error>(err)?;
+            }
         }
-        unsafe { buffer.set_len(len) };
+        buffer.set_len(len);
         let cstring = CString::from_vec_unchecked(buffer.iter().map(|&x| x as u8).collect());
         let log_message = cstring.to_string_lossy().into_owned();
-        println!("Level {}: {}", level, log_message);
+        Ok(log_message)
     } else {
-        eprintln!("Error formatting log message");
+        Err(std::io::Error::new(
+            std::io::ErrorKind::Other,
+            "vsnprintf failed",
+        ))
     }
 }

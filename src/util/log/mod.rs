@@ -50,7 +50,7 @@ unsafe extern "C" fn log_callback(_arg1: *mut c_void, level: c_int, fmt: *const 
     buffer.resize(INITIAL_BUFFER_SIZE, 0 as c_char);
 
     #[cfg(target_os = "windows")]
-    let result = vsnprintf_s(buffer.as_mut_ptr(), buffer.len(), fmt, list);
+    let result = vsnprintf_s(buffer.as_mut_ptr(), buffer.len(), 1000, fmt, list);
     #[cfg(not(target_os = "windows"))]
     let result = vsnprintf(buffer.as_mut_ptr(), buffer.len() as u64, fmt, list);
 
@@ -59,7 +59,7 @@ unsafe extern "C" fn log_callback(_arg1: *mut c_void, level: c_int, fmt: *const 
         if len > buffer.capacity() {
             buffer.reserve(len - buffer.capacity());
             #[cfg(target_os = "windows")]
-            let result = vsnprintf_s(buffer.as_mut_ptr(), buffer.len(), fmt, list);
+            let result = vsnprintf_s(buffer.as_mut_ptr(), buffer.len(), 1000, fmt, list);
             #[cfg(not(target_os = "windows"))]
             let result = vsnprintf(buffer.as_mut_ptr(), buffer.len() as u64, fmt, list);
             assert!(result >= 0);

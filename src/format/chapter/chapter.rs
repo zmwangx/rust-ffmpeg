@@ -26,7 +26,10 @@ impl<'a> Chapter<'a> {
     }
 
     pub fn id(&self) -> i64 {
-        unsafe { (*self.as_ptr()).id as i64 }
+        #[allow(clippy::unnecessary_cast)]
+        unsafe {
+            (*self.as_ptr()).id as i64
+        }
     }
 
     pub fn time_base(&self) -> Rational {

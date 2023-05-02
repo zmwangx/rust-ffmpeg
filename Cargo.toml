@@ -1,6 +1,6 @@
 [package]
 name    = "ffmpeg-next"
-version = "5.1.1"
+version = "6.0.0"
 build   = "build.rs"
 
 authors = ["meh. <meh@schizofreni.co>", "Zhiming Wang <i@zhimingwang.org>"]
@@ -113,5 +113,5 @@ version  = "0.23"
 optional = true
 
 [dependencies.ffmpeg-sys-next]
-version = "5.1.1"
+version = "6.0.1"
 default-features = false

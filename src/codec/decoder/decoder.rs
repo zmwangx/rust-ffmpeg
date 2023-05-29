@@ -52,23 +52,27 @@ impl Decoder {
             }
         }
     }
-
+    
     pub fn video(self) -> Result<Video, Error> {
-        if let Some(codec) = super::find(self.id()) {
+        if let Some(codec) = self.0.codec() {
+            self.open_as(codec).and_then(|o| o.video())
+        } else if let Some(codec) = super::find(self.id()) {
             self.open_as(codec).and_then(|o| o.video())
         } else {
             Err(Error::DecoderNotFound)
         }
     }
-
+    
     pub fn audio(self) -> Result<Audio, Error> {
-        if let Some(codec) = super::find(self.id()) {
+        if let Some(codec) = self.0.codec() {
+            self.open_as(codec).and_then(|o| o.audio())
+        } else if let Some(codec) = super::find(self.id()) {
             self.open_as(codec).and_then(|o| o.audio())
         } else {
             Err(Error::DecoderNotFound)
         }
     }
-
+    
     pub fn subtitle(self) -> Result<Subtitle, Error> {
         if let Some(codec) = super::find(self.id()) {
             self.open_as(codec).and_then(|o| o.subtitle())

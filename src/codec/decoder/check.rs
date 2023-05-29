@@ -4,7 +4,7 @@ use libc::c_int;
 bitflags! {
     pub struct Check: c_int {
         const CRC      = AV_EF_CRCCHECK;
-        const BISTREAM = AV_EF_BITSTREAM;
+        const BITSTREAM = AV_EF_BITSTREAM;
         const BUFFER   = AV_EF_BUFFER;
         const EXPLODE  = AV_EF_EXPLODE;
 

@@ -1945,9 +1945,6 @@ impl From<Id> for AVCodecID {
 
 impl fmt::Display for Id {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
-        let name = unsafe {
-            from_utf8_unchecked(CStr::from_ptr(avcodec_get_name((*self).into())).to_bytes())
-        };
-        write!(f, "{}", name)
+        write!(f, "{}", self.name())
     }
 }

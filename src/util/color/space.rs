@@ -59,6 +59,9 @@ impl From<AVColorSpace> for Space {
             AVCOL_SPC_CHROMA_DERIVED_NCL => Space::ChromaDerivedNCL,
             AVCOL_SPC_CHROMA_DERIVED_CL => Space::ChromaDerivedCL,
             AVCOL_SPC_ICTCP => Space::ICTCP,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

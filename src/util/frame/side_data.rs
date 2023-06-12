@@ -126,6 +126,8 @@ impl From<AVFrameSideDataType> for Type {
 
             #[cfg(feature = "ffmpeg_6_0")]
             AV_FRAME_DATA_AMBIENT_VIEWING_ENVIRONMENT => Type::AMBIENT_VIEWING_ENVIRONMENT,
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

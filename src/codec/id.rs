@@ -1295,6 +1295,9 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_VNULL => Id::VNULL,
             #[cfg(feature = "ffmpeg_6_0")]
             AV_CODEC_ID_ANULL => Id::ANULL,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

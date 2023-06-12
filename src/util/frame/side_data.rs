@@ -58,6 +58,9 @@ pub enum Type {
 
     #[cfg(feature = "ffmpeg_5_1")]
     DYNAMIC_HDR_VIVID,
+
+    #[cfg(feature = "ffmpeg_6_0")]
+    AMBIENT_VIEWING_ENVIRONMENT,
 }
 
 impl Type {
@@ -120,6 +123,9 @@ impl From<AVFrameSideDataType> for Type {
 
             #[cfg(feature = "ffmpeg_5_1")]
             AV_FRAME_DATA_DYNAMIC_HDR_VIVID => Type::DYNAMIC_HDR_VIVID,
+
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_FRAME_DATA_AMBIENT_VIEWING_ENVIRONMENT => Type::AMBIENT_VIEWING_ENVIRONMENT,
         }
     }
 }
@@ -175,6 +181,9 @@ impl From<Type> for AVFrameSideDataType {
 
             #[cfg(feature = "ffmpeg_5_1")]
             Type::DYNAMIC_HDR_VIVID => AV_FRAME_DATA_DYNAMIC_HDR_VIVID,
+
+            #[cfg(feature = "ffmpeg_6_0")]
+            Type::AMBIENT_VIEWING_ENVIRONMENT => AV_FRAME_DATA_AMBIENT_VIEWING_ENVIRONMENT,
         }
     }
 }
@@ -213,7 +222,10 @@ impl<'a> SideData<'a> {
 
     #[inline]
     pub fn data(&self) -> &[u8] {
-        unsafe { slice::from_raw_parts((*self.as_ptr()).data, (*self.as_ptr()).size as usize) }
+        #[allow(clippy::unnecessary_cast)]
+        unsafe {
+            slice::from_raw_parts((*self.as_ptr()).data, (*self.as_ptr()).size as usize)
+        }
     }
 
     #[inline]

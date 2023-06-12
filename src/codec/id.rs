@@ -613,6 +613,37 @@ pub enum Id {
     PHM,
     #[cfg(feature = "ffmpeg_5_1")]
     DFPWM,
+
+    #[cfg(feature = "ffmpeg_6_0")]
+    RADIANCE_HDR,
+    #[cfg(feature = "ffmpeg_6_0")]
+    WBMP,
+    #[cfg(feature = "ffmpeg_6_0")]
+    MEDIA100,
+    #[cfg(feature = "ffmpeg_6_0")]
+    VQC,
+    #[cfg(feature = "ffmpeg_6_0")]
+    ADPCM_XMD,
+    #[cfg(feature = "ffmpeg_6_0")]
+    WADY_DPCM,
+    #[cfg(feature = "ffmpeg_6_0")]
+    CBD2_DPCM,
+    #[cfg(feature = "ffmpeg_6_0")]
+    BONK,
+    #[cfg(feature = "ffmpeg_6_0")]
+    MISC4,
+    #[cfg(feature = "ffmpeg_6_0")]
+    APAC,
+    #[cfg(feature = "ffmpeg_6_0")]
+    FTR,
+    #[cfg(feature = "ffmpeg_6_0")]
+    WAVARC,
+    #[cfg(feature = "ffmpeg_6_0")]
+    RKA,
+    #[cfg(feature = "ffmpeg_6_0")]
+    VNULL,
+    #[cfg(feature = "ffmpeg_6_0")]
+    ANULL,
 }
 
 impl Id {
@@ -1233,6 +1264,37 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_PHM => Id::PHM,
             #[cfg(feature = "ffmpeg_5_1")]
             AV_CODEC_ID_DFPWM => Id::DFPWM,
+
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_CODEC_ID_RADIANCE_HDR => Id::RADIANCE_HDR,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_CODEC_ID_WBMP => Id::WBMP,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_CODEC_ID_MEDIA100 => Id::MEDIA100,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_CODEC_ID_VQC => Id::VQC,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_CODEC_ID_ADPCM_XMD => Id::ADPCM_XMD,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_CODEC_ID_WADY_DPCM => Id::WADY_DPCM,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_CODEC_ID_CBD2_DPCM => Id::CBD2_DPCM,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_CODEC_ID_BONK => Id::BONK,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_CODEC_ID_MISC4 => Id::MISC4,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_CODEC_ID_APAC => Id::APAC,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_CODEC_ID_FTR => Id::FTR,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_CODEC_ID_WAVARC => Id::WAVARC,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_CODEC_ID_RKA => Id::RKA,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_CODEC_ID_VNULL => Id::VNULL,
+            #[cfg(feature = "ffmpeg_6_0")]
+            AV_CODEC_ID_ANULL => Id::ANULL,
         }
     }
 }
@@ -1845,6 +1907,37 @@ impl From<Id> for AVCodecID {
             Id::PHM => AV_CODEC_ID_PHM,
             #[cfg(feature = "ffmpeg_5_1")]
             Id::DFPWM => AV_CODEC_ID_DFPWM,
+
+            #[cfg(feature = "ffmpeg_6_0")]
+            Id::RADIANCE_HDR => AV_CODEC_ID_RADIANCE_HDR,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Id::WBMP => AV_CODEC_ID_WBMP,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Id::MEDIA100 => AV_CODEC_ID_MEDIA100,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Id::VQC => AV_CODEC_ID_VQC,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Id::ADPCM_XMD => AV_CODEC_ID_ADPCM_XMD,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Id::WADY_DPCM => AV_CODEC_ID_WADY_DPCM,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Id::CBD2_DPCM => AV_CODEC_ID_CBD2_DPCM,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Id::BONK => AV_CODEC_ID_BONK,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Id::MISC4 => AV_CODEC_ID_MISC4,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Id::APAC => AV_CODEC_ID_APAC,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Id::FTR => AV_CODEC_ID_FTR,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Id::WAVARC => AV_CODEC_ID_WAVARC,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Id::RKA => AV_CODEC_ID_RKA,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Id::VNULL => AV_CODEC_ID_VNULL,
+            #[cfg(feature = "ffmpeg_6_0")]
+            Id::ANULL => AV_CODEC_ID_ANULL,
         }
     }
 }

@@ -81,7 +81,7 @@ impl<'a, 'b> FromIterator<&'b (String, String)> for Owned<'a> {
     fn from_iter<T: IntoIterator<Item = &'b (String, String)>>(iterator: T) -> Self {
         let mut result = Owned::new();
 
-        for &(ref key, ref value) in iterator {
+        for (key, value) in iterator {
             result.set(key, value);
         }
 

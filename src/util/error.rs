@@ -23,6 +23,9 @@ pub use libc::{
     EROFS, ESPIPE, ESRCH, ETIMEDOUT, ETXTBSY, EWOULDBLOCK, EXDEV,
 };
 
+#[cfg(not(target_os = "freebsd"))]
+pub use libc::{EENODATA, ENOSR, ENOSTR, ETIME};
+
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum Error {
     Bug,

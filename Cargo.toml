@@ -113,5 +113,6 @@ version  = "0.23"
 optional = true
 
 [dependencies.ffmpeg-sys-next]
-version = "6.0.1"
 default-features = false
+git = "https://github.com/membraneframework-labs/rust-ffmpeg-sys.git"
+branch = "fix-for-ffmepg-6.1"

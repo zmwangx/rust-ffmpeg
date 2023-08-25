@@ -15,7 +15,7 @@ keywords      = ["ffmpeg", "multimedia", "video", "audio"]
 categories    = ["multimedia"]
 
 [features]
-default = ["codec", "device", "filter", "format", "software-resampling", "software-scaling"]
+default = ["codec", "device", "filter", "format", "software-resampling", "software-scaling", "non-exhaustive-enums"]
 
 # ffmpeg<xy> are obsolete features kept for backward compatibility purposes and
 # don't do anything anymore (equivalents are automatically specified through
@@ -28,6 +28,9 @@ ffmpeg4 = []
 
 static = ["ffmpeg-sys-next/static"]
 build  = ["static", "ffmpeg-sys-next/build"]
+
+# mark enums in generated bindings as #[non_exhaustive]
+non-exhaustive-enums = ["ffmpeg-sys-next/non-exhaustive-enums"]
 
 # licensing
 build-license-gpl      = ["ffmpeg-sys-next/build-license-gpl"]

@@ -23,6 +23,9 @@ impl From<AVChromaLocation> for Location {
             AVCHROMA_LOC_BOTTOMLEFT => Location::BottomLeft,
             AVCHROMA_LOC_BOTTOM => Location::Bottom,
             AVCHROMA_LOC_NB => Location::Unspecified,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

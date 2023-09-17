@@ -36,7 +36,7 @@ impl Input {
 
 impl Input {
     pub fn format(&self) -> format::Input {
-        unsafe { format::Input::wrap((*self.as_ptr()).iformat as *mut AVInputFormat) }
+        unsafe { format::Input::wrap((*self.as_ptr()).iformat) }
     }
 
     #[cfg(not(feature = "ffmpeg_5_0"))]

@@ -37,7 +37,7 @@ impl Output {
 
 impl Output {
     pub fn format(&self) -> format::Output {
-        unsafe { format::Output::wrap((*self.as_ptr()).oformat as *mut AVOutputFormat) }
+        unsafe { format::Output::wrap((*self.as_ptr()).oformat) }
     }
 
     pub fn write_header(&mut self) -> Result<(), Error> {

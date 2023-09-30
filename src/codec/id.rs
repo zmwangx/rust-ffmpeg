@@ -657,6 +657,8 @@ pub enum Id {
     AC4,
     #[cfg(feature = "ffmpeg_6_1")]
     SMPTE_2038,
+    #[cfg(feature = "ffmpeg_6_1")]
+    OSQ,
 }
 
 impl Id {

@@ -1321,6 +1321,8 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_AC4 => Id::AC4,
             #[cfg(feature = "ffmpeg_6_1")]
             AV_CODEC_ID_SMPTE_2038 => Id::SMPTE_2038,
+            #[cfg(feature = "ffmpeg_6_1")]
+            AV_CODEC_ID_OSQ => Id::OSQ,
         }
     }
 }
@@ -1977,6 +1979,8 @@ impl From<Id> for AVCodecID {
             Id::AC4 => AV_CODEC_ID_AC4,
             #[cfg(feature = "ffmpeg_6_1")]
             Id::SMPTE_2038 => AV_CODEC_ID_SMPTE_2038,
+            #[cfg(feature = "ffmpeg_6_1")]
+            Id::OSQ => AV_CODEC_ID_OSQ,
         }
     }
 }

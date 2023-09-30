@@ -813,6 +813,10 @@ impl From<AVPixelFormat> for Pixel {
             AV_PIX_FMT_P412BE => Pixel::P412BE,
             #[cfg(feature = "ffmpeg_6_1")]
             AV_PIX_FMT_P412LE => Pixel::P412LE,
+            #[cfg(feature = "ffmpeg_6_1")]
+            AV_PIX_FMT_GBRAP14BE => Pixel::GBRAP14BE,
+            #[cfg(feature = "ffmpeg_6_1")]
+            AV_PIX_FMT_GBRAP14LE => Pixel::GBRAP14LE,
 
             #[cfg(feature = "rpi")]
             AV_PIX_FMT_RPI => Pixel::RPI,
@@ -1235,6 +1239,10 @@ impl From<Pixel> for AVPixelFormat {
             Pixel::P412BE => AV_PIX_FMT_P412BE,
             #[cfg(feature = "ffmpeg_6_1")]
             Pixel::P412LE => AV_PIX_FMT_P412LE,
+            #[cfg(feature = "ffmpeg_6_1")]
+            Pixel::GBRAP14BE => AV_PIX_FMT_GBRAP14BE,
+            #[cfg(feature = "ffmpeg_6_1")]
+            Pixel::GBRAP14LE => AV_PIX_FMT_GBRAP14LE,
 
             #[cfg(feature = "rpi")]
             Pixel::RPI => AV_PIX_FMT_RPI,

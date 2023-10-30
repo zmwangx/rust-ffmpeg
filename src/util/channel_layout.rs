@@ -58,6 +58,17 @@ bitflags! {
         const OCTAGONAL          = AV_CH_LAYOUT_OCTAGONAL;
         const HEXADECAGONAL      = AV_CH_LAYOUT_HEXADECAGONAL;
         const STEREO_DOWNMIX     = AV_CH_LAYOUT_STEREO_DOWNMIX;
+
+        #[cfg(feature = "ffmpeg_6_1")]
+        const _3POINT1POINT2      = AV_CH_LAYOUT_3POINT1POINT2;
+        #[cfg(feature = "ffmpeg_6_1")]
+        const _5POINT1POINT2_BACK = AV_CH_LAYOUT_5POINT1POINT2_BACK;
+        #[cfg(feature = "ffmpeg_6_1")]
+        const _5POINT1POINT4_BACK = AV_CH_LAYOUT_5POINT1POINT4_BACK;
+        #[cfg(feature = "ffmpeg_6_1")]
+        const _7POINT1POINT2      = AV_CH_LAYOUT_7POINT1POINT2;
+        #[cfg(feature = "ffmpeg_6_1")]
+        const _7POINT1POINT4_BACK = AV_CH_LAYOUT_7POINT1POINT4_BACK;
     }
 }
 

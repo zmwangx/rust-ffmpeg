@@ -8,7 +8,7 @@ use super::{threading, Compliance, Debug, Flags, Id, Parameters};
 use ffi::*;
 use libc::c_int;
 use media;
-use {Codec, Error};
+use {Codec, Error, Rational};
 
 pub struct Context {
     ptr: *mut AVCodecContext,
@@ -135,6 +135,31 @@ impl Context {
             match avcodec_parameters_to_context(self.as_mut_ptr(), parameters.as_ptr()) {
                 e if e < 0 => Err(Error::from(e)),
                 _ => Ok(()),
+            }
+        }
+    }
+
+    pub fn time_base(&self) -> Rational {
+        unsafe { Rational::from((*self.as_ptr()).time_base) }
+    }
+
+    pub fn set_time_base<R: Into<Rational>>(&mut self, value: R) {
+        unsafe {
+            (*self.as_mut_ptr()).time_base = value.into().into();
+        }
+    }
+
+    pub fn frame_rate(&self) -> Rational {
+        unsafe { Rational::from((*self.as_ptr()).framerate) }
+    }
+
+    pub fn set_frame_rate<R: Into<Rational>>(&mut self, value: Option<R>) {
+        unsafe {
+            if let Some(value) = value {
+                (*self.as_mut_ptr()).framerate = value.into().into();
+            } else {
+                (*self.as_mut_ptr()).framerate.num = 0;
+                (*self.as_mut_ptr()).framerate.den = 1;
             }
         }
     }

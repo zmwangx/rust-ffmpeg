@@ -58,12 +58,12 @@ pub fn license() -> &'static str {
 }
 
 // XXX: use to_cstring when stable
-fn from_path<P: AsRef<Path>>(path: &P) -> CString {
+fn from_path<P: AsRef<Path> + ?Sized>(path: &P) -> CString {
     CString::new(path.as_ref().as_os_str().to_str().unwrap()).unwrap()
 }
 
 // NOTE: this will be better with specialization or anonymous return types
-pub fn open<P: AsRef<Path>>(path: &P, format: &Format) -> Result<Context, Error> {
+pub fn open<P: AsRef<Path> + ?Sized>(path: &P, format: &Format) -> Result<Context, Error> {
     unsafe {
         let mut ps = ptr::null_mut();
         let path = from_path(path);
@@ -100,7 +100,7 @@ pub fn open<P: AsRef<Path>>(path: &P, format: &Format) -> Result<Context, Error>
     }
 }
 
-pub fn open_with<P: AsRef<Path>>(
+pub fn open_with<P: AsRef<Path> + ?Sized>(
     path: &P,
     format: &Format,
     options: Dictionary,
@@ -148,7 +148,7 @@ pub fn open_with<P: AsRef<Path>>(
     }
 }
 
-pub fn input<P: AsRef<Path>>(path: &P) -> Result<context::Input, Error> {
+pub fn input<P: AsRef<Path> + ?Sized>(path: &P) -> Result<context::Input, Error> {
     unsafe {
         let mut ps = ptr::null_mut();
         let path = from_path(path);
@@ -167,7 +167,7 @@ pub fn input<P: AsRef<Path>>(path: &P) -> Result<context::Input, Error> {
     }
 }
 
-pub fn input_with_dictionary<P: AsRef<Path>>(
+pub fn input_with_dictionary<P: AsRef<Path> + ?Sized>(
     path: &P,
     options: Dictionary,
 ) -> Result<context::Input, Error> {
@@ -193,7 +193,7 @@ pub fn input_with_dictionary<P: AsRef<Path>>(
     }
 }
 
-pub fn input_with_interrupt<P: AsRef<Path>, F>(
+pub fn input_with_interrupt<P: AsRef<Path> + ?Sized, F>(
     path: &P,
     closure: F,
 ) -> Result<context::Input, Error>
@@ -219,7 +219,7 @@ where
     }
 }
 
-pub fn output<P: AsRef<Path>>(path: &P) -> Result<context::Output, Error> {
+pub fn output<P: AsRef<Path> + ?Sized>(path: &P) -> Result<context::Output, Error> {
     unsafe {
         let mut ps = ptr::null_mut();
         let path = from_path(path);
@@ -235,7 +235,7 @@ pub fn output<P: AsRef<Path>>(path: &P) -> Result<context::Output, Error> {
     }
 }
 
-pub fn output_with<P: AsRef<Path>>(
+pub fn output_with<P: AsRef<Path> + ?Sized>(
     path: &P,
     options: Dictionary,
 ) -> Result<context::Output, Error> {
@@ -267,7 +267,10 @@ pub fn output_with<P: AsRef<Path>>(
     }
 }
 
-pub fn output_as<P: AsRef<Path>>(path: &P, format: &str) -> Result<context::Output, Error> {
+pub fn output_as<P: AsRef<Path> + ?Sized>(
+    path: &P,
+    format: &str,
+) -> Result<context::Output, Error> {
     unsafe {
         let mut ps = ptr::null_mut();
         let path = from_path(path);
@@ -289,7 +292,7 @@ pub fn output_as<P: AsRef<Path>>(path: &P, format: &str) -> Result<context::Outp
     }
 }
 
-pub fn output_as_with<P: AsRef<Path>>(
+pub fn output_as_with<P: AsRef<Path> + ?Sized>(
     path: &P,
     format: &str,
     options: Dictionary,

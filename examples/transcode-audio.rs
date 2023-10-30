@@ -62,7 +62,7 @@ struct Transcoder {
     out_time_base: ffmpeg::Rational,
 }
 
-fn transcoder<P: AsRef<Path>>(
+fn transcoder<P: AsRef<Path> + ?Sized>(
     ictx: &mut format::context::Input,
     octx: &mut format::context::Output,
     path: &P,

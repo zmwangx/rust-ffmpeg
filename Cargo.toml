@@ -23,6 +23,7 @@ default = [
     "software-resampling",
     "software-scaling",
     "ffmpeg_6_0",
+    "ffmpeg_6_1",
 ]
 
 # ffmpeg<xy> are obsolete features kept for backward compatibility purposes and
@@ -34,6 +35,7 @@ ffmpeg42 = []
 ffmpeg41 = []
 ffmpeg4 = []
 ffmpeg_6_0 = []
+ffmpeg_6_1 = []
 
 static = ["ffmpeg-sys-next/static"]
 build = ["static", "ffmpeg-sys-next/build"]
@@ -123,5 +125,5 @@ optional = true
 
 [dependencies.ffmpeg-sys-next]
 git = "https://github.com/remotion-dev/rust-ffmpeg-sys"
-rev = "77ed909d917cc3b2fdc2ef0cf48ee12d6eaad8bd"
+rev = "fde94b14bdd2b30cb1c4fb1e3c461d4cd09ae81c"
 default-features = false

@@ -16,7 +16,7 @@ impl Iterator for AudioIter {
             if ptr.is_null() && !self.0.is_null() {
                 None
             } else {
-                self.0 = ptr as *mut AVOutputFormat;
+                self.0 = ptr;
 
                 Some(Format::Output(format::Output::wrap(ptr)))
             }
@@ -40,7 +40,7 @@ impl Iterator for VideoIter {
             if ptr.is_null() && !self.0.is_null() {
                 None
             } else {
-                self.0 = ptr as *mut AVOutputFormat;
+                self.0 = ptr;
 
                 Some(Format::Output(format::Output::wrap(ptr)))
             }

@@ -13,7 +13,7 @@ where
     F: FnMut() -> bool,
 {
     // Clippy suggests to remove &mut, but it doesn't compile then (move occurs because value has type `F`, which does not implement the `Copy` trait)
-    #[allow(clippy::needless-borrow)]
+    #[allow(clippy::needless_borrow)]
     match panic::catch_unwind(|| (unsafe { &mut *(opaque as *mut F) })()) {
         Ok(ret) => ret as c_int,
         Err(_) => process::abort(),

@@ -36,6 +36,8 @@ impl Input {
 
 impl Input {
     pub fn format(&self) -> format::Input {
+        // We get a clippy warning in 4.4 but not in 5.0 and newer, so we allow that cast to not complicate the code
+        #[allow(clippy::unnecessary_cast)]
         unsafe { format::Input::wrap((*self.as_ptr()).iformat as *mut AVInputFormat) }
     }
 

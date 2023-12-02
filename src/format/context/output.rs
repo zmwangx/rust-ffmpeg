@@ -37,6 +37,8 @@ impl Output {
 
 impl Output {
     pub fn format(&self) -> format::Output {
+        // We get a clippy warning in 4.4 but not in 5.0 and newer, so we allow that cast to not complicate the code
+        #[allow(clippy::unnecessary_cast)]
         unsafe { format::Output::wrap((*self.as_ptr()).oformat as *mut AVOutputFormat) }
     }
 

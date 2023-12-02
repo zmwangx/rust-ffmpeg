@@ -34,6 +34,8 @@ pub fn new() -> Decoder {
 
 pub fn find(id: Id) -> Option<Codec> {
     unsafe {
+        // We get a clippy warning in 4.4 but not in 5.0 and newer, so we allow that cast to not complicate the code
+        #[allow(clippy::unnecessary_cast)]
         let ptr = avcodec_find_decoder(id.into()) as *mut AVCodec;
 
         if ptr.is_null() {
@@ -47,6 +49,7 @@ pub fn find(id: Id) -> Option<Codec> {
 pub fn find_by_name(name: &str) -> Option<Codec> {
     unsafe {
         let name = CString::new(name).unwrap();
+        #[allow(clippy::unnecessary_cast)]
         let ptr = avcodec_find_decoder_by_name(name.as_ptr()) as *mut AVCodec;
 
         if ptr.is_null() {

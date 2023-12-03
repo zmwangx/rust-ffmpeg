@@ -106,3 +106,37 @@ jobs:
       - name: Check format
         run: |
           cargo fmt -- --check
+  # Added only because there is no ffmpeg6.1 docker image here yet
+  # https://github.com/jrottenberg/ffmpeg
+  build-test-lint-latest:
+    name: FFmpeg Latest - build, test and lint
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y software-properties-common
+          sudo add-apt-repository ppa:ubuntuhandbook1/ffmpeg6
+          sudo apt update
+          sudo apt install -y --no-install-recommends clang curl pkg-config ffmpeg libavutil-dev libavcodec-dev libavformat-dev libavfilter-dev libavfilter-dev libavdevice-dev libswresample-dev
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+      - name: Build
+        run: |
+          cargo build --examples
+      - name: Test
+        run: |
+          cargo test --examples
+      - name: Lint
+        run: |
+          cargo clippy --examples -- -D warnings
+      - name: Check format
+        run: |
+          cargo fmt -- --check

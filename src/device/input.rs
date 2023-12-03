@@ -11,6 +11,8 @@ impl Iterator for AudioIter {
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
+            // We get a clippy warning in 4.4 but not in 5.0 and newer, so we allow that cast to not complicate the code
+            #[allow(clippy::unnecessary_cast)]
             let ptr = av_input_audio_device_next(self.0) as *mut AVInputFormat;
 
             if ptr.is_null() && !self.0.is_null() {
@@ -35,6 +37,8 @@ impl Iterator for VideoIter {
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
+            // We get a clippy warning in 4.4 but not in 5.0 and newer, so we allow that cast to not complicate the code
+            #[allow(clippy::unnecessary_cast)]
             let ptr = av_input_video_device_next(self.0) as *mut AVInputFormat;
 
             if ptr.is_null() && !self.0.is_null() {

@@ -113,8 +113,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-    env:
-      FEATURES: avcodec,avdevice,avfilter,avformat,postproc,swresample,swscale
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
@@ -132,13 +130,13 @@ jobs:
           components: rustfmt, clippy
       - name: Build
         run: |
-          cargo build --features $FEATURES
+          cargo build --examples
       - name: Test
         run: |
-          cargo test --features $FEATURES
+          cargo test --examples
       - name: Lint
         run: |
-          cargo clippy --features $FEATURES -- -D warnings
+          cargo clippy --examples -- -D warnings
       - name: Check format
         run: |
           cargo fmt -- --check

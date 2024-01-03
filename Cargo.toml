@@ -1,6 +1,6 @@
 [package]
 name    = "ffmpeg-next"
-version = "6.1.0"
+version = "6.1.1"
 build   = "build.rs"
 
 authors = ["meh. <meh@schizofreni.co>", "Zhiming Wang <i@zhimingwang.org>"]

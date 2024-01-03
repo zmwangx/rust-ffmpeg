@@ -415,8 +415,6 @@ pub enum Pixel {
     GBRAP14LE,
 
     #[cfg(feature = "rpi")]
-    RPI,
-    #[cfg(feature = "rpi")]
     SAND128,
     #[cfg(feature = "rpi")]
     SAND64_10,
@@ -822,8 +820,6 @@ impl From<AVPixelFormat> for Pixel {
             #[cfg(feature = "ffmpeg_6_1")]
             AV_PIX_FMT_GBRAP14LE => Pixel::GBRAP14LE,
 
-            #[cfg(feature = "rpi")]
-            AV_PIX_FMT_RPI => Pixel::RPI,
             #[cfg(feature = "rpi")]
             AV_PIX_FMT_SAND128 => Pixel::SAND128,
             #[cfg(feature = "rpi")]
@@ -1248,8 +1244,6 @@ impl From<Pixel> for AVPixelFormat {
             #[cfg(feature = "ffmpeg_6_1")]
             Pixel::GBRAP14LE => AV_PIX_FMT_GBRAP14LE,
 
-            #[cfg(feature = "rpi")]
-            Pixel::RPI => AV_PIX_FMT_RPI,
             #[cfg(feature = "rpi")]
             Pixel::SAND128 => AV_PIX_FMT_SAND128,
             #[cfg(feature = "rpi")]

@@ -7,23 +7,19 @@ use {media, Error};
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub struct Codec {
-    ptr: *mut AVCodec,
+    ptr: *const AVCodec,
 }
 
 unsafe impl Send for Codec {}
 unsafe impl Sync for Codec {}
 
 impl Codec {
-    pub unsafe fn wrap(ptr: *mut AVCodec) -> Self {
+    pub unsafe fn wrap(ptr: *const AVCodec) -> Self {
         Codec { ptr }
     }
 
     pub unsafe fn as_ptr(&self) -> *const AVCodec {
         self.ptr as *const _
-    }
-
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut AVCodec {
-        self.ptr
     }
 }
 

@@ -1,5 +1,7 @@
 use ffi::*;
 use libc::c_ulonglong;
+use std::mem;
+use Error;
 
 bitflags! {
     pub struct ChannelLayout: c_ulonglong {
@@ -81,6 +83,34 @@ impl ChannelLayout {
     pub fn default(number: i32) -> ChannelLayout {
         unsafe {
             ChannelLayout::from_bits_truncate(av_get_default_channel_layout(number) as c_ulonglong)
+        }
+    }
+
+    pub fn describe(&self) -> Result<String, Error> {
+        unsafe {
+            let mut av_channel_layout = mem::zeroed();
+            match av_channel_layout_from_mask(&mut av_channel_layout, self.bits) {
+                v if v >= 0 => {}
+                e => return Err(Error::from(e)),
+            }
+
+            let mut buf = vec![0u8; 64];
+            loop {
+                match av_channel_layout_describe(
+                    &av_channel_layout,
+                    buf.as_mut_ptr() as *mut i8,
+                    buf.len(),
+                ) {
+                    v if v as usize > buf.len() => {
+                        buf.resize(v as usize + 1, 0);
+                    }
+                    v if v >= 0 => {
+                        buf.truncate(v as usize);
+                        return Ok(String::from_utf8_unchecked(buf));
+                    }
+                    e => return Err(Error::from(e)),
+                }
+            }
         }
     }
 }

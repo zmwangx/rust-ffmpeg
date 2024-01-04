@@ -63,7 +63,7 @@ impl Output {
         }
     }
 
-    pub fn codec<P: AsRef<Path>>(&self, path: &P, kind: media::Type) -> codec::Id {
+    pub fn codec<P: AsRef<Path> + ?Sized>(&self, path: &P, kind: media::Type) -> codec::Id {
         // XXX: use to_cstring when stable
         let path = CString::new(path.as_ref().as_os_str().to_str().unwrap()).unwrap();
 

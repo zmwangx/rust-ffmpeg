@@ -107,8 +107,14 @@ impl Decoder {
         }
     }
 
-    pub fn time_base(&self) -> Rational {
-        unsafe { Rational::from((*self.as_ptr()).time_base) }
+    pub fn packet_time_base(&self) -> Rational {
+        unsafe { Rational::from((*self.as_ptr()).pkt_timebase) }
+    }
+
+    pub fn set_packet_time_base<R: Into<Rational>>(&mut self, value: R) {
+        unsafe {
+            (*self.as_mut_ptr()).pkt_timebase = value.into().into();
+        }
     }
 }
 

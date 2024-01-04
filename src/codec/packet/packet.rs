@@ -144,6 +144,16 @@ impl Packet {
     }
 
     #[inline]
+    pub fn time_base(&self) -> Rational {
+        self.0.time_base.into()
+    }
+
+    #[inline]
+    pub fn set_time_base(&mut self, value: Rational) {
+        self.0.time_base = value.into();
+    }
+
+    #[inline]
     pub fn size(&self) -> usize {
         self.0.size as usize
     }

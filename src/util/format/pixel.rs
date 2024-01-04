@@ -300,7 +300,11 @@ pub enum Pixel {
     GRAY10LE,
     P016LE,
     P016BE,
-
+    P212BE,
+    P212LE,
+    P412BE,
+    P412LE,
+    
     D3D11,
     GRAY9BE,
     GRAY9LE,
@@ -514,6 +518,11 @@ impl From<AVPixelFormat> for Pixel {
             AV_PIX_FMT_RGBA => Pixel::RGBA,
             AV_PIX_FMT_ABGR => Pixel::ABGR,
             AV_PIX_FMT_BGRA => Pixel::BGRA,
+
+            AV_PIX_FMT_P212BE => Pixel::P212BE,
+            AV_PIX_FMT_P212LE => Pixel::P212LE,
+            AV_PIX_FMT_P412BE => Pixel::P412BE,
+            AV_PIX_FMT_P412LE => Pixel::P412LE,
 
             AV_PIX_FMT_GRAY16BE => Pixel::GRAY16BE,
             AV_PIX_FMT_GRAY16LE => Pixel::GRAY16LE,
@@ -902,6 +911,11 @@ impl From<Pixel> for AVPixelFormat {
             Pixel::BGR565LE => AV_PIX_FMT_BGR565LE,
             Pixel::BGR555BE => AV_PIX_FMT_BGR555BE,
             Pixel::BGR555LE => AV_PIX_FMT_BGR555LE,
+
+            Pixel::P212BE => AV_PIX_FMT_P212BE,
+            Pixel::P212LE => AV_PIX_FMT_P212LE,
+            Pixel::P412BE => AV_PIX_FMT_P412BE,
+            Pixel::P412LE => AV_PIX_FMT_P412LE,
 
             #[cfg(all(feature = "ff_api_vaapi", not(feature = "ffmpeg_5_0")))]
             Pixel::VAAPI_MOCO => AV_PIX_FMT_VAAPI_MOCO,

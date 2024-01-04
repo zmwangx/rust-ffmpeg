@@ -10,6 +10,13 @@ use util::media;
 pub enum Id {
     None,
 
+    PDV,
+    EVC,
+    RTV1,
+    VMIX,
+    AC4,
+    SMPTE2038,
+    
     // video codecs
     MPEG1VIDEO,
     MPEG2VIDEO,
@@ -679,6 +686,14 @@ impl From<AVCodecID> for Id {
         match value {
             AV_CODEC_ID_NONE => Id::None,
 
+            AV_CODEC_ID_PDV => Id::PDV,
+            AV_CODEC_ID_EVC => Id::EVC,
+            AV_CODEC_ID_RTV1 => Id::RTV1,
+
+            AV_CODEC_ID_VMIX => Id::VMIX,
+            AV_CODEC_ID_AC4 => Id::AC4,
+            AV_CODEC_ID_SMPTE_2038 => Id::SMPTE2038,
+
             /* video codecs */
             AV_CODEC_ID_MPEG1VIDEO => Id::MPEG1VIDEO,
             AV_CODEC_ID_MPEG2VIDEO => Id::MPEG2VIDEO,
@@ -1333,6 +1348,14 @@ impl From<Id> for AVCodecID {
     fn from(value: Id) -> AVCodecID {
         match value {
             Id::None => AV_CODEC_ID_NONE,
+
+            Id::PDV => AV_CODEC_ID_PDV,
+            Id::EVC => AV_CODEC_ID_EVC,
+            Id::RTV1 => AV_CODEC_ID_RTV1,
+
+            Id::VMIX => AV_CODEC_ID_VMIX,
+            Id::AC4 => AV_CODEC_ID_AC4,
+            Id::SMPTE2038 => AV_CODEC_ID_SMPTE_2038,
 
             /* video codecs */
             Id::MPEG1VIDEO => AV_CODEC_ID_MPEG1VIDEO,

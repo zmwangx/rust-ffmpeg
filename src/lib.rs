@@ -9,6 +9,7 @@ pub extern crate ffmpeg_sys_next as sys;
 #[cfg(feature = "image")]
 extern crate image;
 extern crate libc;
+extern crate log as log_crate;
 
 pub use sys as ffi;
 
@@ -99,6 +100,14 @@ fn init_filter() {
 #[cfg(not(feature = "filter"))]
 fn init_filter() {}
 
+#[cfg(all(target_arch = "x86_64", any(target_family = "windows", target_family = "unix")))]
+fn init_log() {
+    util::log::callback::set_logging_callback();
+}
+
+#[cfg(not(all(target_arch = "x86_64", any(target_family = "windows", target_family = "unix"))))]
+fn init_log() {}
+
 #[cfg_attr(
     any(feature = "ffmpeg4", feature = "ffmpeg41", feature = "ffmpeg42"),
     deprecated(
@@ -113,6 +122,7 @@ pub fn init() -> Result<(), Error> {
     init_device();
     #[cfg(not(feature = "ffmpeg_5_0"))]
     init_filter();
+    init_log();
 
     Ok(())
 }

@@ -3,6 +3,8 @@ use std::convert::TryFrom;
 use ffi::*;
 use libc::c_int;
 
+use log_crate::LevelFilter;
+
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Level {
     Quiet,
@@ -49,6 +51,19 @@ impl From<Level> for c_int {
             Level::Verbose => AV_LOG_VERBOSE,
             Level::Debug => AV_LOG_DEBUG,
             Level::Trace => AV_LOG_TRACE,
+        }
+    }
+}
+
+impl From<Level> for LevelFilter {
+    fn from(level: Level) -> LevelFilter {
+        match level {
+            Level::Quiet => LevelFilter::Off,
+            Level::Trace => LevelFilter::Trace,
+            Level::Debug | Level::Verbose => LevelFilter::Debug,
+            Level::Info => LevelFilter::Info,
+            Level::Warning => LevelFilter::Warn,
+            Level::Error | Level::Fatal | Level::Panic => LevelFilter::Error,
         }
     }
 }

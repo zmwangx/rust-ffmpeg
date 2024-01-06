@@ -4,7 +4,7 @@ use {DictionaryRef, Rational};
 use format::context::common::Context;
 
 // WARNING: index refers to the offset in the chapters array (starting from 0)
-// it is not necessarly equal to the id (which may start at 1)
+// it is not necessarily equal to the id (which may start at 1)
 pub struct Chapter<'a> {
     context: &'a Context,
     index: usize,

@@ -1,4 +1,5 @@
 use std::ffi::CStr;
+use std::fmt;
 use std::str::from_utf8_unchecked;
 
 use ffi::AVCodecID::*;
@@ -1984,5 +1985,11 @@ impl From<Id> for AVCodecID {
             #[cfg(feature = "ffmpeg_6_1")]
             Id::OSQ => AV_CODEC_ID_OSQ,
         }
+    }
+}
+
+impl fmt::Display for Id {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
+        write!(f, "{}", self.name())
     }
 }

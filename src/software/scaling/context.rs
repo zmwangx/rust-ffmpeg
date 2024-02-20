@@ -96,7 +96,9 @@ impl Context {
                 color::Space::BT2020NCL => ColorSpace::BT2020,
                 _ => ColorSpace::ITU601,
             };
-            let coefficients: *const i32 = sws_getCoefficients(input_color_space_int.into());
+            let color_space_int = input_color_space_int.into();
+            print!("color_space_int: {}\n", color_space_int);
+            let coefficients: *const i32 = sws_getCoefficients(color_space_int);
 
             // 0 means limited range (16-235), 1 means full range (0-255)
             let src_range_value = match src_range {

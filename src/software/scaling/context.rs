@@ -88,7 +88,7 @@ impl Context {
         brightness: i32,
         contrast: i32,
         saturation: i32,
-    ) {
+    ) -> Result<(), Error> {
         unsafe {
             let input_color_space_int = match input_space {
                 color::Space::BT709 => ColorSpace::ITU709,
@@ -112,7 +112,7 @@ impl Context {
                 color::Range::Unspecified => 1,
             };
 
-            sws_setColorspaceDetails(
+            let e = sws_setColorspaceDetails(
                 self.as_mut_ptr(),
                 coefficients,
                 src_range_value,
@@ -122,6 +122,12 @@ impl Context {
                 contrast,
                 saturation,
             );
+
+            if e < 0 {
+                Err(Error::from(e))
+            } else {
+                Ok(())
+            }
         }
     }
 

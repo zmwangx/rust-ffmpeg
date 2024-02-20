@@ -82,10 +82,9 @@ impl Context {
 
     pub fn set_colorspace_details(
         &mut self,
-        space: ColorSpace,
+        input_yuv_space: color::Space,
         src_range: color::Range,
         dst_range: color::Range,
-        input_yuv_space: color::Space,
         brightness: i32,
         contrast: i32,
         saturation: i32,

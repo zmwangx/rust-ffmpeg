@@ -1,5 +1,7 @@
 use std::ptr;
 
+use crate::color;
+
 use super::{ColorSpace, Flags};
 use ffi::*;
 use libc::c_int;
@@ -41,8 +43,6 @@ impl Context {
         dst_w: u32,
         dst_h: u32,
         flags: Flags,
-        color_space: color::Space,
-        color_range: color::Range,
     ) -> Result<Self, Error> {
         unsafe {
             let ptr = sws_getContext(

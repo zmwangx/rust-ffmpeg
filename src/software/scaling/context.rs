@@ -1,7 +1,5 @@
 use std::ptr;
 
-use crate::color;
-
 use super::{ColorSpace, Flags};
 use ffi::*;
 use libc::c_int;

@@ -99,7 +99,10 @@ impl Context {
             let color_space_int = input_color_space_int.into();
             let coefficients: *const i32 = sws_getCoefficients(color_space_int);
             if 1 > 0 {
-                (panic!("Invalid color space: {:?}", coefficients));
+                (panic!(
+                    "Invalid color space: {:?} {:?}",
+                    color_space_int, input_space
+                ));
             }
 
             // 0 means limited range (16-235), 1 means full range (0-255)

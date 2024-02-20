@@ -82,7 +82,7 @@ impl Context {
 
     pub fn set_colorspace_details(
         &mut self,
-        input_yuv_space: color::Space,
+        input_space: color::Space,
         src_range: color::Range,
         dst_range: color::Range,
         brightness: i32,
@@ -90,7 +90,7 @@ impl Context {
         saturation: i32,
     ) {
         unsafe {
-            let input_color_space_int = match input_yuv_space {
+            let input_color_space_int = match input_space {
                 color::Space::BT709 => ColorSpace::ITU709,
                 color::Space::BT2020CL => ColorSpace::BT2020,
                 color::Space::BT2020NCL => ColorSpace::BT2020,

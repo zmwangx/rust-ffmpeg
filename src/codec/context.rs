@@ -2,6 +2,8 @@ use std::any::Any;
 use std::ptr;
 use std::rc::Rc;
 
+use crate::option;
+
 use super::decoder::Decoder;
 use super::encoder::Encoder;
 use super::{threading, Compliance, Debug, Flags, Id, Parameters};
@@ -36,6 +38,15 @@ impl Context {
         unsafe {
             Context {
                 ptr: avcodec_alloc_context3(ptr::null()),
+                owner: None,
+            }
+        }
+    }
+
+    pub fn new_with_codec(codec: &Codec) -> Self {
+        unsafe {
+            Context {
+                ptr: avcodec_alloc_context3(codec.as_ptr()),
                 owner: None,
             }
         }
@@ -163,3 +174,15 @@ impl Clone for Context {
         }
     }
 }
+
+unsafe impl option::Target<AVCodecContext> for Context {
+    fn as_ptr(&self) -> *const AVCodecContext {
+        self.ptr as *const _
+    }
+
+    fn as_mut_ptr(&mut self) -> *mut AVCodecContext {
+        self.ptr as *mut _
+    }
+}
+
+impl option::Settable<AVCodecContext> for Context {}

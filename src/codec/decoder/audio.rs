@@ -61,8 +61,13 @@ impl Audio {
         }
     }
 
+    #[cfg(not(feature = "ffmpeg_7_0"))]
     pub fn frames(&self) -> usize {
         unsafe { (*self.as_ptr()).frame_number as usize }
+    }
+    #[cfg(feature = "ffmpeg_7_0")]
+    pub fn frames(&self) -> usize {
+        unsafe { (*self.as_ptr()).frame_num as usize }
     }
 
     pub fn align(&self) -> usize {

@@ -23,7 +23,10 @@ pub enum Type {
     VideoRate,
     Duration,
     Color,
+    #[cfg(feature = "ffmpeg_5_1")]
     ChannelLayout,
+    #[cfg(feature = "ffmpeg_7_0")]
+    FlagArray,
     c_ulong,
     bool,
 }
@@ -53,6 +56,8 @@ impl From<AVOptionType> for Type {
             AV_OPT_TYPE_CHANNEL_LAYOUT => Type::ChannelLayout,
             #[cfg(feature = "ffmpeg_5_1")]
             AV_OPT_TYPE_CHLAYOUT => Type::ChannelLayout,
+            #[cfg(feature = "ffmpeg_7_0")]
+            AV_OPT_TYPE_FLAG_ARRAY => Type::FlagArray,
         }
     }
 }
@@ -79,7 +84,10 @@ impl From<Type> for AVOptionType {
             Type::VideoRate => AV_OPT_TYPE_VIDEO_RATE,
             Type::Duration => AV_OPT_TYPE_DURATION,
             Type::Color => AV_OPT_TYPE_COLOR,
-            Type::ChannelLayout => AV_OPT_TYPE_CHANNEL_LAYOUT,
+            #[cfg(feature = "ffmpeg_5_1")]
+            Type::ChannelLayout => AV_OPT_TYPE_CHLAYOUT,
+            #[cfg(feature = "ffmpeg_7_0")]
+            Type::FlagArray => AV_OPT_TYPE_FLAG_ARRAY,
         }
     }
 }

@@ -84,6 +84,7 @@ impl Video {
         unsafe { chroma::Location::from((*self.as_ptr()).chroma_sample_location) }
     }
 
+    #[cfg(not(feature = "ffmpeg_7_0"))]
     pub fn set_slice_count(&mut self, value: usize) {
         unsafe {
             (*self.as_mut_ptr()).slice_count = value as c_int;

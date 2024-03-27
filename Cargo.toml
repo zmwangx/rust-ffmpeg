@@ -115,4 +115,3 @@ optional = true
 [dependencies.ffmpeg-sys-next]
 version = "7.0.0"
 default-features = false
-path = "../rust-ffmpeg-sys"

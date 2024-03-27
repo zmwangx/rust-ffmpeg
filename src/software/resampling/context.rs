@@ -68,17 +68,40 @@ impl Context {
         options: Dictionary,
     ) -> Result<Self, Error> {
         unsafe {
-            let ptr = swr_alloc_set_opts(
-                ptr::null_mut(),
-                dst_channel_layout.bits() as i64,
-                dst_format.into(),
-                dst_rate as c_int,
-                src_channel_layout.bits() as i64,
-                src_format.into(),
-                src_rate as c_int,
-                0,
-                ptr::null_mut(),
-            );
+            #[allow(unused_assignments)]
+            let mut ptr = std::ptr::null_mut();
+
+            #[cfg(not(feature = "ffmpeg_7_0"))]
+            {
+                ptr = swr_alloc_set_opts(
+                    ptr::null_mut(),
+                    dst_channel_layout.bits() as i64,
+                    dst_format.into(),
+                    dst_rate as c_int,
+                    src_channel_layout.bits() as i64,
+                    src_format.into(),
+                    src_rate as c_int,
+                    0,
+                    ptr::null_mut(),
+                );
+            }
+            #[cfg(feature = "ffmpeg_7_0")]
+            {
+                let e = swr_alloc_set_opts2(
+                    &mut ptr,
+                    &dst_channel_layout.into(),
+                    dst_format.into(),
+                    dst_rate as c_int,
+                    &src_channel_layout.into(),
+                    src_format.into(),
+                    src_rate as c_int,
+                    0,
+                    ptr::null_mut(),
+                );
+                if e != 0 {
+                    return Err(Error::from(e));
+                }
+            }
 
             let mut opts = options.disown();
             let res = av_opt_set_dict(ptr as *mut c_void, &mut opts);

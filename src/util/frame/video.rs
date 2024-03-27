@@ -174,11 +174,13 @@ impl Video {
     }
 
     #[inline]
+    #[cfg(not(feature = "ffmpeg_7_0"))]
     pub fn coded_number(&self) -> usize {
         unsafe { (*self.as_ptr()).coded_picture_number as usize }
     }
 
     #[inline]
+    #[cfg(not(feature = "ffmpeg_7_0"))]
     pub fn display_number(&self) -> usize {
         unsafe { (*self.as_ptr()).display_picture_number as usize }
     }

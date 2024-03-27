@@ -1,6 +1,5 @@
 #[macro_use]
 pub mod dictionary;
-pub mod channel_layout;
 pub mod chroma;
 pub mod color;
 pub mod error;
@@ -15,6 +14,10 @@ pub mod picture;
 pub mod range;
 pub mod rational;
 pub mod time;
+
+#[cfg_attr(feature = "ffmpeg_7_0", path = "channel_layout.rs")]
+#[cfg_attr(not(feature = "ffmpeg_7_0"), path = "legacy_channel_layout.rs")]
+pub mod channel_layout;
 
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;

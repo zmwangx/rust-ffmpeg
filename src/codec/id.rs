@@ -211,6 +211,7 @@ pub enum Id {
     AVRP,
     V012,
     AVUI,
+    #[cfg(not(feature = "ffmpeg_7_0"))]
     AYUV,
     TARGA_Y216,
     V308,
@@ -659,6 +660,11 @@ pub enum Id {
     SMPTE_2038,
     #[cfg(feature = "ffmpeg_6_1")]
     OSQ,
+
+    #[cfg(feature = "ffmpeg_7_0")]
+    QOA,
+    #[cfg(feature = "ffmpeg_7_0")]
+    LEAD,
 }
 
 impl Id {
@@ -878,6 +884,7 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_AVRP => Id::AVRP,
             AV_CODEC_ID_012V => Id::V012,
             AV_CODEC_ID_AVUI => Id::AVUI,
+            #[cfg(not(feature = "ffmpeg_7_0"))]
             AV_CODEC_ID_AYUV => Id::AYUV,
             AV_CODEC_ID_TARGA_Y216 => Id::TARGA_Y216,
             AV_CODEC_ID_V308 => Id::V308,
@@ -1325,6 +1332,11 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_SMPTE_2038 => Id::SMPTE_2038,
             #[cfg(feature = "ffmpeg_6_1")]
             AV_CODEC_ID_OSQ => Id::OSQ,
+
+            #[cfg(feature = "ffmpeg_7_0")]
+            AV_CODEC_ID_QOA => Id::QOA,
+            #[cfg(feature = "ffmpeg_7_0")]
+            AV_CODEC_ID_LEAD => Id::LEAD,
         }
     }
 }
@@ -1535,6 +1547,7 @@ impl From<Id> for AVCodecID {
             Id::AVRP => AV_CODEC_ID_AVRP,
             Id::V012 => AV_CODEC_ID_012V,
             Id::AVUI => AV_CODEC_ID_AVUI,
+            #[cfg(not(feature = "ffmpeg_7_0"))]
             Id::AYUV => AV_CODEC_ID_AYUV,
             Id::TARGA_Y216 => AV_CODEC_ID_TARGA_Y216,
             Id::V308 => AV_CODEC_ID_V308,
@@ -1983,6 +1996,11 @@ impl From<Id> for AVCodecID {
             Id::SMPTE_2038 => AV_CODEC_ID_SMPTE_2038,
             #[cfg(feature = "ffmpeg_6_1")]
             Id::OSQ => AV_CODEC_ID_OSQ,
+
+            #[cfg(feature = "ffmpeg_7_0")]
+            Id::QOA => AV_CODEC_ID_QOA,
+            #[cfg(feature = "ffmpeg_7_0")]
+            Id::LEAD => AV_CODEC_ID_LEAD,
         }
     }
 }

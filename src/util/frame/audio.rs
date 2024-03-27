@@ -4,7 +4,7 @@ use std::slice;
 
 use super::Frame;
 use ffi::*;
-use libc::{c_int, c_ulonglong};
+use libc::c_int;
 use util::format;
 use ChannelLayout;
 
@@ -63,20 +63,49 @@ impl Audio {
 
     #[inline]
     pub fn channel_layout(&self) -> ChannelLayout {
-        unsafe { ChannelLayout::from_bits_truncate((*self.as_ptr()).channel_layout as c_ulonglong) }
+        unsafe {
+            #[cfg(not(feature = "ffmpeg_7_0"))]
+            {
+                ChannelLayout::from_bits_truncate((*self.as_ptr()).channel_layout as _)
+            }
+
+            #[cfg(feature = "ffmpeg_7_0")]
+            {
+                ChannelLayout::from((*self.as_ptr()).ch_layout)
+            }
+        }
     }
 
     #[inline]
     pub fn set_channel_layout(&mut self, value: ChannelLayout) {
-        unsafe { (*self.as_mut_ptr()).channel_layout = value.bits() }
+        unsafe {
+            #[cfg(not(feature = "ffmpeg_7_0"))]
+            {
+                (*self.as_mut_ptr()).channel_layout = value.bits()
+            }
+
+            #[cfg(feature = "ffmpeg_7_0")]
+            {
+                (*self.as_mut_ptr()).ch_layout = value.into()
+            }
+        }
     }
 
     #[inline]
     pub fn channels(&self) -> u16 {
-        unsafe { (*self.as_ptr()).channels as u16 }
+        #[cfg(not(feature = "ffmpeg_7_0"))]
+        unsafe {
+            (*self.as_ptr()).channels as u16
+        }
+
+        #[cfg(feature = "ffmpeg_7_0")]
+        {
+            self.channel_layout().channels() as u16
+        }
     }
 
     #[inline]
+    #[cfg(not(feature = "ffmpeg_7_0"))]
     pub fn set_channels(&mut self, value: u16) {
         unsafe {
             (*self.as_mut_ptr()).channels = i32::from(value);

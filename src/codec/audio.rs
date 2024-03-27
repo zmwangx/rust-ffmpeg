@@ -38,12 +38,16 @@ impl Audio {
 
     pub fn channel_layouts(&self) -> Option<ChannelLayoutIter> {
         unsafe {
-            if (*self.codec.as_ptr()).channel_layouts.is_null() {
+            #[cfg(not(feature = "ffmpeg_7_0"))]
+            let ptr = (*self.codec.as_ptr()).channel_layouts;
+
+            #[cfg(feature = "ffmpeg_7_0")]
+            let ptr = (*self.codec.as_ptr()).ch_layouts;
+
+            if ptr.is_null() {
                 None
             } else {
-                Some(ChannelLayoutIter::new(
-                    (*self.codec.as_ptr()).channel_layouts,
-                ))
+                Some(ChannelLayoutIter::new(ptr))
             }
         }
     }
@@ -111,18 +115,23 @@ impl Iterator for FormatIter {
     }
 }
 
+#[cfg(not(feature = "ffmpeg_7_0"))]
+type ChannelLayoutType = u64;
+#[cfg(feature = "ffmpeg_7_0")]
+type ChannelLayoutType = AVChannelLayout;
+
 pub struct ChannelLayoutIter {
-    ptr: *const u64,
+    ptr: *const ChannelLayoutType,
 }
 
 impl ChannelLayoutIter {
-    pub fn new(ptr: *const u64) -> Self {
+    pub fn new(ptr: *const ChannelLayoutType) -> Self {
         ChannelLayoutIter { ptr }
     }
 
     pub fn best(self, max: i32) -> ChannelLayout {
         self.fold(ChannelLayout::MONO, |acc, cur| {
-            if cur.channels() > acc.channels() && cur.channels() <= max {
+            if cur.channels() > acc.channels() && cur.channels() <= max as _ {
                 cur
             } else {
                 acc
@@ -136,11 +145,22 @@ impl Iterator for ChannelLayoutIter {
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
+            #[cfg(not(feature = "ffmpeg_7_0"))]
             if *self.ptr == 0 {
                 return None;
             }
 
+            #[cfg(feature = "ffmpeg_7_0")]
+            if self.ptr.is_null() || (*self.ptr).u.mask == 0 {
+                return None;
+            }
+
+            #[cfg(not(feature = "ffmpeg_7_0"))]
             let layout = ChannelLayout::from_bits_truncate(*self.ptr);
+
+            #[cfg(feature = "ffmpeg_7_0")]
+            let layout = ChannelLayout::from(*self.ptr);
+
             self.ptr = self.ptr.offset(1);
 
             Some(layout)

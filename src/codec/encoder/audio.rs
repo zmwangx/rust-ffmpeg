@@ -95,14 +95,33 @@ impl Audio {
 
     pub fn set_channel_layout(&mut self, value: ChannelLayout) {
         unsafe {
-            (*self.as_mut_ptr()).channel_layout = value.bits();
+            #[cfg(not(feature = "ffmpeg_7_0"))]
+            {
+                (*self.as_mut_ptr()).channel_layout = value.bits();
+            }
+
+            #[cfg(feature = "ffmpeg_7_0")]
+            {
+                (*self.as_mut_ptr()).ch_layout = value.into();
+            }
         }
     }
 
     pub fn channel_layout(&self) -> ChannelLayout {
-        unsafe { ChannelLayout::from_bits_truncate((*self.as_ptr()).channel_layout) }
+        unsafe {
+            #[cfg(not(feature = "ffmpeg_7_0"))]
+            {
+                ChannelLayout::from_bits_truncate((*self.as_ptr()).channel_layout)
+            }
+
+            #[cfg(feature = "ffmpeg_7_0")]
+            {
+                ChannelLayout::from((*self.as_ptr()).ch_layout)
+            }
+        }
     }
 
+    #[cfg(not(feature = "ffmpeg_7_0"))]
     pub fn set_channels(&mut self, value: i32) {
         unsafe {
             (*self.as_mut_ptr()).channels = value;
@@ -110,7 +129,15 @@ impl Audio {
     }
 
     pub fn channels(&self) -> u16 {
-        unsafe { (*self.as_ptr()).channels as u16 }
+        #[cfg(not(feature = "ffmpeg_7_0"))]
+        unsafe {
+            (*self.as_ptr()).channels as u16
+        }
+
+        #[cfg(feature = "ffmpeg_7_0")]
+        {
+            self.channel_layout().channels() as u16
+        }
     }
 }
 

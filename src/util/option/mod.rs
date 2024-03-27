@@ -53,6 +53,7 @@ impl From<AVOptionType> for Type {
             AV_OPT_TYPE_VIDEO_RATE => Type::VideoRate,
             AV_OPT_TYPE_DURATION => Type::Duration,
             AV_OPT_TYPE_COLOR => Type::Color,
+            #[cfg(not(feature = "ffmpeg_7_0"))]
             AV_OPT_TYPE_CHANNEL_LAYOUT => Type::ChannelLayout,
             #[cfg(feature = "ffmpeg_5_1")]
             AV_OPT_TYPE_CHLAYOUT => Type::ChannelLayout,

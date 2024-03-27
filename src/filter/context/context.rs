@@ -50,7 +50,14 @@ impl<'a> Context<'a> {
     }
 
     pub fn set_channel_layout(&mut self, value: ChannelLayout) {
-        let _ = option::Settable::set(self, "channel_layouts", &value.bits());
+        #[cfg(not(feature = "ffmpeg_7_0"))]
+        {
+            let _ = option::Settable::set(self, "channel_layouts", &value.bits());
+        }
+        #[cfg(feature = "ffmpeg_7_0")]
+        {
+            let _ = option::Settable::set_channel_layout(self, "channel_layouts", value);
+        }
     }
 }
 

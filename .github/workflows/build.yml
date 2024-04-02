@@ -114,7 +114,7 @@ jobs:
     strategy:
       fail-fast: false
     env:
-      FFMPEG_DIR: /home/runner/work/rust-ffmpeg-sys/rust-ffmpeg-sys/ffmpeg-7.0-linux-clang-default
+      FFMPEG_DIR: /home/runner/work/rust-ffmpeg/rust-ffmpeg/ffmpeg-7.0-linux-clang-default
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies

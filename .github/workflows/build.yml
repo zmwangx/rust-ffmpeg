@@ -106,7 +106,7 @@ jobs:
       - name: Check format
         run: |
           cargo fmt -- --check
-  # Added because there is no ffmpeg7.0 docker image here yet
+  # Added only because there is no ffmpeg7.0 docker image here yet
   # https://github.com/jrottenberg/ffmpeg
   build-test-lint-7-0:
     name: FFmpeg 7.0 - build, test and lint

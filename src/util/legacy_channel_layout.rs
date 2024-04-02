@@ -2,7 +2,7 @@ use ffi::*;
 use libc::c_ulonglong;
 
 bitflags! {
-    #[derive(Copy, Clone, PartialEq, Eq)]
+    #[derive(Copy, Clone, Debug, PartialEq, Eq)]
     pub struct ChannelLayout: c_ulonglong {
         const FRONT_LEFT            = AV_CH_FRONT_LEFT;
         const FRONT_RIGHT           = AV_CH_FRONT_RIGHT;

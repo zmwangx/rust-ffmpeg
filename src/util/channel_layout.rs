@@ -16,6 +16,16 @@ impl PartialEq for ChannelLayout {
 }
 impl Eq for ChannelLayout {}
 
+impl std::fmt::Debug for ChannelLayout {
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let mut s = fmt.debug_struct("ChannelLayout");
+        s.field("is_empty", &self.is_empty());
+        s.field("channels", &self.channels());
+        s.field("u.mask", &unsafe { self.0.u.mask });
+        s.finish()
+    }
+}
+
 macro_rules! define_layout {
     ($name:ident, $nb:expr, $mask:expr) => {
         pub const $name: ChannelLayout = ChannelLayout(AVChannelLayout {
@@ -70,6 +80,11 @@ impl ChannelLayout {
     #[inline]
     pub fn channels(&self) -> i32 {
         self.0.nb_channels
+    }
+
+    #[inline]
+    pub fn bits(&self) -> u64 {
+        unsafe { self.0.u.mask }
     }
 
     pub fn default(number: i32) -> ChannelLayout {

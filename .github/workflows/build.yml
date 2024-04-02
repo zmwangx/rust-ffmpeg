@@ -120,7 +120,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y --no-install-recommends clang curl pkg-config xz-utils
+          sudo apt install -y --no-install-recommends clang curl pkg-config xz-utils libxv-dev
           curl -L https://sourceforge.net/projects/avbuild/files/linux/ffmpeg-7.0-linux-clang-default.tar.xz/download -o ffmpeg.tar.xz
           tar -xf ffmpeg.tar.xz
       - name: Set up Rust

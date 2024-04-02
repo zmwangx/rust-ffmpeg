@@ -64,7 +64,9 @@ impl Decoder {
     }
 
     pub fn audio(self) -> Result<Audio, Error> {
-        if let Some(codec) = super::find(self.id()) {
+        if let Some(codec) = self.codec() {
+            self.open_as(codec).and_then(|o| o.audio())
+        } else if let Some(codec) = super::find(self.id()) {
             self.open_as(codec).and_then(|o| o.audio())
         } else {
             Err(Error::DecoderNotFound)

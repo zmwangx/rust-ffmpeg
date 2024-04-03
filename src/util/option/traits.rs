@@ -134,12 +134,25 @@ pub trait Settable: Target {
         unsafe {
             let name = CString::new(name).unwrap();
 
-            check!(av_opt_set_channel_layout(
-                self.as_mut_ptr(),
-                name.as_ptr(),
-                layout.bits() as i64,
-                AV_OPT_SEARCH_CHILDREN
-            ))
+            #[cfg(not(feature = "ffmpeg_7_0"))]
+            {
+                check!(av_opt_set_channel_layout(
+                    self.as_mut_ptr(),
+                    name.as_ptr(),
+                    layout.bits() as i64,
+                    AV_OPT_SEARCH_CHILDREN
+                ))
+            }
+
+            #[cfg(feature = "ffmpeg_7_0")]
+            {
+                check!(av_opt_set_chlayout(
+                    self.as_mut_ptr(),
+                    name.as_ptr(),
+                    &layout.into(),
+                    AV_OPT_SEARCH_CHILDREN
+                ))
+            }
         }
     }
 }

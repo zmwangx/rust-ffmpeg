@@ -2,6 +2,7 @@ use ffi::*;
 use libc::c_int;
 
 bitflags! {
+    #[derive(Copy, Clone, Debug, PartialEq, Eq)]
     pub struct Check: c_int {
         const CRC      = AV_EF_CRCCHECK;
         const BISTREAM = AV_EF_BITSTREAM;

@@ -1,86 +1,117 @@
 use ffi::*;
-use libc::c_ulonglong;
 
-bitflags! {
-    pub struct ChannelLayout: c_ulonglong {
-        const FRONT_LEFT            = AV_CH_FRONT_LEFT;
-        const FRONT_RIGHT           = AV_CH_FRONT_RIGHT;
-        const FRONT_CENTER          = AV_CH_FRONT_CENTER;
-        const LOW_FREQUENCY         = AV_CH_LOW_FREQUENCY;
-        const BACK_LEFT             = AV_CH_BACK_LEFT;
-        const BACK_RIGHT            = AV_CH_BACK_RIGHT;
-        const FRONT_LEFT_OF_CENTER  = AV_CH_FRONT_LEFT_OF_CENTER;
-        const FRONT_RIGHT_OF_CENTER = AV_CH_FRONT_RIGHT_OF_CENTER;
-        const BACK_CENTER           = AV_CH_BACK_CENTER;
-        const SIDE_LEFT             = AV_CH_SIDE_LEFT;
-        const SIDE_RIGHT            = AV_CH_SIDE_RIGHT;
-        const TOP_CENTER            = AV_CH_TOP_CENTER;
-        const TOP_FRONT_LEFT        = AV_CH_TOP_FRONT_LEFT;
-        const TOP_FRONT_CENTER      = AV_CH_TOP_FRONT_CENTER;
-        const TOP_FRONT_RIGHT       = AV_CH_TOP_FRONT_RIGHT;
-        const TOP_BACK_LEFT         = AV_CH_TOP_BACK_LEFT;
-        const TOP_BACK_CENTER       = AV_CH_TOP_BACK_CENTER;
-        const TOP_BACK_RIGHT        = AV_CH_TOP_BACK_RIGHT;
-        const STEREO_LEFT           = AV_CH_STEREO_LEFT;
-        const STEREO_RIGHT          = AV_CH_STEREO_RIGHT;
-        const WIDE_LEFT             = AV_CH_WIDE_LEFT;
-        const WIDE_RIGHT            = AV_CH_WIDE_RIGHT;
-        const SURROUND_DIRECT_LEFT  = AV_CH_SURROUND_DIRECT_LEFT;
-        const SURROUND_DIRECT_RIGHT = AV_CH_SURROUND_DIRECT_RIGHT;
-        const LOW_FREQUENCY_2       = AV_CH_LOW_FREQUENCY_2;
-        const NATIVE                = AV_CH_LAYOUT_NATIVE;
+#[repr(transparent)]
+#[derive(Copy, Clone)]
+pub struct ChannelLayout(pub AVChannelLayout);
 
-        const MONO               = AV_CH_LAYOUT_MONO;
-        const STEREO             = AV_CH_LAYOUT_STEREO;
-        const _2POINT1           = AV_CH_LAYOUT_2POINT1;
-        const _2_1               = AV_CH_LAYOUT_2_1;
-        const SURROUND           = AV_CH_LAYOUT_SURROUND;
-        const _3POINT1           = AV_CH_LAYOUT_3POINT1;
-        const _4POINT0           = AV_CH_LAYOUT_4POINT0;
-        const _4POINT1           = AV_CH_LAYOUT_4POINT1;
-        const _2_2               = AV_CH_LAYOUT_2_2;
-        const QUAD               = AV_CH_LAYOUT_QUAD;
-        const _5POINT0           = AV_CH_LAYOUT_5POINT0;
-        const _5POINT1           = AV_CH_LAYOUT_5POINT1;
-        const _5POINT0_BACK      = AV_CH_LAYOUT_5POINT0_BACK;
-        const _5POINT1_BACK      = AV_CH_LAYOUT_5POINT1_BACK;
-        const _6POINT0           = AV_CH_LAYOUT_6POINT0;
-        const _6POINT0_FRONT     = AV_CH_LAYOUT_6POINT0_FRONT;
-        const HEXAGONAL          = AV_CH_LAYOUT_HEXAGONAL;
-        const _6POINT1           = AV_CH_LAYOUT_6POINT1;
-        const _6POINT1_BACK      = AV_CH_LAYOUT_6POINT1_BACK;
-        const _6POINT1_FRONT     = AV_CH_LAYOUT_6POINT1_FRONT;
-        const _7POINT0           = AV_CH_LAYOUT_7POINT0;
-        const _7POINT0_FRONT     = AV_CH_LAYOUT_7POINT0_FRONT;
-        const _7POINT1           = AV_CH_LAYOUT_7POINT1;
-        const _7POINT1_WIDE      = AV_CH_LAYOUT_7POINT1_WIDE;
-        const _7POINT1_WIDE_BACK = AV_CH_LAYOUT_7POINT1_WIDE_BACK;
-        const OCTAGONAL          = AV_CH_LAYOUT_OCTAGONAL;
-        const HEXADECAGONAL      = AV_CH_LAYOUT_HEXADECAGONAL;
-        const STEREO_DOWNMIX     = AV_CH_LAYOUT_STEREO_DOWNMIX;
+impl PartialEq for ChannelLayout {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe {
+            self.0.order == other.0.order
+                && self.0.nb_channels == other.0.nb_channels
+                && self.0.u.mask == other.0.u.mask
+                && self.0.opaque == other.0.opaque
+        }
+    }
+}
+impl Eq for ChannelLayout {}
 
-        #[cfg(feature = "ffmpeg_6_1")]
-        const _3POINT1POINT2      = AV_CH_LAYOUT_3POINT1POINT2;
-        #[cfg(feature = "ffmpeg_6_1")]
-        const _5POINT1POINT2_BACK = AV_CH_LAYOUT_5POINT1POINT2_BACK;
-        #[cfg(feature = "ffmpeg_6_1")]
-        const _5POINT1POINT4_BACK = AV_CH_LAYOUT_5POINT1POINT4_BACK;
-        #[cfg(feature = "ffmpeg_6_1")]
-        const _7POINT1POINT2      = AV_CH_LAYOUT_7POINT1POINT2;
-        #[cfg(feature = "ffmpeg_6_1")]
-        const _7POINT1POINT4_BACK = AV_CH_LAYOUT_7POINT1POINT4_BACK;
+impl std::fmt::Debug for ChannelLayout {
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let mut s = fmt.debug_struct("ChannelLayout");
+        s.field("is_empty", &self.is_empty());
+        s.field("channels", &self.channels());
+        s.field("u.mask", &unsafe { self.0.u.mask });
+        s.finish()
     }
 }
 
+macro_rules! define_layout {
+    ($name:ident, $nb:expr, $mask:expr) => {
+        pub const $name: ChannelLayout = ChannelLayout(AVChannelLayout {
+            order: AVChannelOrder::AV_CHANNEL_ORDER_NATIVE,
+            nb_channels: $nb,
+            u: AVChannelLayout__bindgen_ty_1 { mask: $mask },
+            opaque: std::ptr::null_mut(),
+        });
+    };
+}
+
 impl ChannelLayout {
+    define_layout!(MONO, 1, AV_CH_LAYOUT_MONO);
+    define_layout!(STEREO, 2, AV_CH_LAYOUT_STEREO);
+    define_layout!(_2POINT1, 3, AV_CH_LAYOUT_2POINT1);
+    define_layout!(_2_1, 3, AV_CH_LAYOUT_2_1);
+    define_layout!(SURROUND, 3, AV_CH_LAYOUT_SURROUND);
+    define_layout!(_3POINT1, 4, AV_CH_LAYOUT_3POINT1);
+    define_layout!(_4POINT0, 4, AV_CH_LAYOUT_4POINT0);
+    define_layout!(_4POINT1, 5, AV_CH_LAYOUT_4POINT1);
+    define_layout!(_2_2, 4, AV_CH_LAYOUT_2_2);
+    define_layout!(QUAD, 4, AV_CH_LAYOUT_QUAD);
+    define_layout!(_5POINT0, 5, AV_CH_LAYOUT_5POINT0);
+    define_layout!(_5POINT1, 6, AV_CH_LAYOUT_5POINT1);
+    define_layout!(_5POINT0_BACK, 5, AV_CH_LAYOUT_5POINT0_BACK);
+    define_layout!(_5POINT1_BACK, 6, AV_CH_LAYOUT_5POINT1_BACK);
+    define_layout!(_6POINT0, 6, AV_CH_LAYOUT_6POINT0);
+    define_layout!(_6POINT0_FRONT, 6, AV_CH_LAYOUT_6POINT0_FRONT);
+    define_layout!(_3POINT1POINT2, 6, AV_CH_LAYOUT_3POINT1POINT2);
+    define_layout!(HEXAGONAL, 6, AV_CH_LAYOUT_HEXAGONAL);
+    define_layout!(_6POINT1, 7, AV_CH_LAYOUT_6POINT1);
+    define_layout!(_6POINT1_BACK, 7, AV_CH_LAYOUT_6POINT1_BACK);
+    define_layout!(_6POINT1_FRONT, 7, AV_CH_LAYOUT_6POINT1_FRONT);
+    define_layout!(_7POINT0, 7, AV_CH_LAYOUT_7POINT0);
+    define_layout!(_7POINT0_FRONT, 7, AV_CH_LAYOUT_7POINT0_FRONT);
+    define_layout!(_7POINT1, 8, AV_CH_LAYOUT_7POINT1);
+    define_layout!(_7POINT1_WIDE, 8, AV_CH_LAYOUT_7POINT1_WIDE);
+    define_layout!(_7POINT1_WIDE_BACK, 8, AV_CH_LAYOUT_7POINT1_WIDE_BACK);
+    define_layout!(_5POINT1POINT2_BACK, 8, AV_CH_LAYOUT_5POINT1POINT2_BACK);
+    define_layout!(OCTAGONAL, 8, AV_CH_LAYOUT_OCTAGONAL);
+    define_layout!(CUBE, 8, AV_CH_LAYOUT_CUBE);
+    define_layout!(_5POINT1POINT4_BACK, 10, AV_CH_LAYOUT_5POINT1POINT4_BACK);
+    define_layout!(_7POINT1POINT2, 10, AV_CH_LAYOUT_7POINT1POINT2);
+    define_layout!(_7POINT1POINT4_BACK, 12, AV_CH_LAYOUT_7POINT1POINT4_BACK);
+    define_layout!(_7POINT2POINT3, 12, AV_CH_LAYOUT_7POINT2POINT3);
+    define_layout!(_9POINT1POINT4_BACK, 14, AV_CH_LAYOUT_9POINT1POINT4_BACK);
+    define_layout!(HEXADECAGONAL, 16, AV_CH_LAYOUT_HEXADECAGONAL);
+    define_layout!(STEREO_DOWNMIX, 2, AV_CH_LAYOUT_STEREO_DOWNMIX);
+    define_layout!(_22POINT2, 24, AV_CH_LAYOUT_22POINT2);
+    define_layout!(_7POINT1_TOP_BACK, 8, AV_CH_LAYOUT_5POINT1POINT2_BACK);
+
     #[inline]
     pub fn channels(&self) -> i32 {
-        unsafe { av_get_channel_layout_nb_channels(self.bits()) }
+        self.0.nb_channels
+    }
+
+    #[inline]
+    pub fn bits(&self) -> u64 {
+        unsafe { self.0.u.mask }
     }
 
     pub fn default(number: i32) -> ChannelLayout {
         unsafe {
-            ChannelLayout::from_bits_truncate(av_get_default_channel_layout(number) as c_ulonglong)
+            let mut channel_layout = std::mem::zeroed();
+            av_channel_layout_default(&mut channel_layout, number);
+            ChannelLayout(channel_layout)
         }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        unsafe {
+            self.0.order == AVChannelOrder::AV_CHANNEL_ORDER_UNSPEC
+                && self.0.nb_channels == 0
+                && self.0.u.mask == 0
+        }
+    }
+}
+
+impl From<AVChannelLayout> for ChannelLayout {
+    fn from(value: AVChannelLayout) -> Self {
+        Self(value)
+    }
+}
+
+impl From<ChannelLayout> for AVChannelLayout {
+    fn from(value: ChannelLayout) -> Self {
+        value.0
     }
 }

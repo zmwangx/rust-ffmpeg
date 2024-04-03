@@ -2,6 +2,7 @@ use ffi::*;
 use libc::c_int;
 
 bitflags! {
+    #[derive(Copy, Clone, Debug, PartialEq, Eq)]
     pub struct Flags: c_int {
         const FAST_BILINEAR        = SWS_FAST_BILINEAR;
         const BILINEAR             = SWS_BILINEAR;

@@ -11,7 +11,7 @@ jobs:
     container: jrottenberg/ffmpeg:${{ matrix.ffmpeg_version }}-ubuntu
     strategy:
       matrix:
-        ffmpeg_version: ["3.4", "4.0", "4.1", "4.2", "4.3", "4.4", "5.0", "5.1", "6.0"]
+        ffmpeg_version: ["3.4", "4.0", "4.1", "4.2", "4.3", "4.4", "5.0", "5.1", "6.0", "6.1"]
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
@@ -106,22 +106,23 @@ jobs:
       - name: Check format
         run: |
           cargo fmt -- --check
-  # Added only because there is no ffmpeg6.1 docker image here yet
+  # Added only because there is no ffmpeg7.0 docker image here yet
   # https://github.com/jrottenberg/ffmpeg
-  build-test-lint-latest:
-    name: FFmpeg Latest - build, test and lint
+  build-test-lint-7-0:
+    name: FFmpeg 7.0 - build, test and lint
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+    env:
+      FFMPEG_DIR: /home/runner/work/rust-ffmpeg/rust-ffmpeg/ffmpeg-7.0-linux-clang-default
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y software-properties-common
-          sudo add-apt-repository ppa:ubuntuhandbook1/ffmpeg6
-          sudo apt update
-          sudo apt install -y --no-install-recommends clang curl pkg-config ffmpeg libavutil-dev libavcodec-dev libavformat-dev libavfilter-dev libavfilter-dev libavdevice-dev libswresample-dev
+          sudo apt install -y --no-install-recommends clang curl pkg-config xz-utils libxv-dev
+          curl -L https://sourceforge.net/projects/avbuild/files/linux/ffmpeg-7.0-linux-clang-default.tar.xz/download -o ffmpeg.tar.xz
+          tar -xf ffmpeg.tar.xz
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:

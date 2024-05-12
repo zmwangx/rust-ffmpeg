@@ -5,12 +5,13 @@ use ffi::*;
 pub struct ChannelLayout(pub AVChannelLayout);
 
 impl PartialEq for ChannelLayout {
+    // TODO this can actually return an error if < 0
     fn eq(&self, other: &Self) -> bool {
         unsafe {
-            self.0.order == other.0.order
-                && self.0.nb_channels == other.0.nb_channels
-                && self.0.u.mask == other.0.u.mask
-                && self.0.opaque == other.0.opaque
+            av_channel_layout_compare(
+                &self.0 as *const AVChannelLayout,
+                &other.0 as *const AVChannelLayout,
+            ) == 0
         }
     }
 }
@@ -95,12 +96,10 @@ impl ChannelLayout {
         }
     }
 
+    // See https://ffmpeg.org/doxygen/trunk/group__lavu__audio__channels.html#gaa4a685b5c38835392552a7f96ee24a3e,
+    // AV_CH_UNUSED
     pub fn is_empty(&self) -> bool {
-        unsafe {
-            self.0.order == AVChannelOrder::AV_CHANNEL_ORDER_UNSPEC
-                && self.0.nb_channels == 0
-                && self.0.u.mask == 0
-        }
+        self.0.order == AVChannelOrder::AV_CHANNEL_ORDER_UNSPEC
     }
 }
 

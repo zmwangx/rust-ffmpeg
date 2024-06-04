@@ -2,7 +2,6 @@ use std::marker::PhantomData;
 
 use super::{Sink, Source};
 use ffi::*;
-use libc::c_void;
 use {format, option, ChannelLayout};
 
 pub struct Context<'a> {
@@ -61,14 +60,14 @@ impl<'a> Context<'a> {
     }
 }
 
-unsafe impl<'a> option::Target for Context<'a> {
-    fn as_ptr(&self) -> *const c_void {
+unsafe impl<'a> option::Target<AVFilterContext> for Context<'a> {
+    fn as_ptr(&self) -> *const AVFilterContext {
         self.ptr as *const _
     }
 
-    fn as_mut_ptr(&mut self) -> *mut c_void {
+    fn as_mut_ptr(&mut self) -> *mut AVFilterContext {
         self.ptr as *mut _
     }
 }
 
-impl<'a> option::Settable for Context<'a> {}
+impl<'a> option::Settable<AVFilterContext> for Context<'a> {}

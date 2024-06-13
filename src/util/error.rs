@@ -34,6 +34,9 @@ pub use libc::{
 #[cfg(not(any(target_os = "freebsd", target_os = "wasi")))]
 pub use libc::{ENODATA, ENOSR, ENOSTR, ETIME};
 
+#[cfg(not(target_os = "freebsd"))]
+pub use libc::{EENODATA, ENOSR, ENOSTR, ETIME};
+
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum Error {
     Bug,

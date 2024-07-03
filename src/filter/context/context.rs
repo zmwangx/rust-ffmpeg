@@ -52,6 +52,10 @@ impl Context {
             let _ = option::Settable::set_channel_layout(self, "channel_layouts", value);
         }
     }
+
+    pub fn link(&mut self, srcpad: u32, dst: &mut Self, dstpad: u32) {
+        unsafe { avfilter_link(self.as_mut_ptr(), srcpad, dst.as_mut_ptr(), dstpad) };
+    }
 }
 
 unsafe impl option::Target for Context {

@@ -50,15 +50,7 @@ impl Graph {
         }
     }
 
-    pub fn add<'a, 'b>(
-        &'a mut self,
-        filter: &Filter,
-        name: &str,
-        args: &str,
-    ) -> Result<Context<'b>, Error>
-    where
-        'a: 'b,
-    {
+    pub fn add(&mut self, filter: &Filter, name: &str, args: &str) -> Result<Context, Error> {
         unsafe {
             let name = CString::new(name).unwrap();
             let args = CString::new(args).unwrap();
@@ -78,10 +70,7 @@ impl Graph {
         }
     }
 
-    pub fn get<'a, 'b>(&'b mut self, name: &str) -> Option<Context<'b>>
-    where
-        'a: 'b,
-    {
+    pub fn get(&mut self, name: &str) -> Option<Context> {
         unsafe {
             let name = CString::new(name).unwrap();
             let ptr = avfilter_graph_get_filter(self.as_mut_ptr(), name.as_ptr());

@@ -320,6 +320,13 @@ unsafe impl Sample for (u8, u8, u8, u8, u8, u8, u8) {
     }
 }
 
+unsafe impl Sample for (u8, u8, u8, u8, u8, u8, u8, u8) {
+    #[inline(always)]
+    fn is_valid(format: format::Sample, channels: u16) -> bool {
+        channels == 8 && format == format::Sample::U8(format::sample::Type::Packed)
+    }
+}
+
 unsafe impl Sample for i16 {
     #[inline(always)]
     fn is_valid(format: format::Sample, _channels: u16) -> bool {
@@ -366,6 +373,13 @@ unsafe impl Sample for (i16, i16, i16, i16, i16, i16, i16) {
     #[inline(always)]
     fn is_valid(format: format::Sample, channels: u16) -> bool {
         channels == 7 && format == format::Sample::I16(format::sample::Type::Packed)
+    }
+}
+
+unsafe impl Sample for (i16, i16, i16, i16, i16, i16, i16, i16) {
+    #[inline(always)]
+    fn is_valid(format: format::Sample, channels: u16) -> bool {
+        channels == 8 && format == format::Sample::I16(format::sample::Type::Packed)
     }
 }
 
@@ -418,6 +432,13 @@ unsafe impl Sample for (i32, i32, i32, i32, i32, i32, i32) {
     }
 }
 
+unsafe impl Sample for (i32, i32, i32, i32, i32, i32, i32, i32) {
+    #[inline(always)]
+    fn is_valid(format: format::Sample, channels: u16) -> bool {
+        channels == 8 && format == format::Sample::I32(format::sample::Type::Packed)
+    }
+}
+
 unsafe impl Sample for f32 {
     #[inline(always)]
     fn is_valid(format: format::Sample, _channels: u16) -> bool {
@@ -467,6 +488,13 @@ unsafe impl Sample for (f32, f32, f32, f32, f32, f32, f32) {
     }
 }
 
+unsafe impl Sample for (f32, f32, f32, f32, f32, f32, f32, f32) {
+    #[inline(always)]
+    fn is_valid(format: format::Sample, channels: u16) -> bool {
+        channels == 8 && format == format::Sample::F32(format::sample::Type::Packed)
+    }
+}
+
 unsafe impl Sample for f64 {
     #[inline(always)]
     fn is_valid(format: format::Sample, _channels: u16) -> bool {
@@ -513,5 +541,12 @@ unsafe impl Sample for (f64, f64, f64, f64, f64, f64, f64) {
     #[inline(always)]
     fn is_valid(format: format::Sample, channels: u16) -> bool {
         channels == 7 && format == format::Sample::F64(format::sample::Type::Packed)
+    }
+}
+
+unsafe impl Sample for (f64, f64, f64, f64, f64, f64, f64, f64) {
+    #[inline(always)]
+    fn is_valid(format: format::Sample, channels: u16) -> bool {
+        channels == 8 && format == format::Sample::F64(format::sample::Type::Packed)
     }
 }

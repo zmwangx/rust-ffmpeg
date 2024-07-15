@@ -26,7 +26,7 @@ impl Rational {
 
     #[inline]
     pub fn reduce(&self) -> Rational {
-        match self.reduce_with_limit(i32::max_value()) {
+        match self.reduce_with_limit(i32::MAX) {
             Ok(r) => r,
             Err(r) => r,
         }
@@ -80,7 +80,7 @@ impl From<Rational> for AVRational {
 impl From<f64> for Rational {
     #[inline]
     fn from(value: f64) -> Rational {
-        unsafe { Rational::from(av_d2q(value, c_int::max_value())) }
+        unsafe { Rational::from(av_d2q(value, c_int::MAX)) }
     }
 }
 

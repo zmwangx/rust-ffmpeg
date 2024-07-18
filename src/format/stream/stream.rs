@@ -82,14 +82,20 @@ impl<'a> Stream<'a> {
         let codec_width = (*(*self.as_ptr()).codecpar).width;
         let codec_height = (*(*self.as_ptr()).codecpar).height;
 
+        // Careful to not mess with the casting, den is a i32, if multiplied without
+        // first casting, it will overflow
+
+        let num_no_overflow: i64 = codec_width as i64 * sample_aspect_ratio.num as i64;
+        let den_no_overflow: i64 = codec_height as i64 * sample_aspect_ratio.den as i64;
+
         let mut num: i32 = 0;
         let mut den: i32 = 0;
 
         av_reduce(
             &mut num,
             &mut den,
-            (codec_width * sample_aspect_ratio.num).into(),
-            (codec_height * sample_aspect_ratio.den).into(),
+            num_no_overflow,
+            den_no_overflow,
             1024 * 1024,
         );
 

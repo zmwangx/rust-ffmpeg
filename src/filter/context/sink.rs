@@ -4,12 +4,12 @@ use libc::c_int;
 use {Error, Frame, Rational};
 
 pub struct Sink<'a> {
-    ctx: &'a mut Context<'a>,
+    ctx: &'a mut Context,
 }
 
 impl<'a> Sink<'a> {
-    pub unsafe fn wrap<'b>(ctx: &'b mut Context<'b>) -> Sink<'b> {
-        Sink { ctx }
+    pub unsafe fn wrap(ctx: &'a mut Context) -> Self {
+        Self { ctx }
     }
 }
 

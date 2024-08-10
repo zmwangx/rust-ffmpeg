@@ -63,6 +63,9 @@ pub enum Type {
     IAMF_RECON_GAIN_INFO_PARAM,
     #[cfg(feature = "ffmpeg_7_0")]
     AMBIENT_VIEWING_ENVIRONMENT,
+
+    #[cfg(feature = "ffmpeg_7_1")]
+    FRAME_CROPPING,
 }
 
 impl From<AVPacketSideDataType> for Type {
@@ -124,6 +127,9 @@ impl From<AVPacketSideDataType> for Type {
             AV_PKT_DATA_IAMF_RECON_GAIN_INFO_PARAM => Type::IAMF_RECON_GAIN_INFO_PARAM,
             #[cfg(feature = "ffmpeg_7_0")]
             AV_PKT_DATA_AMBIENT_VIEWING_ENVIRONMENT => Type::AMBIENT_VIEWING_ENVIRONMENT,
+
+            #[cfg(feature = "ffmpeg_7_1")]
+            AV_PKT_DATA_FRAME_CROPPING => Type::FRAME_CROPPING,
         }
     }
 }
@@ -187,6 +193,9 @@ impl From<Type> for AVPacketSideDataType {
             Type::IAMF_RECON_GAIN_INFO_PARAM => AV_PKT_DATA_IAMF_RECON_GAIN_INFO_PARAM,
             #[cfg(feature = "ffmpeg_7_0")]
             Type::AMBIENT_VIEWING_ENVIRONMENT => AV_PKT_DATA_AMBIENT_VIEWING_ENVIRONMENT,
+
+            #[cfg(feature = "ffmpeg_7_1")]
+            Type::FRAME_CROPPING => AV_PKT_DATA_FRAME_CROPPING,
         }
     }
 }

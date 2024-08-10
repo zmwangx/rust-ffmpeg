@@ -28,6 +28,9 @@ pub enum Type {
     FlagArray,
     c_ulong,
     bool,
+
+    #[cfg(feature = "ffmpeg_7_1")]
+    UInt,
 }
 
 impl From<AVOptionType> for Type {
@@ -58,6 +61,9 @@ impl From<AVOptionType> for Type {
             AV_OPT_TYPE_CHLAYOUT => Type::ChannelLayout,
             #[cfg(feature = "ffmpeg_7_0")]
             AV_OPT_TYPE_FLAG_ARRAY => Type::FlagArray,
+
+            #[cfg(feature = "ffmpeg_7_1")]
+            AV_OPT_TYPE_UINT => Type::UInt,
         }
     }
 }
@@ -90,6 +96,9 @@ impl From<Type> for AVOptionType {
             Type::ChannelLayout => AV_OPT_TYPE_CHLAYOUT,
             #[cfg(feature = "ffmpeg_7_0")]
             Type::FlagArray => AV_OPT_TYPE_FLAG_ARRAY,
+
+            #[cfg(feature = "ffmpeg_7_1")]
+            Type::UInt => AV_OPT_TYPE_UINT,
         }
     }
 }

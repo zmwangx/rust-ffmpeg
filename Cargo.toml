@@ -27,6 +27,7 @@ ffmpeg41 = []
 ffmpeg4 = []
 
 static = ["ffmpeg-sys-next/static"]
+non-exhaustive-enums = ["ffmpeg-sys-next/non-exhaustive-enums"]
 build  = ["static", "ffmpeg-sys-next/build"]
 
 # licensing
@@ -114,4 +115,5 @@ optional = true
 
 [dependencies.ffmpeg-sys-next]
 version = "7.0.2"
+git = "https://github.com/AdrianEddy/rust-ffmpeg-sys.git"
 default-features = false

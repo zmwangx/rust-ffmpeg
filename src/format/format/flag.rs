@@ -2,6 +2,7 @@ use ffi::*;
 use libc::c_int;
 
 bitflags! {
+    #[derive(Copy, Clone, Debug, PartialEq, Eq)]
     pub struct Flags: c_int {
         const NO_FILE       = AVFMT_NOFILE;
         const NEED_NUMBER   = AVFMT_NEEDNUMBER;

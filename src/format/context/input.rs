@@ -36,7 +36,11 @@ impl Input {
 
 impl Input {
     pub fn format(&self) -> format::Input {
-        unsafe { format::Input::wrap((*self.as_ptr()).iformat as *mut AVInputFormat) }
+        // We get a clippy warning in 4.4 but not in 5.0 and newer, so we allow that cast to not complicate the code
+        #[allow(clippy::unnecessary_cast)]
+        unsafe {
+            format::Input::wrap((*self.as_ptr()).iformat as *mut AVInputFormat)
+        }
     }
 
     #[cfg(not(feature = "ffmpeg_5_0"))]
@@ -122,9 +126,9 @@ impl Input {
             match avformat_seek_file(
                 self.as_mut_ptr(),
                 -1,
-                range.start().cloned().unwrap_or(i64::min_value()),
+                range.start().cloned().unwrap_or(i64::MIN),
                 ts,
-                range.end().cloned().unwrap_or(i64::max_value()),
+                range.end().cloned().unwrap_or(i64::MAX),
                 0,
             ) {
                 s if s >= 0 => Ok(()),

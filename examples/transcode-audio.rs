@@ -62,7 +62,7 @@ struct Transcoder {
     out_time_base: ffmpeg::Rational,
 }
 
-fn transcoder<P: AsRef<Path>>(
+fn transcoder<P: AsRef<Path> + ?Sized>(
     ictx: &mut format::context::Input,
     octx: &mut format::context::Output,
     path: &P,
@@ -99,7 +99,10 @@ fn transcoder<P: AsRef<Path>>(
 
     encoder.set_rate(decoder.rate() as i32);
     encoder.set_channel_layout(channel_layout);
-    encoder.set_channels(channel_layout.channels());
+    #[cfg(not(feature = "ffmpeg_7_0"))]
+    {
+        encoder.set_channels(channel_layout.channels());
+    }
     encoder.set_format(
         codec
             .formats()

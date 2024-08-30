@@ -1,22 +1,15 @@
-use std::marker::PhantomData;
-
 use super::{Sink, Source};
 use ffi::*;
 use libc::c_void;
 use {format, option, ChannelLayout};
 
-pub struct Context<'a> {
+pub struct Context {
     ptr: *mut AVFilterContext,
-
-    _marker: PhantomData<&'a ()>,
 }
 
-impl<'a> Context<'a> {
+impl Context {
     pub unsafe fn wrap(ptr: *mut AVFilterContext) -> Self {
-        Context {
-            ptr,
-            _marker: PhantomData,
-        }
+        Context { ptr }
     }
 
     pub unsafe fn as_ptr(&self) -> *const AVFilterContext {
@@ -28,12 +21,12 @@ impl<'a> Context<'a> {
     }
 }
 
-impl<'a> Context<'a> {
-    pub fn source(&'a mut self) -> Source<'a> {
+impl Context {
+    pub fn source(&mut self) -> Source {
         unsafe { Source::wrap(self) }
     }
 
-    pub fn sink(&'a mut self) -> Sink<'a> {
+    pub fn sink(&mut self) -> Sink {
         unsafe { Sink::wrap(self) }
     }
 
@@ -50,11 +43,22 @@ impl<'a> Context<'a> {
     }
 
     pub fn set_channel_layout(&mut self, value: ChannelLayout) {
-        let _ = option::Settable::set(self, "channel_layouts", &value.bits());
+        #[cfg(not(feature = "ffmpeg_7_0"))]
+        {
+            let _ = option::Settable::set(self, "channel_layouts", &value.bits());
+        }
+        #[cfg(feature = "ffmpeg_7_0")]
+        {
+            let _ = option::Settable::set_channel_layout(self, "channel_layouts", value);
+        }
+    }
+
+    pub fn link(&mut self, srcpad: u32, dst: &mut Self, dstpad: u32) {
+        unsafe { avfilter_link(self.as_mut_ptr(), srcpad, dst.as_mut_ptr(), dstpad) };
     }
 }
 
-unsafe impl<'a> option::Target for Context<'a> {
+unsafe impl option::Target for Context {
     fn as_ptr(&self) -> *const c_void {
         self.ptr as *const _
     }
@@ -64,4 +68,4 @@ unsafe impl<'a> option::Target for Context<'a> {
     }
 }
 
-impl<'a> option::Settable for Context<'a> {}
+impl option::Settable for Context {}

@@ -2,6 +2,7 @@ use ffi::*;
 use libc::c_int;
 
 bitflags! {
+    #[derive(Copy, Clone, Debug, PartialEq, Eq)]
     pub struct Disposition: c_int {
         const DEFAULT          = AV_DISPOSITION_DEFAULT;
         const DUB              = AV_DISPOSITION_DUB;

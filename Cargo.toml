@@ -1,6 +1,6 @@
 [package]
 name    = "ffmpeg-next"
-version = "6.0.0"
+version = "7.0.4"
 build   = "build.rs"
 
 authors = ["meh. <meh@schizofreni.co>", "Zhiming Wang <i@zhimingwang.org>"]
@@ -106,12 +106,12 @@ rpi = []
 
 [dependencies]
 libc     = "0.2"
-bitflags = "1.2"
+bitflags = "2.5"
 
 [dependencies.image]
-version  = "0.23"
+version  = "0.25"
 optional = true
 
 [dependencies.ffmpeg-sys-next]
-version = "6.0.1"
+version = "7.0.2"
 default-features = false

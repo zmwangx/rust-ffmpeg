@@ -30,7 +30,8 @@ const DEFAULT_X264_OPTS: &str = "preset=medium";
 struct Transcoder {
     ost_index: usize,
     decoder: decoder::Video,
-    encoder: encoder::video::Video,
+    input_time_base: Rational,
+    encoder: encoder::Video,
     logging_enabled: bool,
     frame_count: usize,
     last_log_frame_count: usize,
@@ -50,33 +51,35 @@ impl Transcoder {
         let decoder = ffmpeg::codec::context::Context::from_parameters(ist.parameters())?
             .decoder()
             .video()?;
-        let mut ost = octx.add_stream(encoder::find(codec::Id::H264))?;
-        let mut encoder = codec::context::Context::from_parameters(ost.parameters())?
-            .encoder()
-            .video()?;
+
+        let codec = encoder::find(codec::Id::H264);
+        let mut ost = octx.add_stream(codec)?;
+
+        let mut encoder =
+            codec::context::Context::new_with_codec(codec.ok_or(ffmpeg::Error::InvalidData)?)
+                .encoder()
+                .video()?;
+        ost.set_parameters(&encoder);
         encoder.set_height(decoder.height());
         encoder.set_width(decoder.width());
         encoder.set_aspect_ratio(decoder.aspect_ratio());
         encoder.set_format(decoder.format());
         encoder.set_frame_rate(decoder.frame_rate());
-        encoder.set_time_base(decoder.frame_rate().unwrap().invert());
+        encoder.set_time_base(ist.time_base());
+
         if global_header {
             encoder.set_flags(codec::Flags::GLOBAL_HEADER);
         }
 
-        encoder
+        let opened_encoder = encoder
             .open_with(x264_opts)
-            .expect("error opening libx264 encoder with supplied settings");
-        encoder = codec::context::Context::from_parameters(ost.parameters())?
-            .encoder()
-            .video()?;
-        ost.set_parameters(&encoder);
+            .expect("error opening x264 with supplied settings");
+        ost.set_parameters(&opened_encoder);
         Ok(Self {
             ost_index,
             decoder,
-            encoder: codec::context::Context::from_parameters(ost.parameters())?
-                .encoder()
-                .video()?,
+            input_time_base: ist.time_base(),
+            encoder: opened_encoder,
             logging_enabled: enable_logging,
             frame_count: 0,
             last_log_frame_count: 0,
@@ -103,7 +106,7 @@ impl Transcoder {
             self.frame_count += 1;
             let timestamp = frame.timestamp();
             self.log_progress(f64::from(
-                Rational(timestamp.unwrap_or(0) as i32, 1) * self.decoder.time_base(),
+                Rational(timestamp.unwrap_or(0) as i32, 1) * self.input_time_base,
             ));
             frame.set_pts(timestamp);
             frame.set_kind(picture::Type::None);
@@ -128,7 +131,7 @@ impl Transcoder {
         let mut encoded = Packet::empty();
         while self.encoder.receive_packet(&mut encoded).is_ok() {
             encoded.set_stream(self.ost_index);
-            encoded.rescale_ts(self.decoder.time_base(), ost_time_base);
+            encoded.rescale_ts(self.input_time_base, ost_time_base);
             encoded.write_interleaved(octx).unwrap();
         }
     }
@@ -247,7 +250,6 @@ fn main() {
         let ost_time_base = ost_time_bases[ost_index as usize];
         match transcoders.get_mut(&ist_index) {
             Some(transcoder) => {
-                packet.rescale_ts(stream.time_base(), transcoder.decoder.time_base());
                 transcoder.send_packet_to_decoder(&packet);
                 transcoder.receive_and_process_decoded_frames(&mut octx, ost_time_base);
             }

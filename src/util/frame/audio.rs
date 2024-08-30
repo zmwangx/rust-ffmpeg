@@ -4,7 +4,7 @@ use std::slice;
 
 use super::Frame;
 use ffi::*;
-use libc::{c_int, c_ulonglong};
+use libc::c_int;
 use util::format;
 use ChannelLayout;
 
@@ -49,7 +49,9 @@ impl Audio {
             if (*self.as_ptr()).format == -1 {
                 format::Sample::None
             } else {
-                format::Sample::from(mem::transmute::<_, AVSampleFormat>((*self.as_ptr()).format))
+                format::Sample::from(mem::transmute::<i32, AVSampleFormat>(
+                    (*self.as_ptr()).format,
+                ))
             }
         }
     }
@@ -63,20 +65,49 @@ impl Audio {
 
     #[inline]
     pub fn channel_layout(&self) -> ChannelLayout {
-        unsafe { ChannelLayout::from_bits_truncate((*self.as_ptr()).channel_layout as c_ulonglong) }
+        unsafe {
+            #[cfg(not(feature = "ffmpeg_7_0"))]
+            {
+                ChannelLayout::from_bits_truncate((*self.as_ptr()).channel_layout as _)
+            }
+
+            #[cfg(feature = "ffmpeg_7_0")]
+            {
+                ChannelLayout::from((*self.as_ptr()).ch_layout)
+            }
+        }
     }
 
     #[inline]
     pub fn set_channel_layout(&mut self, value: ChannelLayout) {
-        unsafe { (*self.as_mut_ptr()).channel_layout = value.bits() }
+        unsafe {
+            #[cfg(not(feature = "ffmpeg_7_0"))]
+            {
+                (*self.as_mut_ptr()).channel_layout = value.bits()
+            }
+
+            #[cfg(feature = "ffmpeg_7_0")]
+            {
+                (*self.as_mut_ptr()).ch_layout = value.into()
+            }
+        }
     }
 
     #[inline]
     pub fn channels(&self) -> u16 {
-        unsafe { (*self.as_ptr()).channels as u16 }
+        #[cfg(not(feature = "ffmpeg_7_0"))]
+        unsafe {
+            (*self.as_ptr()).channels as u16
+        }
+
+        #[cfg(feature = "ffmpeg_7_0")]
+        {
+            self.channel_layout().channels() as u16
+        }
     }
 
     #[inline]
+    #[cfg(not(feature = "ffmpeg_7_0"))]
     pub fn set_channels(&mut self, value: u16) {
         unsafe {
             (*self.as_mut_ptr()).channels = i32::from(value);
@@ -289,6 +320,13 @@ unsafe impl Sample for (u8, u8, u8, u8, u8, u8, u8) {
     }
 }
 
+unsafe impl Sample for (u8, u8, u8, u8, u8, u8, u8, u8) {
+    #[inline(always)]
+    fn is_valid(format: format::Sample, channels: u16) -> bool {
+        channels == 8 && format == format::Sample::U8(format::sample::Type::Packed)
+    }
+}
+
 unsafe impl Sample for i16 {
     #[inline(always)]
     fn is_valid(format: format::Sample, _channels: u16) -> bool {
@@ -335,6 +373,13 @@ unsafe impl Sample for (i16, i16, i16, i16, i16, i16, i16) {
     #[inline(always)]
     fn is_valid(format: format::Sample, channels: u16) -> bool {
         channels == 7 && format == format::Sample::I16(format::sample::Type::Packed)
+    }
+}
+
+unsafe impl Sample for (i16, i16, i16, i16, i16, i16, i16, i16) {
+    #[inline(always)]
+    fn is_valid(format: format::Sample, channels: u16) -> bool {
+        channels == 8 && format == format::Sample::I16(format::sample::Type::Packed)
     }
 }
 
@@ -387,6 +432,13 @@ unsafe impl Sample for (i32, i32, i32, i32, i32, i32, i32) {
     }
 }
 
+unsafe impl Sample for (i32, i32, i32, i32, i32, i32, i32, i32) {
+    #[inline(always)]
+    fn is_valid(format: format::Sample, channels: u16) -> bool {
+        channels == 8 && format == format::Sample::I32(format::sample::Type::Packed)
+    }
+}
+
 unsafe impl Sample for f32 {
     #[inline(always)]
     fn is_valid(format: format::Sample, _channels: u16) -> bool {
@@ -436,6 +488,13 @@ unsafe impl Sample for (f32, f32, f32, f32, f32, f32, f32) {
     }
 }
 
+unsafe impl Sample for (f32, f32, f32, f32, f32, f32, f32, f32) {
+    #[inline(always)]
+    fn is_valid(format: format::Sample, channels: u16) -> bool {
+        channels == 8 && format == format::Sample::F32(format::sample::Type::Packed)
+    }
+}
+
 unsafe impl Sample for f64 {
     #[inline(always)]
     fn is_valid(format: format::Sample, _channels: u16) -> bool {
@@ -482,5 +541,12 @@ unsafe impl Sample for (f64, f64, f64, f64, f64, f64, f64) {
     #[inline(always)]
     fn is_valid(format: format::Sample, channels: u16) -> bool {
         channels == 7 && format == format::Sample::F64(format::sample::Type::Packed)
+    }
+}
+
+unsafe impl Sample for (f64, f64, f64, f64, f64, f64, f64, f64) {
+    #[inline(always)]
+    fn is_valid(format: format::Sample, channels: u16) -> bool {
+        channels == 8 && format == format::Sample::F64(format::sample::Type::Packed)
     }
 }

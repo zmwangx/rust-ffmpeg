@@ -1,15 +1,15 @@
 use super::Context;
 use ffi::*;
 use libc::c_int;
-use {Error, Frame};
+use {Error, Frame, Rational};
 
 pub struct Sink<'a> {
-    ctx: &'a mut Context<'a>,
+    ctx: &'a mut Context,
 }
 
 impl<'a> Sink<'a> {
-    pub unsafe fn wrap<'b>(ctx: &'b mut Context<'b>) -> Sink<'b> {
-        Sink { ctx }
+    pub unsafe fn wrap(ctx: &'a mut Context) -> Self {
+        Self { ctx }
     }
 }
 
@@ -40,5 +40,9 @@ impl<'a> Sink<'a> {
         unsafe {
             av_buffersink_set_frame_size(self.ctx.as_mut_ptr(), value);
         }
+    }
+
+    pub fn time_base(&self) -> Rational {
+        unsafe { av_buffersink_get_time_base(self.ctx.as_ptr()) }.into()
     }
 }

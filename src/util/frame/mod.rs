@@ -79,7 +79,11 @@ impl Frame {
     pub fn packet(&self) -> Packet {
         unsafe {
             Packet {
+                #[cfg(not(feature = "ffmpeg_7_0"))]
                 duration: (*self.as_ptr()).pkt_duration,
+                #[cfg(feature = "ffmpeg_7_0")]
+                duration: (*self.as_ptr()).duration,
+
                 position: (*self.as_ptr()).pkt_pos,
                 size: (*self.as_ptr()).pkt_size as usize,
 

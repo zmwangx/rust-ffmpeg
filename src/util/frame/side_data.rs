@@ -64,6 +64,9 @@ pub enum Type {
 
     #[cfg(feature = "ffmpeg_6_1")]
     VIDEO_HINT,
+
+    #[cfg(feature = "ffmpeg_7_1")]
+    LCEVC,
 }
 
 impl Type {
@@ -132,6 +135,9 @@ impl From<AVFrameSideDataType> for Type {
 
             #[cfg(feature = "ffmpeg_6_1")]
             AV_FRAME_DATA_VIDEO_HINT => Type::VIDEO_HINT,
+
+            #[cfg(feature = "ffmpeg_7_1")]
+            AV_FRAME_DATA_LCEVC => Type::LCEVC,
         }
     }
 }
@@ -193,6 +199,9 @@ impl From<Type> for AVFrameSideDataType {
 
             #[cfg(feature = "ffmpeg_6_1")]
             Type::VIDEO_HINT => AV_FRAME_DATA_VIDEO_HINT,
+
+            #[cfg(feature = "ffmpeg_7_1")]
+            Type::LCEVC => AV_FRAME_DATA_LCEVC,
         }
     }
 }

@@ -66,6 +66,8 @@ pub enum Type {
 
     #[cfg(feature = "ffmpeg_7_1")]
     FRAME_CROPPING,
+    #[cfg(feature = "ffmpeg_7_1")]
+    LCEVC,
 }
 
 impl From<AVPacketSideDataType> for Type {
@@ -130,6 +132,8 @@ impl From<AVPacketSideDataType> for Type {
 
             #[cfg(feature = "ffmpeg_7_1")]
             AV_PKT_DATA_FRAME_CROPPING => Type::FRAME_CROPPING,
+            #[cfg(feature = "ffmpeg_7_1")]
+            AV_PKT_DATA_LCEVC => Type::LCEVC,
         }
     }
 }
@@ -196,6 +200,8 @@ impl From<Type> for AVPacketSideDataType {
 
             #[cfg(feature = "ffmpeg_7_1")]
             Type::FRAME_CROPPING => AV_PKT_DATA_FRAME_CROPPING,
+            #[cfg(feature = "ffmpeg_7_1")]
+            Type::LCEVC => AV_PKT_DATA_LCEVC,
         }
     }
 }

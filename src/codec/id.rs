@@ -668,6 +668,8 @@ pub enum Id {
 
     #[cfg(feature = "ffmpeg_7_1")]
     LC3,
+    #[cfg(feature = "ffmpeg_7_1")]
+    LCEVC,
 }
 
 impl Id {

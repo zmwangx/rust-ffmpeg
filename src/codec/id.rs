@@ -665,6 +665,11 @@ pub enum Id {
     QOA,
     #[cfg(feature = "ffmpeg_7_0")]
     LEAD,
+
+    #[cfg(feature = "ffmpeg_7_1")]
+    LC3,
+    #[cfg(feature = "ffmpeg_7_1")]
+    LCEVC,
 }
 
 impl Id {
@@ -1337,6 +1342,11 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_QOA => Id::QOA,
             #[cfg(feature = "ffmpeg_7_0")]
             AV_CODEC_ID_LEAD => Id::LEAD,
+
+            #[cfg(feature = "ffmpeg_7_1")]
+            AV_CODEC_ID_LC3 => Id::LC3,
+            #[cfg(feature = "ffmpeg_7_1")]
+            AV_CODEC_ID_LCEVC => Id::LCEVC,
         }
     }
 }
@@ -2001,6 +2011,11 @@ impl From<Id> for AVCodecID {
             Id::QOA => AV_CODEC_ID_QOA,
             #[cfg(feature = "ffmpeg_7_0")]
             Id::LEAD => AV_CODEC_ID_LEAD,
+
+            #[cfg(feature = "ffmpeg_7_1")]
+            Id::LC3 => AV_CODEC_ID_LC3,
+            #[cfg(feature = "ffmpeg_7_1")]
+            Id::LCEVC => AV_CODEC_ID_LCEVC,
         }
     }
 }

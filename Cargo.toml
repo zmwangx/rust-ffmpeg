@@ -1,6 +1,6 @@
 [package]
 name    = "ffmpeg-next"
-version = "7.0.4"
+version = "7.1.0"
 build   = "build.rs"
 
 authors = ["meh. <meh@schizofreni.co>", "Zhiming Wang <i@zhimingwang.org>"]
@@ -27,6 +27,7 @@ ffmpeg41 = []
 ffmpeg4 = []
 
 static = ["ffmpeg-sys-next/static"]
+non-exhaustive-enums = ["ffmpeg-sys-next/non-exhaustive-enums"]
 build  = ["static", "ffmpeg-sys-next/build"]
 
 # licensing
@@ -106,12 +107,12 @@ rpi = []
 
 [dependencies]
 libc     = "0.2"
-bitflags = "2.5"
+bitflags = "2.6"
 
 [dependencies.image]
 version  = "0.25"
 optional = true
 
 [dependencies.ffmpeg-sys-next]
-version = "7.0.2"
+version = "7.1.0"
 default-features = false

@@ -1,3 +1,4 @@
+use std::convert::TryFrom;
 use std::ptr;
 
 use super::Delay;
@@ -153,6 +154,23 @@ impl Context {
             match swr_get_delay(self.as_ptr() as *mut _, 1) {
                 0 => None,
                 _ => Some(Delay::from(self)),
+            }
+        }
+    }
+
+    /// Returns an upper bound on the number of samples the next [`run`][Self::run] call will
+    /// output, if called with `in_samples` of input samples.
+    ///
+    /// Returns an error if `in_samples` exceeds `i32::MAX`.
+    pub fn get_out_samples(&self, in_samples: u32) -> Result<u32, Error> {
+        // We return an error in case `in_samples` is bigger than `i32::MAX` because the
+        // libswresample API wasn't designed very well here and accepts a signed integer as the
+        // number of samples, for some reason.
+        let in_samples = i32::try_from(in_samples).map_err(|_| Error::InvalidData)?;
+        unsafe {
+            match swr_get_out_samples(self.as_ptr() as *mut _, in_samples) {
+                n if n >= 0 => Ok(n as u32),
+                e => Err(Error::from(e)),
             }
         }
     }

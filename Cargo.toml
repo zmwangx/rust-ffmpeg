@@ -125,6 +125,6 @@ optional = true
 
 [dependencies.ffmpeg-sys-next]
 
-rev = "7da943df1ea7be22868b3f8e236b6a9f5b8c1559"
+rev = "253f719fc63d7858d86cef710d8fba835baf3b33"
 default-features = false
 git = "https://github.com/remotion-dev/rust-ffmpeg-sys"

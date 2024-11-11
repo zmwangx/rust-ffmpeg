@@ -18,5 +18,7 @@ bitflags! {
         const CAPTIONS         = AV_DISPOSITION_CAPTIONS;
         const DESCRIPTIONS     = AV_DISPOSITION_DESCRIPTIONS;
         const METADATA         = AV_DISPOSITION_METADATA;
+        #[cfg(feature = "ffmpeg_7_1")]
+        const MULTILAYER       = AV_DISPOSITION_MULTILAYER;
     }
 }

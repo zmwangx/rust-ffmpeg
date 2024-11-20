@@ -29,7 +29,6 @@ fn main() -> Result<(), ffmpeg::Error> {
 
         let mut decoder = context_decoder.decoder().video()?;
 
-
         let mut scaler = Context::get(
             decoder.format(),
             decoder.width(),

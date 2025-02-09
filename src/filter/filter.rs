@@ -103,7 +103,7 @@ impl<'a> Iterator for PadIter<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         unsafe {
-            if self.cur >= self.count {
+            if self.cur >= self.count || self.ptr.is_null() {
                 return None;
             }
 

@@ -60,6 +60,10 @@ impl Iterator for RateIter {
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
+            if self.ptr.is_null() {
+              return None;
+            }
+
             if (*self.ptr).num == 0 && (*self.ptr).den == 0 {
                 return None;
             }
@@ -87,6 +91,10 @@ impl Iterator for FormatIter {
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
+            if self.ptr.is_null() {
+              return None;
+            }
+
             if *self.ptr == AVPixelFormat::AV_PIX_FMT_NONE {
                 return None;
             }

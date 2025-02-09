@@ -318,6 +318,10 @@ impl<'a> Iterator for SideDataIter<'a> {
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
+            if self.ptr.is_null() {
+              return None;
+            }
+
             if self.cur >= (*self.ptr).side_data_elems {
                 None
             } else {

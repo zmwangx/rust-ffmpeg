@@ -118,6 +118,10 @@ impl Iterator for ProfileIter {
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
+            if self.ptr.is_null() {
+              return None;
+            }
+
             if (*self.ptr).profile == FF_PROFILE_UNKNOWN {
                 return None;
             }

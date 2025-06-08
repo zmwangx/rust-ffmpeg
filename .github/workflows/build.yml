@@ -11,7 +11,7 @@ jobs:
     container: jrottenberg/ffmpeg:${{ matrix.ffmpeg_version }}-ubuntu
     strategy:
       matrix:
-        ffmpeg_version: ["3.4", "4.0", "4.1", "4.2", "4.3", "4.4", "5.0", "5.1", "6.0", "6.1", "7.0"]
+        ffmpeg_version: ["7.0", "7.1"]
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
@@ -72,7 +72,9 @@ jobs:
       matrix:
         include:
           - ffmpeg_version: latest
-            ffmpeg_download_url: https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full-shared.7z
+            ffmpeg_download_url: ffmpeg-release-full-shared.7z
+          - ffmpeg_version: 7.0.2
+            ffmpeg_download_url: ffmpeg-7.0.2-full_build-shared.7z
       fail-fast: false
     env:
       FFMPEG_DOWNLOAD_URL: ${{ matrix.ffmpeg_download_url }}
@@ -89,10 +91,9 @@ jobs:
           Add-Content $env:GITHUB_ENV "FFMPEG_DIR=${pwd}\ffmpeg`n"
           Add-Content $env:GITHUB_PATH "${pwd}\ffmpeg\bin`n"
       - name: Set up Rust
-        uses: actions-rs/toolchain@v1
+        uses: v
         with:
           toolchain: stable
-          override: true
           components: rustfmt, clippy
       - name: Build
         run: |

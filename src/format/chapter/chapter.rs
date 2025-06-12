@@ -10,7 +10,7 @@ pub struct Chapter<'a> {
     index: usize,
 }
 
-impl<'a> Chapter<'a> {
+impl Chapter<'_> {
     pub unsafe fn wrap(context: &Context, index: usize) -> Chapter {
         Chapter { context, index }
     }
@@ -20,7 +20,7 @@ impl<'a> Chapter<'a> {
     }
 }
 
-impl<'a> Chapter<'a> {
+impl Chapter<'_> {
     pub fn index(&self) -> usize {
         self.index
     }
@@ -49,7 +49,7 @@ impl<'a> Chapter<'a> {
     }
 }
 
-impl<'a> PartialEq for Chapter<'a> {
+impl PartialEq for Chapter<'_> {
     fn eq(&self, other: &Self) -> bool {
         unsafe { self.as_ptr() == other.as_ptr() }
     }

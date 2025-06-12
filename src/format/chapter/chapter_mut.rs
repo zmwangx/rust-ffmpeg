@@ -15,7 +15,7 @@ pub struct ChapterMut<'a> {
     immutable: Chapter<'a>,
 }
 
-impl<'a> ChapterMut<'a> {
+impl ChapterMut<'_> {
     pub unsafe fn wrap(context: &mut Context, index: usize) -> ChapterMut {
         ChapterMut {
             context: mem::transmute_copy(&context),
@@ -30,7 +30,7 @@ impl<'a> ChapterMut<'a> {
     }
 }
 
-impl<'a> ChapterMut<'a> {
+impl ChapterMut<'_> {
     pub fn set_id(&mut self, value: i64) {
         unsafe {
             (*self.as_mut_ptr()).id = value as _;

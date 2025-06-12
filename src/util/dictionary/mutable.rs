@@ -13,7 +13,7 @@ pub struct Ref<'a> {
     _marker: PhantomData<&'a ()>,
 }
 
-impl<'a> Ref<'a> {
+impl Ref<'_> {
     pub unsafe fn wrap(ptr: *mut AVDictionary) -> Self {
         Ref {
             ptr,
@@ -27,7 +27,7 @@ impl<'a> Ref<'a> {
     }
 }
 
-impl<'a> Ref<'a> {
+impl Ref<'_> {
     pub fn set(&mut self, key: &str, value: &str) {
         unsafe {
             let key = CString::new(key).unwrap();
@@ -52,7 +52,7 @@ impl<'a> Deref for Ref<'a> {
     }
 }
 
-impl<'a> fmt::Debug for Ref<'a> {
+impl fmt::Debug for Ref<'_> {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         self.imm.fmt(fmt)
     }

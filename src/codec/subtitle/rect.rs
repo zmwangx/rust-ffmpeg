@@ -14,7 +14,7 @@ pub enum Rect<'a> {
     Ass(Ass<'a>),
 }
 
-impl<'a> Rect<'a> {
+impl Rect<'_> {
     pub unsafe fn wrap(ptr: *const AVSubtitleRect) -> Self {
         match Type::from((*ptr).type_) {
             Type::None => Rect::None(ptr),
@@ -34,7 +34,7 @@ impl<'a> Rect<'a> {
     }
 }
 
-impl<'a> Rect<'a> {
+impl Rect<'_> {
     pub fn flags(&self) -> Flags {
         unsafe {
             Flags::from_bits_truncate(match *self {
@@ -53,7 +53,7 @@ pub struct Bitmap<'a> {
     _marker: PhantomData<&'a ()>,
 }
 
-impl<'a> Bitmap<'a> {
+impl Bitmap<'_> {
     pub unsafe fn wrap(ptr: *const AVSubtitleRect) -> Self {
         Bitmap {
             ptr,
@@ -66,7 +66,7 @@ impl<'a> Bitmap<'a> {
     }
 }
 
-impl<'a> Bitmap<'a> {
+impl Bitmap<'_> {
     pub fn x(&self) -> usize {
         unsafe { (*self.as_ptr()).x as usize }
     }
@@ -107,7 +107,7 @@ pub struct Text<'a> {
     _marker: PhantomData<&'a ()>,
 }
 
-impl<'a> Text<'a> {
+impl Text<'_> {
     pub unsafe fn wrap(ptr: *const AVSubtitleRect) -> Self {
         Text {
             ptr,
@@ -120,7 +120,7 @@ impl<'a> Text<'a> {
     }
 }
 
-impl<'a> Text<'a> {
+impl Text<'_> {
     pub fn get(&self) -> &str {
         unsafe { from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).text).to_bytes()) }
     }
@@ -132,7 +132,7 @@ pub struct Ass<'a> {
     _marker: PhantomData<&'a ()>,
 }
 
-impl<'a> Ass<'a> {
+impl Ass<'_> {
     pub unsafe fn wrap(ptr: *const AVSubtitleRect) -> Self {
         Ass {
             ptr,
@@ -145,7 +145,7 @@ impl<'a> Ass<'a> {
     }
 }
 
-impl<'a> Ass<'a> {
+impl Ass<'_> {
     pub fn get(&self) -> &str {
         unsafe { from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).ass).to_bytes()) }
     }

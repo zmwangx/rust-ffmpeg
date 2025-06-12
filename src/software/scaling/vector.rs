@@ -11,7 +11,7 @@ pub struct Vector<'a> {
     _marker: PhantomData<&'a ()>,
 }
 
-impl<'a> Vector<'a> {
+impl Vector<'_> {
     pub unsafe fn wrap(ptr: *mut SwsVector) -> Self {
         Vector {
             ptr,
@@ -29,7 +29,7 @@ impl<'a> Vector<'a> {
     }
 }
 
-impl<'a> Vector<'a> {
+impl Vector<'_> {
     pub fn new(length: usize) -> Self {
         unsafe {
             Vector {
@@ -124,7 +124,7 @@ impl<'a> Vector<'a> {
 }
 
 #[cfg(not(feature = "ffmpeg_5_0"))]
-impl<'a> Clone for Vector<'a> {
+impl Clone for Vector<'_> {
     fn clone(&self) -> Self {
         unsafe {
             Vector {
@@ -136,7 +136,7 @@ impl<'a> Clone for Vector<'a> {
     }
 }
 
-impl<'a> Drop for Vector<'a> {
+impl Drop for Vector<'_> {
     fn drop(&mut self) {
         unsafe {
             if self._own {

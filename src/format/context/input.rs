@@ -156,7 +156,7 @@ pub struct PacketIter<'a> {
     context: &'a mut Input,
 }
 
-impl<'a> PacketIter<'a> {
+impl PacketIter<'_> {
     pub fn new(context: &mut Input) -> PacketIter {
         PacketIter { context }
     }

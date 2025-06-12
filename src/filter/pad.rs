@@ -12,7 +12,7 @@ pub struct Pad<'a> {
     _marker: PhantomData<&'a ()>,
 }
 
-impl<'a> Pad<'a> {
+impl Pad<'_> {
     pub unsafe fn wrap(ptr: *const AVFilterPad, idx: isize) -> Self {
         Pad {
             ptr,
@@ -30,7 +30,7 @@ impl<'a> Pad<'a> {
     }
 }
 
-impl<'a> Pad<'a> {
+impl Pad<'_> {
     pub fn name(&self) -> Option<&str> {
         unsafe {
             let ptr = avfilter_pad_get_name(self.ptr, self.idx as i32);

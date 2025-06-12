@@ -190,7 +190,7 @@ pub struct StreamIter<'a> {
     current: c_uint,
 }
 
-impl<'a> StreamIter<'a> {
+impl StreamIter<'_> {
     pub fn new<'s, 'c: 's>(context: &'c Context) -> StreamIter<'s> {
         StreamIter {
             context,
@@ -249,14 +249,14 @@ impl<'a> Iterator for StreamIter<'a> {
     }
 }
 
-impl<'a> ExactSizeIterator for StreamIter<'a> {}
+impl ExactSizeIterator for StreamIter<'_> {}
 
 pub struct StreamIterMut<'a> {
     context: &'a mut Context,
     current: c_uint,
 }
 
-impl<'a> StreamIterMut<'a> {
+impl StreamIterMut<'_> {
     pub fn new<'s, 'c: 's>(context: &'c mut Context) -> StreamIterMut<'s> {
         StreamIterMut {
             context,
@@ -292,14 +292,14 @@ impl<'a> Iterator for StreamIterMut<'a> {
     }
 }
 
-impl<'a> ExactSizeIterator for StreamIterMut<'a> {}
+impl ExactSizeIterator for StreamIterMut<'_> {}
 
 pub struct ChapterIter<'a> {
     context: &'a Context,
     current: c_uint,
 }
 
-impl<'a> ChapterIter<'a> {
+impl ChapterIter<'_> {
     pub fn new<'s, 'c: 's>(context: &'c Context) -> ChapterIter<'s> {
         ChapterIter {
             context,
@@ -335,14 +335,14 @@ impl<'a> Iterator for ChapterIter<'a> {
     }
 }
 
-impl<'a> ExactSizeIterator for ChapterIter<'a> {}
+impl ExactSizeIterator for ChapterIter<'_> {}
 
 pub struct ChapterIterMut<'a> {
     context: &'a mut Context,
     current: c_uint,
 }
 
-impl<'a> ChapterIterMut<'a> {
+impl ChapterIterMut<'_> {
     pub fn new<'s, 'c: 's>(context: &'c mut Context) -> ChapterIterMut<'s> {
         ChapterIterMut {
             context,
@@ -381,7 +381,7 @@ impl<'a> Iterator for ChapterIterMut<'a> {
     }
 }
 
-impl<'a> ExactSizeIterator for ChapterIterMut<'a> {}
+impl ExactSizeIterator for ChapterIterMut<'_> {}
 
 impl fmt::Debug for Context {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {

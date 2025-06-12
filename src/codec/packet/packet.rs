@@ -303,7 +303,7 @@ pub struct SideDataIter<'a> {
     _marker: PhantomData<&'a Packet>,
 }
 
-impl<'a> SideDataIter<'a> {
+impl SideDataIter<'_> {
     pub fn new(ptr: *const AVPacket) -> Self {
         SideDataIter {
             ptr,
@@ -338,4 +338,4 @@ impl<'a> Iterator for SideDataIter<'a> {
     }
 }
 
-impl<'a> ExactSizeIterator for SideDataIter<'a> {}
+impl ExactSizeIterator for SideDataIter<'_> {}

@@ -212,7 +212,7 @@ pub struct SideData<'a> {
     _marker: PhantomData<&'a Packet>,
 }
 
-impl<'a> SideData<'a> {
+impl SideData<'_> {
     pub unsafe fn wrap(ptr: *mut AVPacketSideData) -> Self {
         SideData {
             ptr,
@@ -225,7 +225,7 @@ impl<'a> SideData<'a> {
     }
 }
 
-impl<'a> SideData<'a> {
+impl SideData<'_> {
     pub fn kind(&self) -> Type {
         unsafe { Type::from((*self.as_ptr()).type_) }
     }

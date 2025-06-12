@@ -13,7 +13,7 @@ pub struct Ref<'a> {
     _marker: PhantomData<&'a ()>,
 }
 
-impl<'a> Ref<'a> {
+impl Ref<'_> {
     pub unsafe fn wrap(ptr: *const AVDictionary) -> Self {
         Ref {
             ptr,
@@ -26,8 +26,8 @@ impl<'a> Ref<'a> {
     }
 }
 
-impl<'a> Ref<'a> {
-    pub fn get(&'a self, key: &str) -> Option<&'a str> {
+impl Ref<'_> {
+    pub fn get(&self, key: &str) -> Option<&str> {
         unsafe {
             let key = CString::new(key).unwrap();
             let entry = av_dict_get(self.as_ptr(), key.as_ptr(), ptr::null_mut(), 0);
@@ -60,7 +60,7 @@ impl<'a> IntoIterator for &'a Ref<'a> {
     }
 }
 
-impl<'a> fmt::Debug for Ref<'a> {
+impl fmt::Debug for Ref<'_> {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         fmt.debug_map().entries(self.iter()).finish()
     }

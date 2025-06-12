@@ -128,7 +128,7 @@ pub struct RectIter<'a> {
     _marker: PhantomData<&'a Subtitle>,
 }
 
-impl<'a> RectIter<'a> {
+impl RectIter<'_> {
     pub fn new(ptr: *const AVSubtitle) -> Self {
         RectIter {
             ptr,
@@ -163,7 +163,7 @@ impl<'a> Iterator for RectIter<'a> {
     }
 }
 
-impl<'a> ExactSizeIterator for RectIter<'a> {}
+impl ExactSizeIterator for RectIter<'_> {}
 
 pub struct RectMutIter<'a> {
     ptr: *mut AVSubtitle,
@@ -172,7 +172,7 @@ pub struct RectMutIter<'a> {
     _marker: PhantomData<&'a Subtitle>,
 }
 
-impl<'a> RectMutIter<'a> {
+impl RectMutIter<'_> {
     pub fn new(ptr: *mut AVSubtitle) -> Self {
         RectMutIter {
             ptr,
@@ -207,4 +207,4 @@ impl<'a> Iterator for RectMutIter<'a> {
     }
 }
 
-impl<'a> ExactSizeIterator for RectMutIter<'a> {}
+impl ExactSizeIterator for RectMutIter<'_> {}

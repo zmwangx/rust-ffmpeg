@@ -14,7 +14,7 @@ pub struct Info<'a> {
     _marker: PhantomData<&'a ()>,
 }
 
-impl<'a> Info<'a> {
+impl Info<'_> {
     pub unsafe fn wrap(ptr: *mut AVDeviceInfo) -> Self {
         Info {
             ptr,
@@ -31,7 +31,7 @@ impl<'a> Info<'a> {
     }
 }
 
-impl<'a> Info<'a> {
+impl Info<'_> {
     pub fn name(&self) -> &str {
         unsafe { from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).device_name).to_bytes()) }
     }

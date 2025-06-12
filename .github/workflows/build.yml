@@ -1,6 +1,9 @@
 name: build
 on:
   push:
+    branches:
+      - main
+      - master
   pull_request:
   schedule:
     - cron: "0 0 * * *"
@@ -8,25 +11,62 @@ jobs:
   build-test-lint-linux:
     name: Linux - FFmpeg ${{ matrix.ffmpeg_version }} - build, test and lint
     runs-on: ubuntu-latest
-    container: jrottenberg/ffmpeg:${{ matrix.ffmpeg_version }}-ubuntu
     strategy:
       matrix:
-        ffmpeg_version: ["3.4", "4.0", "4.1", "4.2", "4.3", "4.4", "5.0", "5.1", "6.0", "6.1", "7.0"]
+        include:
+          - ffmpeg_version: latest
+            asset_url: "ffmpeg-master-latest-linux64-gpl-shared.tar.xz"
+          - ffmpeg_version: 7.1
+            asset_url: "ffmpeg-n7.1-latest-linux64-gpl-shared-7.1.tar.xz"
+          - ffmpeg_version: 6.1
+            asset_url: "ffmpeg-n6.1-latest-linux64-gpl-shared-6.1.tar.xz"
+
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+      
       - name: Install dependencies
         run: |
-          apt update
-          apt install -y --no-install-recommends clang curl pkg-config
+          sudo apt update
+          sudo apt install -y --no-install-recommends clang pkg-config
+
+      - name: Install ffmpeg
+        id: setup-ffmpeg
+        run: |
+          BASE_URL="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest"
+          echo "Downloading FFmpeg version: ${{ matrix.ffmpeg_version }}"
+          echo "Downloading asset: ${{ matrix.asset_url }}"
+          curl -L --fail "${BASE_URL}/${{ matrix.asset_url }}" -o ffmpeg.tar.xz
+          if [ ! -f ffmpeg.tar.xz ]; then
+            echo "FFmpeg download failed"
+            exit 1
+          fi
+          mkdir -p ffmpeg
+          echo "Extracting FFmpeg to ffmpeg directory"
+          tar -xf ffmpeg.tar.xz -C ffmpeg --strip-components=1
+          echo "ffmpeg-path=$(pwd)/ffmpeg" >> $GITHUB_OUTPUT
+          echo "FFmpeg directory structure:"
+          find ffmpeg | sort
+          echo "PKG_CONFIG_PATH=$(pwd)/ffmpeg/lib/pkgconfig" >> $GITHUB_ENV
+          echo "FFMPEG_DIR=$(pwd)/ffmpeg" >> $GITHUB_ENV
+          echo "FFMPEG_PATH=$(pwd)/ffmpeg/bin" >> $GITHUB_ENV
+          echo "FFMPEG_INCLUDE_DIR=$(pwd)/ffmpeg/include" >> $GITHUB_ENV
+          echo "FFMPEG_LIB_DIR=$(pwd)/ffmpeg/lib" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=$(pwd)/ffmpeg/lib:${LD_LIBRARY_PATH}" >> $GITHUB_ENV
+
+      - name: check that pkg-config can find ffmpeg
+        run: |
+          pkg-config --cflags --libs libavformat libavcodec libavutil libswscale || exit 1
+          echo "pkg-config found ffmpeg libraries successfully"
       - name: Set up Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          override: true
           components: rustfmt, clippy
       - name: Build
         run: |
+          echo "${{ matrix.ffmpeg_version }}" 
+          echo "FFMPEG PATH ${{ steps.setup-ffmpeg.outputs.ffmpeg-path }}"
           cargo build --examples
       - name: Test
         run: |
@@ -42,7 +82,7 @@ jobs:
     name: macOS - FFmpeg latest - build, test and lint
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Install dependencies
         run: |
           brew install ffmpeg pkg-config
@@ -71,63 +111,30 @@ jobs:
     strategy:
       matrix:
         include:
-          - ffmpeg_version: latest
-            ffmpeg_download_url: https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full-shared.7z
+          - ffmpeg_version: 7.1.1
+            ffmpeg_download_url: https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-7.1.1-full_build-shared.7z
+          - ffmpeg_version: 7.0.2
+            ffmpeg_download_url: https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-7.0.2-full_build-shared.7z
       fail-fast: false
     env:
       FFMPEG_DOWNLOAD_URL: ${{ matrix.ffmpeg_download_url }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Install dependencies
         run: |
           $VCINSTALLDIR = $(& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath)
           Add-Content $env:GITHUB_ENV "LIBCLANG_PATH=${VCINSTALLDIR}\VC\Tools\LLVM\x64\bin`n"
-          Invoke-WebRequest "${env:FFMPEG_DOWNLOAD_URL}" -OutFile ffmpeg-release-full-shared.7z
+          curl -L --fail "${env:FFMPEG_DOWNLOAD_URL}" -o ffmpeg-release-full-shared.7z
+          if (!(Test-Path ffmpeg-release-full-shared.7z)) { Write-Error "FFmpeg download failed"; exit 1 }
           7z x ffmpeg-release-full-shared.7z
           mkdir ffmpeg
           mv ffmpeg-*/* ffmpeg/
           Add-Content $env:GITHUB_ENV "FFMPEG_DIR=${pwd}\ffmpeg`n"
           Add-Content $env:GITHUB_PATH "${pwd}\ffmpeg\bin`n"
       - name: Set up Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          override: true
-          components: rustfmt, clippy
-      - name: Build
-        run: |
-          cargo build --examples
-      - name: Test
-        run: |
-          cargo test --examples
-      - name: Lint
-        run: |
-          cargo clippy --examples -- -D warnings
-      - name: Check format
-        run: |
-          cargo fmt -- --check
-  # Added only because there is no ffmpeg7.1 docker image here yet
-  # https://github.com/jrottenberg/ffmpeg
-  build-test-lint-7-1:
-    name: FFmpeg 7.1 - build, test and lint
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-    env:
-      FFMPEG_DIR: /home/runner/work/rust-ffmpeg/rust-ffmpeg/ffmpeg-7.1-linux-clang-default
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y --no-install-recommends clang curl pkg-config xz-utils libxv-dev
-          curl -L https://sourceforge.net/projects/avbuild/files/linux/ffmpeg-7.1-linux-clang-default.tar.xz/download -o ffmpeg.tar.xz
-          tar -xf ffmpeg.tar.xz
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
           components: rustfmt, clippy
       - name: Build
         run: |

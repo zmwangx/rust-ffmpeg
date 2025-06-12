@@ -10,7 +10,7 @@ pub struct Borrow<'a> {
     data: &'a [u8],
 }
 
-impl<'a> Borrow<'a> {
+impl Borrow<'_> {
     pub fn new(data: &[u8]) -> Borrow {
         unsafe {
             let mut packet: AVPacket = mem::zeroed();
@@ -33,13 +33,13 @@ impl<'a> Borrow<'a> {
     }
 }
 
-impl<'a> Ref for Borrow<'a> {
+impl Ref for Borrow<'_> {
     fn as_ptr(&self) -> *const AVPacket {
         &self.packet
     }
 }
 
-impl<'a> Drop for Borrow<'a> {
+impl Drop for Borrow<'_> {
     fn drop(&mut self) {
         unsafe {
             self.packet.data = ptr::null_mut();

@@ -12,7 +12,7 @@ pub struct Iter<'a> {
     _marker: PhantomData<&'a ()>,
 }
 
-impl<'a> Iter<'a> {
+impl Iter<'_> {
     pub fn new(dictionary: *const AVDictionary) -> Self {
         Iter {
             ptr: dictionary,

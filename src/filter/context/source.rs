@@ -14,7 +14,7 @@ impl<'a> Source<'a> {
     }
 }
 
-impl<'a> Source<'a> {
+impl Source<'_> {
     pub fn failed_requests(&self) -> usize {
         unsafe { av_buffersrc_get_nb_failed_requests(self.ctx.as_ptr() as *mut _) as usize }
     }

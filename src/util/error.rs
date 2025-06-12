@@ -149,7 +149,7 @@ impl error::Error for Error {}
 
 impl From<Error> for io::Error {
     fn from(value: Error) -> io::Error {
-        io::Error::new(io::ErrorKind::Other, value)
+        io::Error::other(value)
     }
 }
 

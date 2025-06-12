@@ -12,7 +12,7 @@ pub enum RectMut<'a> {
     Ass(AssMut<'a>),
 }
 
-impl<'a> RectMut<'a> {
+impl RectMut<'_> {
     pub unsafe fn wrap(ptr: *mut AVSubtitleRect) -> Self {
         match Type::from((*ptr).type_) {
             Type::None => RectMut::None(ptr),
@@ -41,7 +41,7 @@ impl<'a> RectMut<'a> {
     }
 }
 
-impl<'a> RectMut<'a> {
+impl RectMut<'_> {
     pub fn flags(&self) -> Flags {
         unsafe {
             Flags::from_bits_truncate(match *self {
@@ -58,7 +58,7 @@ pub struct BitmapMut<'a> {
     immutable: Bitmap<'a>,
 }
 
-impl<'a> BitmapMut<'a> {
+impl BitmapMut<'_> {
     pub unsafe fn wrap(ptr: *mut AVSubtitleRect) -> Self {
         BitmapMut {
             immutable: Bitmap::wrap(ptr as *const _),
@@ -70,7 +70,7 @@ impl<'a> BitmapMut<'a> {
     }
 }
 
-impl<'a> BitmapMut<'a> {
+impl BitmapMut<'_> {
     pub fn set_x(&mut self, value: usize) {
         unsafe {
             (*self.as_mut_ptr()).x = value as c_int;
@@ -114,7 +114,7 @@ pub struct TextMut<'a> {
     immutable: Text<'a>,
 }
 
-impl<'a> TextMut<'a> {
+impl TextMut<'_> {
     pub unsafe fn wrap(ptr: *mut AVSubtitleRect) -> Self {
         TextMut {
             immutable: Text::wrap(ptr as *const _),
@@ -126,7 +126,7 @@ impl<'a> TextMut<'a> {
     }
 }
 
-impl<'a> TextMut<'a> {
+impl TextMut<'_> {
     pub fn set(&mut self, value: &str) {
         let value = CString::new(value).unwrap();
 
@@ -148,7 +148,7 @@ pub struct AssMut<'a> {
     immutable: Ass<'a>,
 }
 
-impl<'a> AssMut<'a> {
+impl AssMut<'_> {
     pub unsafe fn wrap(ptr: *mut AVSubtitleRect) -> Self {
         AssMut {
             immutable: Ass::wrap(ptr),
@@ -160,7 +160,7 @@ impl<'a> AssMut<'a> {
     }
 }
 
-impl<'a> AssMut<'a> {
+impl AssMut<'_> {
     pub fn set(&mut self, value: &str) {
         let value = CString::new(value).unwrap();
 

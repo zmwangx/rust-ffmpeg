@@ -95,6 +95,7 @@ impl Opened {
 
 impl Drop for Opened {
     fn drop(&mut self) {
+        #[cfg(not(feature = "ffmpeg_8_0"))]
         unsafe {
             avcodec_close(self.as_mut_ptr());
         }

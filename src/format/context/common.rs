@@ -68,11 +68,11 @@ impl Context {
         }
     }
 
-    pub fn streams(&self) -> StreamIter {
+    pub fn streams(&self) -> StreamIter<'_> {
         StreamIter::new(self)
     }
 
-    pub fn streams_mut(&mut self) -> StreamIterMut {
+    pub fn streams_mut(&mut self) -> StreamIterMut<'_> {
         StreamIterMut::new(self)
     }
 
@@ -115,15 +115,15 @@ impl Context {
         }
     }
 
-    pub fn chapters(&self) -> ChapterIter {
+    pub fn chapters(&self) -> ChapterIter<'_> {
         ChapterIter::new(self)
     }
 
-    pub fn chapters_mut(&mut self) -> ChapterIterMut {
+    pub fn chapters_mut(&mut self) -> ChapterIterMut<'_> {
         ChapterIterMut::new(self)
     }
 
-    pub fn metadata(&self) -> DictionaryRef {
+    pub fn metadata(&self) -> DictionaryRef<'_> {
         unsafe { DictionaryRef::wrap((*self.as_ptr()).metadata) }
     }
 }

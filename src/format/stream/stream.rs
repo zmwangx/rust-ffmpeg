@@ -12,7 +12,7 @@ pub struct Stream<'a> {
 }
 
 impl<'a> Stream<'a> {
-    pub unsafe fn wrap(context: &Context, index: usize) -> Stream {
+    pub unsafe fn wrap(context: &Context, index: usize) -> Stream<'_> {
         Stream { context, index }
     }
 
@@ -65,7 +65,7 @@ impl<'a> Stream<'a> {
         unsafe { Discard::from((*self.as_ptr()).discard) }
     }
 
-    pub fn side_data(&self) -> SideDataIter {
+    pub fn side_data(&self) -> SideDataIter<'_> {
         SideDataIter::new(self)
     }
 
@@ -77,7 +77,7 @@ impl<'a> Stream<'a> {
         unsafe { Rational::from((*self.as_ptr()).avg_frame_rate) }
     }
 
-    pub fn metadata(&self) -> DictionaryRef {
+    pub fn metadata(&self) -> DictionaryRef<'_> {
         unsafe { DictionaryRef::wrap((*self.as_ptr()).metadata) }
     }
 }
@@ -105,6 +105,7 @@ impl<'a> Iterator for SideDataIter<'a> {
     type Item = packet::SideData<'a>;
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+        #[cfg(not(feature = "ffmpeg_8_0"))]
         unsafe {
             if self.current >= (*self.stream.as_ptr()).nb_side_data {
                 return None;
@@ -118,11 +119,28 @@ impl<'a> Iterator for SideDataIter<'a> {
                     .offset((self.current - 1) as isize),
             ))
         }
+        #[cfg(feature = "ffmpeg_8_0")]
+        unsafe {
+            if self.current >= (*self.stream.parameters().as_ptr()).nb_coded_side_data {
+                return None;
+            }
+
+            self.current += 1;
+
+            Some(packet::SideData::wrap(
+                (*self.stream.parameters().as_ptr())
+                    .coded_side_data
+                    .offset((self.current - 1) as isize) as *mut _,
+            ))
+        }
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
         unsafe {
+            #[cfg(not(feature = "ffmpeg_8_0"))]
             let length = (*self.stream.as_ptr()).nb_side_data as usize;
+            #[cfg(feature = "ffmpeg_8_0")]
+            let length = (*self.stream.parameters().as_ptr()).nb_coded_side_data as usize;
 
             (
                 length - self.current as usize,

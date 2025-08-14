@@ -54,7 +54,7 @@ impl Packet {
     }
 
     #[inline]
-    pub fn borrow(data: &[u8]) -> Borrow {
+    pub fn borrow(data: &[u8]) -> Borrow<'_> {
         Borrow::new(data)
     }
 
@@ -187,7 +187,7 @@ impl Packet {
     }
 
     #[inline]
-    pub fn side_data(&self) -> SideDataIter {
+    pub fn side_data(&self) -> SideDataIter<'_> {
         SideDataIter::new(&self.0)
     }
 

@@ -14,7 +14,7 @@ pub struct StreamMut<'a> {
 }
 
 impl<'a> StreamMut<'a> {
-    pub unsafe fn wrap(context: &mut Context, index: usize) -> StreamMut {
+    pub unsafe fn wrap(context: &mut Context, index: usize) -> StreamMut<'_> {
         StreamMut {
             context: mem::transmute_copy(&context),
             index,

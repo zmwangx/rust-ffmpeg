@@ -116,4 +116,3 @@ optional = true
 [dependencies.ffmpeg-sys-next]
 version = "8.0.0"
 default-features = false
-git = "https://github.com/AdrianEddy/rust-ffmpeg-sys"

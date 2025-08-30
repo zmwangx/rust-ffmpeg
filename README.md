@@ -2,7 +2,16 @@
 [![docs.rs](https://docs.rs/ffmpeg-next/badge.svg)](https://docs.rs/ffmpeg-next/)
 [![build](https://github.com/zmwangx/rust-ffmpeg/workflows/build/badge.svg)](https://github.com/zmwangx/rust-ffmpeg/actions)
 
-This is a fork of the abandoned [ffmpeg](https://crates.io/crates/ffmpeg) crate by [meh.](https://github.com/meh/rust-ffmpeg).
+This is a fork of the [ffmpeg](https://crates.io/crates/ffmpeg) crate hosted at [meh/rust-ffmpeg](https://github.com/meh/rust-ffmpeg).
+ffmpeg-next was created due to the stalled development of the ffmpeg crate.
+
+**This crate is in maintenance-only mode.**
+
+This means:
+ - the crate will continue to compile for all release branches of FFmpeg 3.4 and later (only the latest patch release of each release branch is officially supported)
+ - bug fixes will be merged
+ - new APIs wil **not** be merged
+ - efforts to improve existig API are **unlikely** to be merged.
 
 This crate is currently in maintenance mode, and aims to be compatible with all of FFmpeg's versions from 3.4
 (currently from 3.4 til 8.0)
@@ -20,7 +29,5 @@ Documentation:
 *See [CHANGELOG.md](CHANGELOG.md) for other information on version upgrades.*
 
 A word on versioning: major and minor versions of this crate track major and minor versions of FFmpeg, e.g. 4.2.x of this crate has been updated to support the 4.2.x series of FFmpeg. Patch level is reserved for changes to this crate and does not track FFmpeg patch versions. Since we can only freely bump the patch level, versioning of this crate differs from semver: minor versions may behave like semver major versions and introduce backward-incompatible changes; patch versions may behave like semver minor versions and introduce new APIs. Please peg the version you use accordingly.
-
-**Please realize that this crate is in maintenance-only mode for the most part.** Which means I'll try my best to ensure the crate compiles against all release branches of FFmpeg 3.4 and later (only the latest patch release of each release branch is officially supported) and fix reported bugs, but if a new FFmpeg version brings new APIs that require significant effort to port to Rust, you might have to send me a PR (and just to be clear, I can't really guarantee I'll have the time to review). Any PR to improve existing API is unlikely to be merged, unfortunately.
 
 🤝 **If you have significant, demonstrable experience in Rust and multimedia-related programming, please let me know, I'll be more than happy to invite you as a collaborator.** 🤝

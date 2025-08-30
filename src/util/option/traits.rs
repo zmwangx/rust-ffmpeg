@@ -4,7 +4,7 @@ use std::ffi::CString;
 use std::mem;
 
 use ffi::*;
-use libc::{c_int, c_void};
+use libc::c_int;
 use util::format;
 use {ChannelLayout, Error, Rational};
 
@@ -17,21 +17,21 @@ macro_rules! check {
     };
 }
 
-pub unsafe trait Target {
-    fn as_ptr(&self) -> *const c_void;
-    fn as_mut_ptr(&mut self) -> *mut c_void;
+pub unsafe trait Target<T> {
+    fn as_ptr(&self) -> *const T;
+    fn as_mut_ptr(&mut self) -> *mut T;
 }
 
-pub trait Settable: Target {
-    fn set<T: 'static>(&mut self, name: &str, value: &T) -> Result<(), Error> {
+pub trait Settable<T>: Target<T> {
+    fn set<V: 'static>(&mut self, name: &str, value: &V) -> Result<(), Error> {
         unsafe {
             let name = CString::new(name).unwrap();
 
             check!(av_opt_set_bin(
-                self.as_mut_ptr(),
+                self.as_mut_ptr() as *mut _,
                 name.as_ptr(),
                 value as *const _ as *const _,
-                mem::size_of::<T>() as c_int,
+                mem::size_of::<V>() as c_int,
                 AV_OPT_SEARCH_CHILDREN
             ))
         }
@@ -43,7 +43,7 @@ pub trait Settable: Target {
             let value = CString::new(value).unwrap();
 
             check!(av_opt_set(
-                self.as_mut_ptr(),
+                self.as_mut_ptr() as *mut _,
                 name.as_ptr(),
                 value.as_ptr(),
                 AV_OPT_SEARCH_CHILDREN
@@ -56,7 +56,7 @@ pub trait Settable: Target {
             let name = CString::new(name).unwrap();
 
             check!(av_opt_set_int(
-                self.as_mut_ptr(),
+                self.as_mut_ptr() as *mut _,
                 name.as_ptr(),
                 value,
                 AV_OPT_SEARCH_CHILDREN
@@ -69,7 +69,7 @@ pub trait Settable: Target {
             let name = CString::new(name).unwrap();
 
             check!(av_opt_set_double(
-                self.as_mut_ptr(),
+                self.as_mut_ptr() as *mut _,
                 name.as_ptr(),
                 value,
                 AV_OPT_SEARCH_CHILDREN
@@ -77,12 +77,12 @@ pub trait Settable: Target {
         }
     }
 
-    fn set_rational<T: Into<Rational>>(&mut self, name: &str, value: T) -> Result<(), Error> {
+    fn set_rational<V: Into<Rational>>(&mut self, name: &str, value: V) -> Result<(), Error> {
         unsafe {
             let name = CString::new(name).unwrap();
 
             check!(av_opt_set_q(
-                self.as_mut_ptr(),
+                self.as_mut_ptr() as *mut _,
                 name.as_ptr(),
                 value.into().into(),
                 AV_OPT_SEARCH_CHILDREN
@@ -95,7 +95,7 @@ pub trait Settable: Target {
             let name = CString::new(name).unwrap();
 
             check!(av_opt_set_image_size(
-                self.as_mut_ptr(),
+                self.as_mut_ptr() as *mut _,
                 name.as_ptr(),
                 w as c_int,
                 h as c_int,
@@ -109,7 +109,7 @@ pub trait Settable: Target {
             let name = CString::new(name).unwrap();
 
             check!(av_opt_set_pixel_fmt(
-                self.as_mut_ptr(),
+                self.as_mut_ptr() as *mut _,
                 name.as_ptr(),
                 format.into(),
                 AV_OPT_SEARCH_CHILDREN
@@ -122,7 +122,7 @@ pub trait Settable: Target {
             let name = CString::new(name).unwrap();
 
             check!(av_opt_set_sample_fmt(
-                self.as_mut_ptr(),
+                self.as_mut_ptr() as *mut _,
                 name.as_ptr(),
                 format.into(),
                 AV_OPT_SEARCH_CHILDREN
@@ -137,7 +137,7 @@ pub trait Settable: Target {
             #[cfg(not(feature = "ffmpeg_7_0"))]
             {
                 check!(av_opt_set_channel_layout(
-                    self.as_mut_ptr(),
+                    self.as_mut_ptr() as *mut _,
                     name.as_ptr(),
                     layout.bits() as i64,
                     AV_OPT_SEARCH_CHILDREN
@@ -147,7 +147,7 @@ pub trait Settable: Target {
             #[cfg(feature = "ffmpeg_7_0")]
             {
                 check!(av_opt_set_chlayout(
-                    self.as_mut_ptr(),
+                    self.as_mut_ptr() as *mut _,
                     name.as_ptr(),
                     &layout.into(),
                     AV_OPT_SEARCH_CHILDREN
@@ -157,6 +157,6 @@ pub trait Settable: Target {
     }
 }
 
-pub trait Gettable: Target {}
+pub trait Gettable<T>: Target<T> {}
 
-pub trait Iterable: Target {}
+pub trait Iterable<T>: Target<T> {}

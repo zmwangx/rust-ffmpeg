@@ -4,6 +4,7 @@ use ffi::*;
 pub enum Mode {
     Input,
     Output,
+    Buffer,
 }
 
 pub struct Destructor {
@@ -25,6 +26,10 @@ impl Drop for Destructor {
 
                 Mode::Output => {
                     avio_close((*self.ptr).pb);
+                    avformat_free_context(self.ptr);
+                }
+
+                Mode::Buffer => {
                     avformat_free_context(self.ptr);
                 }
             }

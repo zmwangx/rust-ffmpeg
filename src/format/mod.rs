@@ -167,6 +167,38 @@ pub fn input<P: AsRef<Path> + ?Sized>(path: &P) -> Result<context::Input, Error>
     }
 }
 
+pub fn input_device<P: AsRef<Path> + ?Sized>(driver: &P, name: &str, options: Option<Dictionary>) -> Result<context::Input, Error> {
+    unsafe {
+        let mut ps = ptr::null_mut();
+        let dv = from_path(name);
+        let fmt = av_find_input_format(from_path(driver).as_ptr());
+        let mut opts = options.map(|d| d.disown()).unwrap_or(ptr::null_mut());
+
+        match avformat_open_input(&mut ps, dv.as_ptr(), fmt, &mut opts) {
+            0 => {
+                if !opts.is_null() {
+                    ffmpeg_sys_next::av_dict_free(&mut opts);
+                }
+
+                match avformat_find_stream_info(ps, ptr::null_mut()) {
+                    r if r >= 0 => Ok(context::Input::wrap(ps)),
+                    e => {
+                        avformat_close_input(&mut ps);
+                        Err(Error::from(e))
+                    }
+                }
+            },
+            e => {
+                if !opts.is_null() {
+                    ffmpeg_sys_next::av_dict_free(&mut opts);
+                }
+
+                Err(Error::from(e))
+            }
+        }
+    }
+}
+
 pub fn input_with_dictionary<P: AsRef<Path> + ?Sized>(
     path: &P,
     options: Dictionary,

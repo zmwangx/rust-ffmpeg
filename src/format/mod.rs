@@ -282,9 +282,15 @@ pub fn output_as<P: AsRef<Path> + ?Sized>(
             format.as_ptr(),
             path.as_ptr(),
         ) {
-            0 => match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
-                0 => Ok(context::Output::wrap(ps)),
-                e => Err(Error::from(e)),
+            0 => {
+                let output = context::Output::wrap(ps);
+                if (output.format().flags() & flag::Flags::NO_FILE) == flag::Flags::NO_FILE {
+                    return Ok(output);
+                }
+                match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
+                    0 => Ok(output),
+                    e => Err(Error::from(e)),
+                }
             },
 
             e => Err(Error::from(e)),
@@ -310,6 +316,10 @@ pub fn output_as_with<P: AsRef<Path> + ?Sized>(
             path.as_ptr(),
         ) {
             0 => {
+                let output = context::Output::wrap(ps);
+                if (output.format().flags() & flag::Flags::NO_FILE) == flag::Flags::NO_FILE {
+                    return Ok(output);
+                }
                 let res = avio_open2(
                     &mut (*ps).pb,
                     path.as_ptr(),
@@ -321,7 +331,7 @@ pub fn output_as_with<P: AsRef<Path> + ?Sized>(
                 Dictionary::own(opts);
 
                 match res {
-                    0 => Ok(context::Output::wrap(ps)),
+                    0 => Ok(output),
                     e => Err(Error::from(e)),
                 }
             }

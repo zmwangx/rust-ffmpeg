@@ -26,6 +26,13 @@ impl Output {
         }
     }
 
+    pub unsafe fn wrap_buffer(ptr: *mut AVFormatContext) -> Self {
+        Output {
+            ptr,
+            ctx: Context::wrap(ptr, destructor::Mode::Buffer),
+        }
+    }
+
     pub unsafe fn as_ptr(&self) -> *const AVFormatContext {
         self.ptr as *const _
     }

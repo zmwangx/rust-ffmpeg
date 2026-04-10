@@ -13,7 +13,7 @@ pub use self::iter::Iter;
 #[macro_export]
 macro_rules! dict {
 	( $($key:expr => $value:expr),* $(,)*) => ({
-			let mut dict = ::ffmpeg::Dictionary::new();
+			let mut dict = $crate::Dictionary::new();
 
 			$(
 				dict.set($key, $value);

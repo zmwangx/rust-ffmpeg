@@ -22,7 +22,7 @@ where
 
 pub fn new<F>(opaque: Box<F>) -> Interrupt
 where
-    F: FnMut() -> bool,
+    F: FnMut() -> bool + 'static,
 {
     let interrupt_cb = AVIOInterruptCB {
         callback: Some(callback::<F>),

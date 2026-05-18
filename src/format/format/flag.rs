@@ -19,6 +19,7 @@ bitflags! {
         const NO_BINSEARCH  = AVFMT_NOBINSEARCH;
         const NO_GENSEARCH  = AVFMT_NOGENSEARCH;
         const NO_BYTE_SEEK  = AVFMT_NO_BYTE_SEEK;
+        #[cfg(not(feature = "ffmpeg_8_0"))]
         const ALLOW_FLUSH   = AVFMT_ALLOW_FLUSH;
         const TS_NONSTRICT  = AVFMT_TS_NONSTRICT;
         const TS_NEGATIVE   = AVFMT_TS_NEGATIVE;

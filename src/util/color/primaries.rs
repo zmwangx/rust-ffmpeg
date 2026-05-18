@@ -66,6 +66,9 @@ impl From<AVColorPrimaries> for Primaries {
             AVCOL_PRI_JEDEC_P22 => Primaries::JEDEC_P22,
             #[cfg(feature = "ffmpeg_4_3")]
             AVCOL_PRI_EBU3213 => Primaries::EBU3213,
+
+            #[cfg(feature = "ffmpeg_8_1")]
+            AVCOL_PRI_EXT_BASE | AVCOL_PRI_EXT_NB => Primaries::Reserved0,
         }
     }
 }

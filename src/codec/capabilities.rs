@@ -12,6 +12,7 @@ bitflags! {
         const SMALL_LAST_FRAME    = AV_CODEC_CAP_SMALL_LAST_FRAME;
         #[cfg(not(feature = "ffmpeg_4_0"))]
         const HWACCEL_VDPAU       = AV_CODEC_CAP_HWACCEL_VDPAU;
+        #[cfg(not(feature = "ffmpeg_8_0"))]
         const SUBFRAMES           = AV_CODEC_CAP_SUBFRAMES;
         const EXPERIMENTAL        = AV_CODEC_CAP_EXPERIMENTAL;
         const CHANNEL_CONF        = AV_CODEC_CAP_CHANNEL_CONF;

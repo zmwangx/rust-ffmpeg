@@ -88,15 +88,15 @@ impl Subtitle {
         self.0.end_display_time = value;
     }
 
-    pub fn rects(&self) -> RectIter {
+    pub fn rects(&self) -> RectIter<'_> {
         RectIter::new(&self.0)
     }
 
-    pub fn rects_mut(&mut self) -> RectMutIter {
+    pub fn rects_mut(&mut self) -> RectMutIter<'_> {
         RectMutIter::new(&mut self.0)
     }
 
-    pub fn add_rect(&mut self, kind: Type) -> RectMut {
+    pub fn add_rect(&mut self, kind: Type) -> RectMut<'_> {
         unsafe {
             self.0.num_rects += 1;
             self.0.rects = av_realloc(

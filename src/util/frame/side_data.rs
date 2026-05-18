@@ -69,6 +69,12 @@ pub enum Type {
     LCEVC,
     #[cfg(feature = "ffmpeg_7_1")]
     VIEW_ID,
+
+    #[cfg(feature = "ffmpeg_8_0")]
+    THREE_D_REFERENCE_DISPLAYS,
+
+    #[cfg(feature = "ffmpeg_8_1")]
+    EXIF,
 }
 
 impl Type {
@@ -142,6 +148,12 @@ impl From<AVFrameSideDataType> for Type {
             AV_FRAME_DATA_LCEVC => Type::LCEVC,
             #[cfg(feature = "ffmpeg_7_1")]
             AV_FRAME_DATA_VIEW_ID => Type::VIEW_ID,
+
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_FRAME_DATA_3D_REFERENCE_DISPLAYS => Type::THREE_D_REFERENCE_DISPLAYS,
+
+            #[cfg(feature = "ffmpeg_8_1")]
+            AV_FRAME_DATA_EXIF => Type::EXIF,
         }
     }
 }
@@ -208,6 +220,12 @@ impl From<Type> for AVFrameSideDataType {
             Type::LCEVC => AV_FRAME_DATA_LCEVC,
             #[cfg(feature = "ffmpeg_7_1")]
             Type::VIEW_ID => AV_FRAME_DATA_VIEW_ID,
+
+            #[cfg(feature = "ffmpeg_8_0")]
+            Type::THREE_D_REFERENCE_DISPLAYS => AV_FRAME_DATA_3D_REFERENCE_DISPLAYS,
+
+            #[cfg(feature = "ffmpeg_8_1")]
+            Type::EXIF => AV_FRAME_DATA_EXIF,
         }
     }
 }
@@ -253,7 +271,7 @@ impl<'a> SideData<'a> {
     }
 
     #[inline]
-    pub fn metadata(&self) -> DictionaryRef {
+    pub fn metadata(&self) -> DictionaryRef<'_> {
         unsafe { DictionaryRef::wrap((*self.as_ptr()).metadata) }
     }
 }

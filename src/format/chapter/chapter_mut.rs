@@ -16,7 +16,7 @@ pub struct ChapterMut<'a> {
 }
 
 impl<'a> ChapterMut<'a> {
-    pub unsafe fn wrap(context: &mut Context, index: usize) -> ChapterMut {
+    pub unsafe fn wrap(context: &mut Context, index: usize) -> ChapterMut<'_> {
         ChapterMut {
             context: mem::transmute_copy(&context),
             index,
@@ -65,7 +65,7 @@ impl<'a> ChapterMut<'a> {
         }
     }
 
-    pub fn metadata(&mut self) -> DictionaryMut {
+    pub fn metadata(&mut self) -> DictionaryMut<'_> {
         unsafe { DictionaryMut::wrap((*self.as_mut_ptr()).metadata) }
     }
 }

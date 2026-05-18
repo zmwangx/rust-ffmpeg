@@ -22,11 +22,11 @@ impl Context {
 }
 
 impl Context {
-    pub fn source(&mut self) -> Source {
+    pub fn source(&mut self) -> Source<'_> {
         unsafe { Source::wrap(self) }
     }
 
-    pub fn sink(&mut self) -> Sink {
+    pub fn sink(&mut self) -> Sink<'_> {
         unsafe { Sink::wrap(self) }
     }
 

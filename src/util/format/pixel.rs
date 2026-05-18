@@ -417,6 +417,105 @@ pub enum Pixel {
     #[cfg(feature = "ffmpeg_7_0")]
     D3D12,
 
+    #[cfg(feature = "ffmpeg_8_0")]
+    AYUV,
+    #[cfg(feature = "ffmpeg_8_0")]
+    UYVA,
+    #[cfg(feature = "ffmpeg_8_0")]
+    VYU444,
+    #[cfg(feature = "ffmpeg_8_0")]
+    V30X,
+    #[cfg(feature = "ffmpeg_8_0")]
+    V30XLE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    V30XBE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    RGBF16,
+    #[cfg(feature = "ffmpeg_8_0")]
+    RGBF16LE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    RGBF16BE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    RGB96,
+    #[cfg(feature = "ffmpeg_8_0")]
+    RGB96LE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    RGB96BE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    RGBA128,
+    #[cfg(feature = "ffmpeg_8_0")]
+    RGBA128LE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    RGBA128BE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    Y216,
+    #[cfg(feature = "ffmpeg_8_0")]
+    Y216LE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    Y216BE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    XV48,
+    #[cfg(feature = "ffmpeg_8_0")]
+    XV48LE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    XV48BE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GBRPF16BE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GBRPF16LE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GBRAPF16BE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GBRAPF16LE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GRAYF16BE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GRAYF16LE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    AMF_SURFACE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GRAY32BE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GRAY32LE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    YAF16BE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    YAF16LE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    YAF32BE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    YAF32LE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GBRAP32BE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GBRAP32LE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    OHCODEC,
+    #[cfg(feature = "ffmpeg_8_0")]
+    YUV444P10MSB,
+    #[cfg(feature = "ffmpeg_8_0")]
+    YUV444P10MSBBE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    YUV444P10MSBLE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    YUV444P12MSB,
+    #[cfg(feature = "ffmpeg_8_0")]
+    YUV444P12MSBBE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    YUV444P12MSBLE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GBRP10MSB,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GBRP10MSBBE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GBRP10MSBLE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GBRP12MSB,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GBRP12MSBBE,
+    #[cfg(feature = "ffmpeg_8_0")]
+    GBRP12MSBLE,
+
     #[cfg(feature = "rpi")]
     SAND128,
     #[cfg(feature = "rpi")]
@@ -825,6 +924,85 @@ impl From<AVPixelFormat> for Pixel {
 
             #[cfg(feature = "ffmpeg_7_0")]
             AV_PIX_FMT_D3D12 => Pixel::D3D12,
+
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_AYUV => Pixel::AYUV,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_UYVA => Pixel::UYVA,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_VYU444 => Pixel::VYU444,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_V30XLE => Pixel::V30XLE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_V30XBE => Pixel::V30XBE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_RGBF16LE => Pixel::RGBF16LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_RGBF16BE => Pixel::RGBF16BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_RGB96LE => Pixel::RGB96LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_RGB96BE => Pixel::RGB96BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_RGBA128LE => Pixel::RGBA128LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_RGBA128BE => Pixel::RGBA128BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_Y216LE => Pixel::Y216LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_Y216BE => Pixel::Y216BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_XV48LE => Pixel::XV48LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_XV48BE => Pixel::XV48BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_GBRPF16BE => Pixel::GBRPF16BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_GBRPF16LE => Pixel::GBRPF16LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_GBRAPF16BE => Pixel::GBRAPF16BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_GBRAPF16LE => Pixel::GBRAPF16LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_GRAYF16BE => Pixel::GRAYF16BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_GRAYF16LE => Pixel::GRAYF16LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_AMF_SURFACE => Pixel::AMF_SURFACE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_GRAY32BE => Pixel::GRAY32BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_GRAY32LE => Pixel::GRAY32LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_YAF16BE => Pixel::YAF16BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_YAF16LE => Pixel::YAF16LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_YAF32BE => Pixel::YAF32BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_YAF32LE => Pixel::YAF32LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_GBRAP32BE => Pixel::GBRAP32BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_GBRAP32LE => Pixel::GBRAP32LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_OHCODEC => Pixel::OHCODEC,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_YUV444P10MSBBE => Pixel::YUV444P10MSBBE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_YUV444P10MSBLE => Pixel::YUV444P10MSBLE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_YUV444P12MSBBE => Pixel::YUV444P12MSBBE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_YUV444P12MSBLE => Pixel::YUV444P12MSBLE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_GBRP10MSBBE => Pixel::GBRP10MSBBE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_GBRP10MSBLE => Pixel::GBRP10MSBLE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_GBRP12MSBBE => Pixel::GBRP12MSBBE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            AV_PIX_FMT_GBRP12MSBLE => Pixel::GBRP12MSBLE,
 
             #[cfg(feature = "rpi")]
             AV_PIX_FMT_SAND128 => Pixel::SAND128,
@@ -1252,6 +1430,105 @@ impl From<Pixel> for AVPixelFormat {
 
             #[cfg(feature = "ffmpeg_7_0")]
             Pixel::D3D12 => AV_PIX_FMT_D3D12,
+
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::AYUV => AV_PIX_FMT_AYUV,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::UYVA => AV_PIX_FMT_UYVA,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::VYU444 => AV_PIX_FMT_VYU444,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::V30X => AV_PIX_FMT_V30X,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::V30XLE => AV_PIX_FMT_V30XLE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::V30XBE => AV_PIX_FMT_V30XBE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::RGBF16 => AV_PIX_FMT_RGBF16,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::RGBF16LE => AV_PIX_FMT_RGBF16LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::RGBF16BE => AV_PIX_FMT_RGBF16BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::RGB96 => AV_PIX_FMT_RGB96,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::RGB96LE => AV_PIX_FMT_RGB96LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::RGB96BE => AV_PIX_FMT_RGB96BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::RGBA128 => AV_PIX_FMT_RGBA128,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::RGBA128LE => AV_PIX_FMT_RGBA128LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::RGBA128BE => AV_PIX_FMT_RGBA128BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::Y216 => AV_PIX_FMT_Y216,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::Y216LE => AV_PIX_FMT_Y216LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::Y216BE => AV_PIX_FMT_Y216BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::XV48 => AV_PIX_FMT_XV48,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::XV48LE => AV_PIX_FMT_XV48LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::XV48BE => AV_PIX_FMT_XV48BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GBRPF16BE => AV_PIX_FMT_GBRPF16BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GBRPF16LE => AV_PIX_FMT_GBRPF16LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GBRAPF16BE => AV_PIX_FMT_GBRAPF16BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GBRAPF16LE => AV_PIX_FMT_GBRAPF16LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GRAYF16BE => AV_PIX_FMT_GRAYF16BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GRAYF16LE => AV_PIX_FMT_GRAYF16LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::AMF_SURFACE => AV_PIX_FMT_AMF_SURFACE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GRAY32BE => AV_PIX_FMT_GRAY32BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GRAY32LE => AV_PIX_FMT_GRAY32LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::YAF16BE => AV_PIX_FMT_YAF16BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::YAF16LE => AV_PIX_FMT_YAF16LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::YAF32BE => AV_PIX_FMT_YAF32BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::YAF32LE => AV_PIX_FMT_YAF32LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GBRAP32BE => AV_PIX_FMT_GBRAP32BE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GBRAP32LE => AV_PIX_FMT_GBRAP32LE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::OHCODEC => AV_PIX_FMT_OHCODEC,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::YUV444P10MSB => AV_PIX_FMT_YUV444P10MSB,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::YUV444P10MSBBE => AV_PIX_FMT_YUV444P10MSBBE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::YUV444P10MSBLE => AV_PIX_FMT_YUV444P10MSBLE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::YUV444P12MSB => AV_PIX_FMT_YUV444P12MSB,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::YUV444P12MSBBE => AV_PIX_FMT_YUV444P12MSBBE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::YUV444P12MSBLE => AV_PIX_FMT_YUV444P12MSBLE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GBRP10MSB => AV_PIX_FMT_GBRP10MSB,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GBRP10MSBBE => AV_PIX_FMT_GBRP10MSBBE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GBRP10MSBLE => AV_PIX_FMT_GBRP10MSBLE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GBRP12MSB => AV_PIX_FMT_GBRP12MSB,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GBRP12MSBBE => AV_PIX_FMT_GBRP12MSBBE,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Pixel::GBRP12MSBLE => AV_PIX_FMT_GBRP12MSBLE,
 
             #[cfg(feature = "rpi")]
             Pixel::SAND128 => AV_PIX_FMT_SAND128,

@@ -53,7 +53,7 @@ impl Output {
         }
     }
 
-    pub fn write_header_with(&mut self, options: Dictionary) -> Result<Dictionary, Error> {
+    pub fn write_header_with(&mut self, options: Dictionary) -> Result<Dictionary<'_>, Error> {
         unsafe {
             let mut opts = options.disown();
             let res = avformat_write_header(self.as_mut_ptr(), &mut opts);
@@ -74,7 +74,7 @@ impl Output {
         }
     }
 
-    pub fn add_stream<E: traits::Encoder>(&mut self, codec: E) -> Result<StreamMut, Error> {
+    pub fn add_stream<E: traits::Encoder>(&mut self, codec: E) -> Result<StreamMut<'_>, Error> {
         unsafe {
             let codec = codec.encoder();
             let codec = codec.map_or(ptr::null(), |c| c.as_ptr());
@@ -90,7 +90,7 @@ impl Output {
         }
     }
 
-    pub fn add_stream_with(&mut self, context: &codec::Context) -> Result<StreamMut, Error> {
+    pub fn add_stream_with(&mut self, context: &codec::Context) -> Result<StreamMut<'_>, Error> {
         unsafe {
             let ptr = avformat_new_stream(self.as_mut_ptr(), ptr::null());
 
@@ -116,7 +116,7 @@ impl Output {
         start: i64,
         end: i64,
         title: S,
-    ) -> Result<ChapterMut, Error> {
+    ) -> Result<ChapterMut<'_>, Error> {
         // avpriv_new_chapter is private (libavformat/internal.h)
 
         if start > end {

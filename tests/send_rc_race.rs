@@ -62,7 +62,7 @@ fn parameters_send_rc_race() {
     for i in 1..=iterations() {
         let input = ffmpeg::format::input(&path).unwrap();
         // Observe the shared keep-alive refcount from outside.
-        let weak = std::rc::Rc::downgrade(&unsafe { input.destructor() });
+        let weak = Arc::downgrade(&unsafe { input.destructor() });
 
         let barrier = Arc::new(Barrier::new(THREADS + 1));
         let handles: Vec<_> = (0..THREADS)

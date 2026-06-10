@@ -1,82 +1,145 @@
 use ffi;
+use libc;
+use std::any::TypeId;
 use std::ffi::{c_int, c_void};
 use std::io::{Read, Seek, SeekFrom, Write};
+use std::mem::ManuallyDrop;
 use Error;
 
-/// Default internal I/O buffer size used by the underlying `AVIOContext`.
-const BUFFER_SIZE: usize = 16384;
+/// Default `AVIOContext` buffer size, matching libavformat's own default.
+const DEFAULT_BUFFER_SIZE: usize = 32768;
 
-/// A safe Rust wrapper that creates an FFmpeg [`AVIOContext`] backed by any
-/// Rust `Read` / `Write` / `Seek` stream.
+/// An FFmpeg [`AVIOContext`] backed by a Rust `Read`/`Write`/`Seek` stream,
+/// for custom I/O via `format::input_from_stream` / `format::output_to_stream`.
 ///
-/// This type allocates and owns an `AVIOContext` whose callbacks bridge to a
-/// user-provided Rust stream. The stream is boxed and stored in the `opaque`
-/// field of `AVIOContext` and is automatically dropped when `StreamIo` is
-/// dropped.
+/// `StreamIo` owns both the `AVIOContext` and the boxed stream; dropping it
+/// frees both. The stream must be `Send + 'static` (the callbacks may run on
+/// whatever thread is driving the context), but not `Sync`: callbacks never
+/// run concurrently.
 ///
-/// # What this is for
+/// A context is unidirectional: [`StreamIo::from_read`] /
+/// [`StreamIo::from_read_seek`] create read (demuxing) contexts,
+/// [`StreamIo::from_write`] / [`StreamIo::from_write_seek`] write (muxing)
+/// contexts; a mismatch is rejected with `EINVAL`.
 ///
-/// FFmpeg allows you to supply custom I/O by passing an `AVIOContext` to
-/// demuxers/muxers instead of a filename/URL. `StreamIo` lets you do that
-/// with ordinary Rust I/O types like `File`, `Cursor<Vec<u8>>`, network
-/// streams, etc.
+/// I/O is buffered internally (32 KiB by default; tune it with the
+/// `*_with_capacity` constructors). The stream must be *blocking*: FFmpeg has
+/// no retry layer for custom I/O, so the first `WouldBlock`/`TimedOut` error
+/// poisons the context. `Interrupted` is retried internally, and `Ok(0)` from
+/// `read` is reported as EOF.
 ///
-/// # Ownership & lifetime
-///
-/// - `StreamIo` **owns** both the C `AVIOContext` and the boxed Rust stream.
-/// - Dropping `StreamIo` frees the internal buffer, the `AVIOContext`,
-///   and the boxed stream in the correct order.
-/// - You must ensure the `AVIOContext*` returned by [`StreamIo::as_mut_ptr`]
-///   does not outlive the `StreamIo` that created it.
-///
-/// # Thread-safety
-///
-/// The underlying Rust stream is not synchronized; callbacks are invoked
-/// by FFmpeg on the calling thread. Do not share the same `StreamIo`
-/// across threads unless the wrapped stream itself is thread-safe and FFmpeg
-/// will not call the callbacks concurrently.
-///
-/// # EOF
-///
-/// - A `Read` that returns `Ok(0)` is translated to `AVERROR_EOF`.
-///
-/// # Safety notes
-///
-/// - `as_mut_ptr` exposes a raw `*mut AVIOContext` for integration with FFmpeg C APIs.
-///   You must make sure this pointer does not outlive the `StreamIo` instance.
+/// Dropping a writable `StreamIo` — directly, or via the `Output` that
+/// absorbed it — flushes buffered data and the stream itself, discarding
+/// errors (like `std::io::BufWriter`). For well-formed output you must still
+/// call `write_trailer` first. Use [`StreamIo::into_inner`] to get the
+/// stream back.
 ///
 /// [`AVIOContext`]: https://ffmpeg.org/doxygen/trunk/structAVIOContext.html
 pub struct StreamIo {
     ptr: *mut ffi::AVIOContext,
     drop_opaque: fn(*mut c_void),
+    flush_opaque: Option<fn(*mut c_void)>,
+    stream_type: TypeId,
 }
+
+// SAFETY: every constructor requires the wrapped stream to be `Send`, the
+// `AVIOContext` and its buffer are heap allocations not tied to any thread,
+// and the stream is only ever accessed through `&mut self` / the callbacks
+// (which FFmpeg invokes from the single thread driving the I/O). This impl is
+// also what the pre-existing `unsafe impl Send` on `Input`/`Output`/`Context`
+// relies on, since they embed a `StreamIo` via `destructor::Mode`.
+unsafe impl Send for StreamIo {}
+
 impl StreamIo {
-    pub fn from_read<T: Read>(stream: T) -> Result<Self, Error> {
-        Self::new_impl(stream, Some(read::<T>), None, None)
+    pub fn from_read<T: Read + Send + 'static>(stream: T) -> Result<Self, Error> {
+        Self::from_read_with_capacity(stream, DEFAULT_BUFFER_SIZE)
     }
-    pub fn from_read_seek<T: Read + Seek>(stream: T) -> Result<Self, Error> {
-        Self::new_impl(stream, Some(read::<T>), None, Some(seek::<T>))
+    pub fn from_read_seek<T: Read + Seek + Send + 'static>(stream: T) -> Result<Self, Error> {
+        Self::from_read_seek_with_capacity(stream, DEFAULT_BUFFER_SIZE)
     }
-    pub fn from_read_write_seek<T: Read + Write + Seek>(stream: T) -> Result<Self, Error> {
-        Self::new_impl(stream, Some(read::<T>), Some(write::<T>), Some(seek::<T>))
+    pub fn from_write<T: Write + Send + 'static>(stream: T) -> Result<Self, Error> {
+        Self::from_write_with_capacity(stream, DEFAULT_BUFFER_SIZE)
     }
-    pub fn from_read_write<T: Read + Write>(stream: T) -> Result<Self, Error> {
-        Self::new_impl(stream, Some(read::<T>), Some(write::<T>), None)
-    }
-    pub fn from_write<T: Write>(stream: T) -> Result<Self, Error> {
-        Self::new_impl(stream, None, Some(write::<T>), None)
-    }
-    pub fn from_write_seek<T: Write + Seek>(stream: T) -> Result<Self, Error> {
-        Self::new_impl(stream, None, Some(write::<T>), Some(seek::<T>))
+    pub fn from_write_seek<T: Write + Seek + Send + 'static>(stream: T) -> Result<Self, Error> {
+        Self::from_write_seek_with_capacity(stream, DEFAULT_BUFFER_SIZE)
     }
 
-    fn new_impl<T>(
+    /// Like [`StreamIo::from_read`], with an explicit buffer size in bytes.
+    /// Fails with `EINVAL` if `capacity` is zero or exceeds `c_int::MAX`.
+    pub fn from_read_with_capacity<T: Read + Send + 'static>(
         stream: T,
+        capacity: usize,
+    ) -> Result<Self, Error> {
+        Self::new_impl(stream, capacity, Some(read::<T>), None, None, None)
+    }
+    /// Like [`StreamIo::from_read_seek`], with an explicit buffer size in bytes.
+    /// Fails with `EINVAL` if `capacity` is zero or exceeds `c_int::MAX`.
+    pub fn from_read_seek_with_capacity<T: Read + Seek + Send + 'static>(
+        stream: T,
+        capacity: usize,
+    ) -> Result<Self, Error> {
+        Self::new_impl(
+            stream,
+            capacity,
+            Some(read::<T>),
+            None,
+            Some(seek::<T>),
+            None,
+        )
+    }
+    /// Like [`StreamIo::from_write`], with an explicit buffer size in bytes.
+    /// Fails with `EINVAL` if `capacity` is zero or exceeds `c_int::MAX`.
+    pub fn from_write_with_capacity<T: Write + Send + 'static>(
+        stream: T,
+        capacity: usize,
+    ) -> Result<Self, Error> {
+        Self::new_impl(
+            stream,
+            capacity,
+            None,
+            Some(write::<T>),
+            None,
+            Some(flush_stream::<T>),
+        )
+    }
+    /// Like [`StreamIo::from_write_seek`], with an explicit buffer size in bytes.
+    /// Fails with `EINVAL` if `capacity` is zero or exceeds `c_int::MAX`.
+    pub fn from_write_seek_with_capacity<T: Write + Seek + Send + 'static>(
+        stream: T,
+        capacity: usize,
+    ) -> Result<Self, Error> {
+        Self::new_impl(
+            stream,
+            capacity,
+            None,
+            Some(write::<T>),
+            Some(seek::<T>),
+            Some(flush_stream::<T>),
+        )
+    }
+
+    /// Returns `true` if this is a write (muxing) context.
+    pub fn is_writable(&self) -> bool {
+        unsafe { (*self.ptr).write_flag != 0 }
+    }
+
+    fn new_impl<T: Send + 'static>(
+        stream: T,
+        capacity: usize,
         r: Option<unsafe extern "C" fn(*mut c_void, *mut u8, c_int) -> c_int>,
         w: Option<unsafe extern "C" fn(*mut c_void, WriteBufferType, c_int) -> c_int>,
         s: Option<unsafe extern "C" fn(*mut c_void, i64, c_int) -> i64>,
+        flush: Option<fn(*mut c_void)>,
     ) -> Result<Self, Error> {
-        let buffer = unsafe { ffi::av_malloc(BUFFER_SIZE) };
+        // `AVIOContext::buffer_size` is a C `int`, and a zero-size buffer
+        // would make `fill_buffer` / `flush_buffer` spin without progress.
+        if capacity == 0 || capacity > c_int::MAX as usize {
+            return Err(Error::Other { errno: ffi::EINVAL });
+        }
+        // Zero-initialized so the slice handed to the first `read` callback
+        // never exposes uninitialized memory (see the zeroing in `read` for
+        // the buffers FFmpeg itself allocates and swaps in later).
+        let buffer = unsafe { ffi::av_mallocz(capacity) };
         if buffer.is_null() {
             return Err(Error::Other { errno: ffi::ENOMEM });
         }
@@ -84,7 +147,7 @@ impl StreamIo {
         let ptr = unsafe {
             ffi::avio_alloc_context(
                 buffer as *mut _,
-                BUFFER_SIZE as _,
+                capacity as _,
                 w.is_some() as _,
                 stream_box_ptr,
                 r,
@@ -93,19 +156,39 @@ impl StreamIo {
             )
         };
         if ptr.is_null() {
+            // `avio_alloc_context` takes ownership of `buffer` only on success.
             unsafe {
+                ffi::av_free(buffer);
                 drop(Box::from_raw(stream_box_ptr as *mut T));
             }
             return Err(Error::Other { errno: ffi::ENOMEM });
         }
 
-        fn drop_box<T>(p: *mut c_void) {
-            drop(unsafe { Box::from_raw(p as *mut T) });
-        }
         Ok(Self {
             ptr,
             drop_opaque: drop_box::<T>,
+            flush_opaque: flush,
+            stream_type: TypeId::of::<T>(),
         })
+    }
+
+    /// Consumes the `StreamIo` and returns the wrapped stream, flushing data
+    /// still buffered in the `AVIOContext` first. The stream's own
+    /// [`Write::flush`] is *not* called, so the caller can flush and observe
+    /// errors. Fails (returning `self`) unless `T` is the exact type the
+    /// `StreamIo` was constructed with.
+    pub fn into_inner<T: 'static>(self) -> Result<T, Self> {
+        if self.stream_type != TypeId::of::<T>() {
+            return Err(self);
+        }
+        let mut this = ManuallyDrop::new(self);
+        unsafe {
+            ffi::avio_flush(this.ptr);
+            let opaque = (*this.ptr).opaque;
+            ffi::av_freep(&raw mut (*this.ptr).buffer as *mut c_void);
+            ffi::avio_context_free(&mut this.ptr);
+            Ok(*Box::from_raw(opaque as *mut T))
+        }
     }
 
     /// Returns a mutable raw pointer to the underlying `AVIOContext`.
@@ -123,6 +206,17 @@ impl Drop for StreamIo {
         if !self.ptr.is_null() {
             unsafe {
                 let opaque = (*self.ptr).opaque;
+                if (*self.ptr).write_flag != 0 {
+                    // Salvage data still buffered in the AVIOContext, then let
+                    // the stream flush its own buffers (a user `BufWriter`
+                    // tail would otherwise only flush in its Drop, or be lost).
+                    // Errors are unreportable from a destructor and are
+                    // discarded, like `std::io::BufWriter` does.
+                    ffi::avio_flush(self.ptr);
+                    if let Some(flush) = self.flush_opaque {
+                        flush(opaque);
+                    }
+                }
                 ffi::av_freep(&raw mut (*self.ptr).buffer as *mut c_void);
                 ffi::avio_context_free(&mut self.ptr);
                 (self.drop_opaque)(opaque);
@@ -138,12 +232,35 @@ impl std::fmt::Debug for StreamIo {
 }
 
 unsafe extern "C" fn read<T: Read>(opaque: *mut c_void, buf: *mut u8, buf_size: c_int) -> c_int {
+    // FFmpeg never issues zero-sized reads (and `read_packet` must not
+    // return 0 — it asserts on that), but a `Read` impl would report one as
+    // `Ok(0)`, which we translate to EOF; reject instead of lying.
+    if buf_size <= 0 {
+        return ffi::AVERROR(ffi::EINVAL);
+    }
+    // `buf` routinely points into uninitialized memory FFmpeg allocated: the
+    // probe buffer `ffio_rewind_with_probe_data` swaps in as `s->buffer`, the
+    // post-probe `set_buf_size` reallocation, and direct reads into caller
+    // buffers all come from plain `av_malloc`/`av_realloc`. A safe `Read`
+    // impl is allowed to read from the slice it is given, so it must be
+    // initialized; the memset is noise next to the I/O itself.
+    unsafe { std::ptr::write_bytes(buf, 0, buf_size as usize) };
     let buf = unsafe { std::slice::from_raw_parts_mut(buf, buf_size as usize) };
     let stream = unsafe { &mut *(opaque as *mut T) };
-    match stream.read(buf) {
-        Ok(0) => ffi::AVERROR_EOF,
-        Ok(n) => n as c_int,
-        Err(e) => map_io_error(e),
+    loop {
+        return match stream.read(buf) {
+            Ok(0) => ffi::AVERROR_EOF,
+            // A buggy (but safe) `Read` impl may report more bytes than the buffer
+            // holds; FFmpeg trusts the count and would advance `buf_end` past the
+            // allocation.
+            Ok(n) if n > buf.len() => ffi::AVERROR(ffi::EIO),
+            Ok(n) => n as c_int,
+            // Retry interrupted reads like FFmpeg's own protocol layer does;
+            // surfacing EINTR would poison the context (see `map_io_error`)
+            // even though the read can simply be reissued.
+            Err(ref e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
+            Err(e) => map_io_error(e),
+        };
     }
 }
 unsafe extern "C" fn write<T: Write>(
@@ -151,10 +268,18 @@ unsafe extern "C" fn write<T: Write>(
     buf: WriteBufferType,
     buf_size: c_int,
 ) -> c_int {
+    if buf_size < 0 {
+        return ffi::AVERROR(ffi::EINVAL);
+    }
     let buf = unsafe { std::slice::from_raw_parts(buf, buf_size as usize) };
     let stream = unsafe { &mut *(opaque as *mut T) };
-    match stream.write(buf) {
-        Ok(n) => n as c_int,
+    // FFmpeg treats any non-negative return as "the whole buffer was written"
+    // and never retries a remainder, so a short `write` would silently lose
+    // data; `write_all` is the only faithful mapping. It also retries
+    // `ErrorKind::Interrupted` internally (per its contract), so EINTR never
+    // reaches `map_io_error` — mirroring the retry loop in `read`.
+    match stream.write_all(buf) {
+        Ok(()) => buf_size,
         Err(e) => map_io_error(e),
     }
 }
@@ -162,7 +287,9 @@ unsafe extern "C" fn seek<T: Seek>(opaque: *mut c_void, offset: i64, whence: c_i
     let stream = unsafe { &mut *(opaque as *mut T) };
 
     if whence == ffi::AVSEEK_SIZE {
-        // Return stream size
+        // Return the stream size. Any negative return makes `avio_size` fall
+        // back to probing with SEEK_END, which also restores the position
+        // FFmpeg expects, so a partial failure here cannot corrupt state.
         match stream.stream_position().and_then(|cur| {
             let end = stream.seek(SeekFrom::End(0))?;
             if cur != end {
@@ -171,7 +298,7 @@ unsafe extern "C" fn seek<T: Seek>(opaque: *mut c_void, offset: i64, whence: c_i
             Ok(end)
         }) {
             Ok(sz) => return sz as i64,
-            Err(_) => return ffi::AVERROR(ffi::ENOSYS) as i64,
+            Err(e) => return map_io_error(e) as i64,
         }
     }
 
@@ -183,17 +310,55 @@ unsafe extern "C" fn seek<T: Seek>(opaque: *mut c_void, offset: i64, whence: c_i
     };
     match stream.seek(pos) {
         Ok(pos) => pos as i64,
-        Err(_) => ffi::AVERROR(ffi::EIO) as i64,
+        Err(e) => map_io_error(e) as i64,
     }
+}
+
+// Not a C callback: invoked from `StreamIo::drop` to flush the user stream
+// after the `AVIOContext` buffer has been written out.
+fn flush_stream<T: Write>(opaque: *mut c_void) {
+    let _ = unsafe { &mut *(opaque as *mut T) }.flush();
+}
+
+// Not a C callback: invoked from `StreamIo::drop` to free the boxed stream.
+// `opaque` must be the `Box<T>` created in `new_impl`.
+fn drop_box<T>(opaque: *mut c_void) {
+    drop(unsafe { Box::from_raw(opaque as *mut T) });
 }
 
 fn map_io_error(e: std::io::Error) -> i32 {
     use std::io::ErrorKind::*;
+    // On Unix the raw OS error *is* an errno value, which is exactly what
+    // AVERROR encodes; pass it through to preserve detail (EACCES, ENOSPC,
+    // ...). On Windows it is a Win32 error code, not an errno, so it cannot
+    // be used and we fall back to mapping the `ErrorKind`.
+    #[cfg(unix)]
+    if let Some(errno) = e.raw_os_error() {
+        if errno > 0 {
+            return ffi::AVERROR(errno);
+        }
+    }
+    // Errors returned from the read/write callbacks are sticky: there is no
+    // retry layer above a custom AVIOContext (FFmpeg retries EINTR/EAGAIN
+    // only inside its own URL protocols), so `fill_buffer`/`writeout` latch
+    // whatever we return into `s->error` and no further I/O happens. That is
+    // why `Interrupted` is retried in the callbacks instead of being mapped
+    // here (this arm stays reachable from `seek`, which FFmpeg does not
+    // treat as sticky), and why `WouldBlock`/`TimedOut` — while given their
+    // truthful codes — are fatal: see the "Blocking I/O" notes on `StreamIo`.
+    //
+    // The errno constants come from `libc`, not the generated bindings: they
+    // must agree with the `util::error` re-exports users match `Error::Other`
+    // against (and with the platform CRT the FFmpeg binary itself was built
+    // with), whereas bindgen has been observed emitting glibc values on
+    // Windows (ETIMEDOUT 110 vs the CRT's 138).
     match e.kind() {
         UnexpectedEof => ffi::AVERROR_EOF,
-        Interrupted => ffi::AVERROR(ffi::EINTR),
-        WouldBlock | TimedOut => ffi::AVERROR(ffi::EAGAIN),
-        _ => ffi::AVERROR(ffi::EIO),
+        Interrupted => ffi::AVERROR(libc::EINTR),
+        WouldBlock => ffi::AVERROR(libc::EAGAIN),
+        TimedOut => ffi::AVERROR(libc::ETIMEDOUT),
+        Unsupported => ffi::AVERROR(libc::ENOSYS),
+        _ => ffi::AVERROR(libc::EIO),
     }
 }
 

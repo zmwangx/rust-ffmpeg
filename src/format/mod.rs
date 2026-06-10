@@ -62,6 +62,12 @@ fn from_path<P: AsRef<Path> + ?Sized>(path: &P) -> CString {
     CString::new(path.as_ref().as_os_str().to_str().unwrap()).unwrap()
 }
 
+fn opt_cstring(s: Option<&str>) -> Result<Option<CString>, Error> {
+    s.map(CString::new)
+        .transpose()
+        .map_err(|_| Error::Other { errno: EINVAL })
+}
+
 // NOTE: this will be better with specialization or anonymous return types
 pub fn open<P: AsRef<Path> + ?Sized>(path: &P, format: &Format) -> Result<Context, Error> {
     unsafe {
@@ -202,6 +208,9 @@ where
 {
     unsafe {
         let mut ps = avformat_alloc_context();
+        if ps.is_null() {
+            return Err(Error::Other { errno: ENOMEM });
+        }
         let path = from_path(path);
         (*ps).interrupt_callback = interrupt::new(Box::new(closure)).interrupt;
 
@@ -219,22 +228,31 @@ where
     }
 }
 
-/// Opens an input file using a custom I/O stream.
-/// Create `format::context::StreamIo` first, then pass to this function.
+/// Opens an input from a readable `context::StreamIo` (created with
+/// `StreamIo::from_read` or `StreamIo::from_read_seek`).
 ///
-/// You can optionally include a filename to help with format detection,
-/// and a dictionary of options to configure the format context.
+/// An optional filename helps with format detection; options configure the
+/// format context. Fails with `EINVAL` if `custom_io` is a write context or
+/// `filename` contains an interior NUL byte.
 pub fn input_from_stream(
     mut custom_io: context::StreamIo,
     filename: Option<&str>,
     options: Option<Dictionary>,
 ) -> Result<context::Input, Error> {
+    if custom_io.is_writable() {
+        return Err(Error::Other { errno: EINVAL });
+    }
+
+    let filename = opt_cstring(filename)?;
+    let filename_ptr = filename.as_ref().map_or(ptr::null(), |f| f.as_ptr());
+
     unsafe {
         let mut ps = avformat_alloc_context();
+        if ps.is_null() {
+            return Err(Error::Other { errno: ENOMEM });
+        }
         (*ps).pb = custom_io.as_mut_ptr();
-
-        let filename = filename.map(|f| CString::new(f).unwrap());
-        let filename_ptr = filename.as_ref().map_or(ptr::null(), |f| f.as_ptr());
+        (*ps).flags |= AVFMT_FLAG_CUSTOM_IO;
 
         let result = if let Some(opts) = options {
             let mut opts = opts.disown();
@@ -371,28 +389,37 @@ pub fn output_as_with<P: AsRef<Path> + ?Sized>(
     }
 }
 
-/// Creates the output context where the result is written to the provided Stream.
-/// Create a writable `format::context::StreamIo` first, then pass to this function.
+/// Creates an output context that writes to a writable `context::StreamIo`
+/// (created with `StreamIo::from_write` or `StreamIo::from_write_seek`).
 ///
-/// You can optionally include a filename to infer the output format from that,
-/// or specify the format explicitly.
+/// The output format is inferred from `filename` or given explicitly via
+/// `format`; most muxers need a seekable stream for well-formed output. Call
+/// `write_trailer` before dropping the returned context — dropping only
+/// flushes what the muxer already emitted, it cannot finalize the file.
+/// Fails with `EINVAL` if `custom_io` is not a write context or `filename` /
+/// `format` contain an interior NUL byte.
 pub fn output_to_stream(
     mut custom_io: context::StreamIo,
     filename: Option<&str>,
     format: Option<&str>,
 ) -> Result<context::Output, Error> {
+    if !custom_io.is_writable() {
+        return Err(Error::Other { errno: EINVAL });
+    }
+
+    let filename = opt_cstring(filename)?;
+    let filename_ptr = filename.as_ref().map_or(ptr::null(), |f| f.as_ptr());
+
+    let format = opt_cstring(format)?;
+    let format_ptr = format.as_ref().map_or(ptr::null(), |f| f.as_ptr());
+
     unsafe {
         let mut ps = ptr::null_mut();
-
-        let filename = filename.map(|f| CString::new(f).unwrap());
-        let filename_ptr = filename.as_ref().map_or(ptr::null(), |f| f.as_ptr());
-
-        let format = format.map(|f| CString::new(f).unwrap());
-        let format_ptr = format.as_ref().map_or(ptr::null(), |f| f.as_ptr());
 
         match avformat_alloc_output_context2(&mut ps, ptr::null_mut(), format_ptr, filename_ptr) {
             0 => {
                 (*ps).pb = custom_io.as_mut_ptr();
+                (*ps).flags |= AVFMT_FLAG_CUSTOM_IO;
 
                 Ok(context::Output::wrap_with_custom_io(ps, custom_io))
             }

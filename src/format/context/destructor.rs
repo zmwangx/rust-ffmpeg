@@ -24,13 +24,17 @@ impl Drop for Destructor {
     fn drop(&mut self) {
         unsafe {
             match self.mode {
-                Mode::InputCustomIo(ref _io) => {
+                Mode::InputCustomIo(_) => {
+                    // AVFMT_FLAG_CUSTOM_IO is set, so this leaves `pb` alone
+                    // (demuxers' read_close() may still use it); the StreamIo
+                    // in `mode` frees it when dropped after this body.
                     avformat_close_input(&mut self.ptr);
-                    // Custom io will just be dropped here
                 }
-                Mode::OutputCustomIo(ref _io) => {
+                Mode::OutputCustomIo(_) => {
                     avformat_free_context(self.ptr);
-                    // Custom io will just be dropped here
+                    // The StreamIo in `mode` is dropped afterwards; its Drop
+                    // flushes buffered data to the stream before freeing the
+                    // AVIOContext.
                 }
                 Mode::Input => avformat_close_input(&mut self.ptr),
 

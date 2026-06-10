@@ -7,6 +7,9 @@ pub use self::input::Input;
 pub mod output;
 pub use self::output::Output;
 
+pub mod stream_io;
+pub use self::stream_io::StreamIo;
+
 #[doc(hidden)]
 pub mod common;
 

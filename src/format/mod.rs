@@ -62,6 +62,12 @@ fn from_path<P: AsRef<Path> + ?Sized>(path: &P) -> CString {
     CString::new(path.as_ref().as_os_str().to_str().unwrap()).unwrap()
 }
 
+fn opt_cstring(s: Option<&str>) -> Result<Option<CString>, Error> {
+    s.map(CString::new)
+        .transpose()
+        .map_err(|_| Error::Other { errno: EINVAL })
+}
+
 // NOTE: this will be better with specialization or anonymous return types
 pub fn open<P: AsRef<Path> + ?Sized>(path: &P, format: &Format) -> Result<Context, Error> {
     unsafe {
@@ -202,12 +208,64 @@ where
 {
     unsafe {
         let mut ps = avformat_alloc_context();
+        if ps.is_null() {
+            return Err(Error::Other { errno: ENOMEM });
+        }
         let path = from_path(path);
         (*ps).interrupt_callback = interrupt::new(Box::new(closure)).interrupt;
 
         match avformat_open_input(&mut ps, path.as_ptr(), ptr::null_mut(), ptr::null_mut()) {
             0 => match avformat_find_stream_info(ps, ptr::null_mut()) {
                 r if r >= 0 => Ok(context::Input::wrap(ps)),
+                e => {
+                    avformat_close_input(&mut ps);
+                    Err(Error::from(e))
+                }
+            },
+
+            e => Err(Error::from(e)),
+        }
+    }
+}
+
+/// Opens an input from a readable `context::StreamIo` (created with
+/// `StreamIo::from_read` or `StreamIo::from_read_seek`).
+///
+/// An optional filename helps with format detection; options configure the
+/// format context. Fails with `EINVAL` if `custom_io` is a write context or
+/// `filename` contains an interior NUL byte.
+pub fn input_from_stream(
+    mut custom_io: context::StreamIo,
+    filename: Option<&str>,
+    options: Option<Dictionary>,
+) -> Result<context::Input, Error> {
+    if custom_io.is_writable() {
+        return Err(Error::Other { errno: EINVAL });
+    }
+
+    let filename = opt_cstring(filename)?;
+    let filename_ptr = filename.as_ref().map_or(ptr::null(), |f| f.as_ptr());
+
+    unsafe {
+        let mut ps = avformat_alloc_context();
+        if ps.is_null() {
+            return Err(Error::Other { errno: ENOMEM });
+        }
+        (*ps).pb = custom_io.as_mut_ptr();
+        (*ps).flags |= AVFMT_FLAG_CUSTOM_IO;
+
+        let result = if let Some(opts) = options {
+            let mut opts = opts.disown();
+            let res = avformat_open_input(&mut ps, filename_ptr, ptr::null_mut(), &mut opts);
+            Dictionary::own(opts);
+            res
+        } else {
+            avformat_open_input(&mut ps, filename_ptr, ptr::null_mut(), ptr::null_mut())
+        };
+
+        match result {
+            0 => match avformat_find_stream_info(ps, ptr::null_mut()) {
+                r if r >= 0 => Ok(context::Input::wrap_with_custom_io(ps, custom_io)),
                 e => {
                     avformat_close_input(&mut ps);
                     Err(Error::from(e))
@@ -324,6 +382,57 @@ pub fn output_as_with<P: AsRef<Path> + ?Sized>(
                     0 => Ok(context::Output::wrap(ps)),
                     e => Err(Error::from(e)),
                 }
+            }
+
+            e => Err(Error::from(e)),
+        }
+    }
+}
+
+/// Creates an output context that writes to a writable `context::StreamIo`
+/// (created with `StreamIo::from_write` or `StreamIo::from_write_seek`).
+///
+/// The output format is inferred from `filename` or given explicitly via
+/// `format`; most muxers need a seekable stream for well-formed output. Call
+/// `write_trailer` before dropping the returned context — dropping only
+/// flushes what the muxer already emitted, it cannot finalize the file.
+/// Fails with `EINVAL` if `custom_io` is not a write context, if `filename` /
+/// `format` contain an interior NUL byte, or if the resolved muxer does its
+/// own I/O and would never write to the stream (`AVFMT_NOFILE` formats like
+/// `image2` or output devices).
+pub fn output_to_stream(
+    mut custom_io: context::StreamIo,
+    filename: Option<&str>,
+    format: Option<&str>,
+) -> Result<context::Output, Error> {
+    if !custom_io.is_writable() {
+        return Err(Error::Other { errno: EINVAL });
+    }
+
+    let filename = opt_cstring(filename)?;
+    let filename_ptr = filename.as_ref().map_or(ptr::null(), |f| f.as_ptr());
+
+    let format = opt_cstring(format)?;
+    let format_ptr = format.as_ref().map_or(ptr::null(), |f| f.as_ptr());
+
+    unsafe {
+        let mut ps = ptr::null_mut();
+
+        match avformat_alloc_output_context2(&mut ps, ptr::null_mut(), format_ptr, filename_ptr) {
+            0 => {
+                // AVFMT_NOFILE muxers (image2's one-file-per-frame, devices,
+                // ...) do their own I/O, and `AVFormatContext.pb` is
+                // documented to stay NULL for them; the caller's stream would
+                // silently never receive the muxed output.
+                if (*(*ps).oformat).flags & AVFMT_NOFILE != 0 {
+                    avformat_free_context(ps);
+                    return Err(Error::Other { errno: EINVAL });
+                }
+
+                (*ps).pb = custom_io.as_mut_ptr();
+                (*ps).flags |= AVFMT_FLAG_CUSTOM_IO;
+
+                Ok(context::Output::wrap_with_custom_io(ps, custom_io))
             }
 
             e => Err(Error::from(e)),

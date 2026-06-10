@@ -242,8 +242,7 @@ where
         let path = from_path(path);
 
         let mut opts = options.disown();
-        let res =
-            avformat_open_input(&raw mut ps, path.as_ptr(), ptr::null_mut(), &raw mut opts);
+        let res = avformat_open_input(&raw mut ps, path.as_ptr(), ptr::null_mut(), &raw mut opts);
         Dictionary::own(opts);
 
         match res {

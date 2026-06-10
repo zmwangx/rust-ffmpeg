@@ -31,6 +31,20 @@ impl Decoder {
         }
     }
 
+    pub fn open_with(mut self, options: Dictionary) -> Result<Opened, Error> {
+        unsafe {
+            let mut opts = options.disown();
+            let res = avcodec_open2(self.as_mut_ptr(), ptr::null(), &mut opts);
+
+            Dictionary::own(opts);
+
+            match res {
+                0 => Ok(Opened(self)),
+                e => Err(Error::from(e)),
+            }
+        }
+    }
+
     pub fn open_as_with<D: traits::Decoder>(
         mut self,
         codec: D,

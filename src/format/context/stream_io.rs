@@ -31,9 +31,11 @@ const DEFAULT_BUFFER_SIZE: usize = 32768;
 ///
 /// Dropping a writable `StreamIo` — directly, or via the `Output` that
 /// absorbed it — flushes buffered data and the stream itself, discarding
-/// errors (like `std::io::BufWriter`). For well-formed output you must still
-/// call `write_trailer` first. Use [`StreamIo::into_inner`] to get the
-/// stream back.
+/// errors (like `std::io::BufWriter`). That keep-alive is shared (an `Arc`)
+/// with any `codec::Parameters`/`Context` derived from a stream, so the drop
+/// and its flush run on whichever thread releases the last of those owners.
+/// For well-formed output you must still call `write_trailer` first. Use
+/// [`StreamIo::into_inner`] to get the stream back.
 ///
 /// [`AVIOContext`]: https://ffmpeg.org/doxygen/trunk/structAVIOContext.html
 pub struct StreamIo {
@@ -46,9 +48,18 @@ pub struct StreamIo {
 // SAFETY: every constructor requires the wrapped stream to be `Send`, the
 // `AVIOContext` and its buffer are heap allocations not tied to any thread,
 // and the stream is only ever accessed through `&mut self` / the callbacks
-// (which FFmpeg invokes from the single thread driving the I/O). This impl is
-// also what the pre-existing `unsafe impl Send` on `Input`/`Output`/`Context`
-// relies on, since they embed a `StreamIo` via `destructor::Mode`.
+// (which FFmpeg invokes from the single thread driving the I/O, never
+// concurrently — so `Send` without `Sync` is exactly right).
+//
+// This impl also backs `Send + Sync` on the `Destructor` that embeds a
+// `StreamIo` via `destructor::Mode`. A format context's keep-alive is an
+// `Arc<Destructor>`, cloned into every stream-derived `codec::{Context,
+// Parameters}`; all of those are `Send`, so the last owner to drop — and
+// hence `StreamIo::drop`, which flushes and drops the wrapped stream — may
+// run on any thread. That is sound precisely because the stream is `Send`.
+// `StreamIo` is intentionally not `Sync` and need not be: `Destructor`
+// exposes no `&`-access to the embedded `StreamIo`, so `Destructor: Sync`
+// (sharing `&Destructor`) can never reach it.
 unsafe impl Send for StreamIo {}
 
 impl StreamIo {

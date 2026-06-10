@@ -20,8 +20,14 @@ impl Destructor {
     }
 }
 
-// SAFETY: drop runs once with exclusive ownership of the pointer, on any
-// thread; no `&self` methods.
+// SAFETY: `Destructor` owns the `AVFormatContext` and, in the custom-IO
+// modes, the `StreamIo` keep-alive (itself `Send`). `Drop` runs exactly once,
+// with exclusive ownership, on whichever thread releases the last `Arc`;
+// closing the context and dropping the `StreamIo` (which flushes the user
+// stream) are safe from any thread because `StreamIo` and the wrapped stream
+// are `Send` — hence `Send`. There are no `&self` methods and the fields are
+// private, so a shared `&Destructor` gives another thread no way to touch the
+// pointer or the embedded (non-`Sync`) `StreamIo` — hence `Sync`.
 unsafe impl Send for Destructor {}
 unsafe impl Sync for Destructor {}
 

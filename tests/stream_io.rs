@@ -131,7 +131,10 @@ fn unrepresentable_positions_are_eoverflow() {
     let eoverflow = ffmpeg_next::ffi::AVERROR(ffmpeg_next::util::error::EOVERFLOW) as i64;
     let mut io = StreamIo::from_read_seek(Huge).unwrap();
     assert_eq!(raw_seek(&mut io, 0, 1), eoverflow);
-    assert_eq!(raw_seek(&mut io, 0, ffmpeg_next::ffi::AVSEEK_SIZE), eoverflow);
+    assert_eq!(
+        raw_seek(&mut io, 0, ffmpeg_next::ffi::AVSEEK_SIZE),
+        eoverflow
+    );
 }
 
 #[test]

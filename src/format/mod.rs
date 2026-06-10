@@ -204,7 +204,7 @@ pub fn input_with_interrupt<P: AsRef<Path> + ?Sized, F>(
     closure: F,
 ) -> Result<context::Input, Error>
 where
-    F: FnMut() -> bool,
+    F: FnMut() -> bool + 'static,
 {
     unsafe {
         let mut ps = avformat_alloc_context();
@@ -228,6 +228,37 @@ where
     }
 }
 
+pub fn input_with_interrupt_and_dictionary<F>(
+    path: &Path,
+    closure: F,
+    options: Dictionary,
+) -> Result<context::Input, Error>
+where
+    F: FnMut() -> bool + 'static,
+{
+    unsafe {
+        let mut ps = avformat_alloc_context();
+        (*ps).interrupt_callback = interrupt::new(Box::new(closure)).interrupt;
+        let path = from_path(path);
+
+        let mut opts = options.disown();
+        let res =
+            avformat_open_input(&raw mut ps, path.as_ptr(), ptr::null_mut(), &raw mut opts);
+        Dictionary::own(opts);
+
+        match res {
+            0 => match avformat_find_stream_info(ps, ptr::null_mut()) {
+                r if r >= 0 => Ok(context::Input::wrap(ps)),
+                e => {
+                    avformat_close_input(&raw mut ps);
+                    Err(Error::from(e))
+                }
+            },
+
+            e => Err(Error::from(e)),
+        }
+    }
+}
 /// Opens an input from a readable `context::StreamIo` (created with
 /// `StreamIo::from_read` or `StreamIo::from_read_seek`).
 ///

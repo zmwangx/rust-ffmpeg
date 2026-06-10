@@ -1,3 +1,10 @@
+Unreleased
+----------
+
+- Fix unsound `Send` impls: replace the non-atomic `Rc` keep-alive shared by
+  format contexts and stream-derived `codec::{Context, Parameters}` with
+  `Arc`. Breaking for the unsafe `wrap`/`destructor` signatures.
+
 5.0.0
 -----
 

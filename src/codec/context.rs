@@ -1,6 +1,6 @@
 use std::any::Any;
 use std::ptr;
-use std::rc::Rc;
+use std::sync::Arc;
 
 use super::decoder::Decoder;
 use super::encoder::Encoder;
@@ -12,13 +12,18 @@ use {Codec, Error, Rational};
 
 pub struct Context {
     ptr: *mut AVCodecContext,
-    owner: Option<Rc<dyn Any>>,
+    owner: Option<Arc<dyn Any + Send + Sync>>,
 }
 
+// SAFETY: the context either owns its `AVCodecContext` or keeps its owner
+// alive through an atomically refcounted, thread-safe handle.
 unsafe impl Send for Context {}
 
 impl Context {
-    pub unsafe fn wrap(ptr: *mut AVCodecContext, owner: Option<Rc<dyn Any>>) -> Self {
+    pub unsafe fn wrap(
+        ptr: *mut AVCodecContext,
+        owner: Option<Arc<dyn Any + Send + Sync>>,
+    ) -> Self {
         Context { ptr, owner }
     }
 

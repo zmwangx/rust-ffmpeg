@@ -63,6 +63,78 @@ fn direction_mismatch_is_rejected() {
 }
 
 #[test]
+fn nofile_muxers_are_rejected() {
+    // image2 (AVFMT_NOFILE) opens one file per frame through its own I/O;
+    // `AVFormatContext.pb` is documented to stay NULL for such muxers, so a
+    // caller-provided stream would silently never receive the output.
+    let w = StreamIo::from_write_seek(Cursor::new(Vec::new())).unwrap();
+    assert_einval(format::output_to_stream(
+        w,
+        Some("frame-%03d.bmp"),
+        Some("image2"),
+    ));
+}
+
+/// Drives the seek callback installed in the `AVIOContext` the way FFmpeg
+/// (or a caller invoking `AVIOContext.seek` directly) would.
+fn raw_seek(io: &mut StreamIo, offset: i64, whence: i32) -> i64 {
+    unsafe {
+        let ctx = io.as_mut_ptr();
+        ((*ctx).seek.expect("seekable context"))((*ctx).opaque, offset, whence)
+    }
+}
+
+#[test]
+fn seek_masks_avseek_force() {
+    use ffmpeg_next::ffi::{AVSEEK_FORCE, AVSEEK_SIZE};
+
+    let mut io = StreamIo::from_read_seek(Cursor::new(vec![0u8; 10])).unwrap();
+    // SEEK_SET is 0, so this whence is SEEK_SET | AVSEEK_FORCE.
+    assert_eq!(raw_seek(&mut io, 7, AVSEEK_FORCE), 7);
+    assert_eq!(raw_seek(&mut io, -2, 2 | AVSEEK_FORCE), 8);
+    assert_eq!(raw_seek(&mut io, 0, AVSEEK_SIZE | AVSEEK_FORCE), 10);
+    // SEEK_CUR: AVSEEK_SIZE must have restored the position.
+    assert_eq!(raw_seek(&mut io, 0, 1), 8);
+}
+
+#[test]
+fn seek_rejects_negative_absolute_offsets_and_unknown_whence() {
+    let einval = ffmpeg_next::ffi::AVERROR(ffmpeg_next::util::error::EINVAL) as i64;
+
+    let mut io = StreamIo::from_read_seek(Cursor::new(vec![0u8; 10])).unwrap();
+    assert_eq!(raw_seek(&mut io, -1, 0), einval);
+    assert_eq!(raw_seek(&mut io, i64::MIN, 0), einval);
+    assert_eq!(raw_seek(&mut io, 0, 3), einval);
+    // SEEK_CUR: the failed seeks must not have moved the stream.
+    assert_eq!(raw_seek(&mut io, 0, 1), 0);
+}
+
+#[test]
+fn unrepresentable_positions_are_eoverflow() {
+    use std::io::{Read, Seek, SeekFrom};
+
+    // A `Seek` impl is free to report positions `i64` cannot hold; the
+    // callback must turn those into an error instead of letting them wrap
+    // into the negative AVERROR range.
+    struct Huge;
+    impl Read for Huge {
+        fn read(&mut self, _: &mut [u8]) -> std::io::Result<usize> {
+            Ok(0)
+        }
+    }
+    impl Seek for Huge {
+        fn seek(&mut self, _: SeekFrom) -> std::io::Result<u64> {
+            Ok(u64::MAX)
+        }
+    }
+
+    let eoverflow = ffmpeg_next::ffi::AVERROR(ffmpeg_next::util::error::EOVERFLOW) as i64;
+    let mut io = StreamIo::from_read_seek(Huge).unwrap();
+    assert_eq!(raw_seek(&mut io, 0, 1), eoverflow);
+    assert_eq!(raw_seek(&mut io, 0, ffmpeg_next::ffi::AVSEEK_SIZE), eoverflow);
+}
+
+#[test]
 fn interior_nul_names_error_instead_of_panicking() {
     let r = StreamIo::from_read(Cursor::new(vec![0u8])).unwrap();
     assert_einval(format::input_from_stream(r, Some("bad\0name.mp4"), None));

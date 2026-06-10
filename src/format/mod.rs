@@ -396,8 +396,10 @@ pub fn output_as_with<P: AsRef<Path> + ?Sized>(
 /// `format`; most muxers need a seekable stream for well-formed output. Call
 /// `write_trailer` before dropping the returned context — dropping only
 /// flushes what the muxer already emitted, it cannot finalize the file.
-/// Fails with `EINVAL` if `custom_io` is not a write context or `filename` /
-/// `format` contain an interior NUL byte.
+/// Fails with `EINVAL` if `custom_io` is not a write context, if `filename` /
+/// `format` contain an interior NUL byte, or if the resolved muxer does its
+/// own I/O and would never write to the stream (`AVFMT_NOFILE` formats like
+/// `image2` or output devices).
 pub fn output_to_stream(
     mut custom_io: context::StreamIo,
     filename: Option<&str>,
@@ -418,6 +420,15 @@ pub fn output_to_stream(
 
         match avformat_alloc_output_context2(&mut ps, ptr::null_mut(), format_ptr, filename_ptr) {
             0 => {
+                // AVFMT_NOFILE muxers (image2's one-file-per-frame, devices,
+                // ...) do their own I/O, and `AVFormatContext.pb` is
+                // documented to stay NULL for them; the caller's stream would
+                // silently never receive the muxed output.
+                if (*(*ps).oformat).flags & AVFMT_NOFILE != 0 {
+                    avformat_free_context(ps);
+                    return Err(Error::Other { errno: EINVAL });
+                }
+
                 (*ps).pb = custom_io.as_mut_ptr();
                 (*ps).flags |= AVFMT_FLAG_CUSTOM_IO;
 

@@ -1,6 +1,7 @@
 use ffi;
 use libc;
 use std::any::TypeId;
+use std::convert::TryFrom;
 use std::ffi::{c_int, c_void};
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::mem::ManuallyDrop;
@@ -286,6 +287,12 @@ unsafe extern "C" fn write<T: Write>(
 unsafe extern "C" fn seek<T: Seek>(opaque: *mut c_void, offset: i64, whence: c_int) -> i64 {
     let stream = unsafe { &mut *(opaque as *mut T) };
 
+    // AVSEEK_FORCE may be OR'd into `whence` ("seek by any means"); avio.h
+    // documents it as ignored by the seek code since 2010, and FFmpeg's own
+    // dispatchers mask it off before seeking (`avio_seek`, `ffurl_seek`).
+    // Honor the flag convention instead of failing the seek with EINVAL.
+    let whence = whence & !ffi::AVSEEK_FORCE;
+
     if whence == ffi::AVSEEK_SIZE {
         // Return the stream size. Any negative return makes `avio_size` fall
         // back to probing with SEEK_END, which also restores the position
@@ -297,21 +304,32 @@ unsafe extern "C" fn seek<T: Seek>(opaque: *mut c_void, offset: i64, whence: c_i
             }
             Ok(end)
         }) {
-            Ok(sz) => return sz as i64,
+            Ok(sz) => return position_to_i64(sz),
             Err(e) => return map_io_error(e) as i64,
         }
     }
 
     let pos = match whence {
-        0 => SeekFrom::Start(offset as u64),
+        // `avio_seek` rejects negative absolute offsets before invoking the
+        // callback, so one can only arrive from a caller driving the callback
+        // directly; `as u64` would turn it into a huge forward seek.
+        0 if offset >= 0 => SeekFrom::Start(offset as u64),
+        0 => return ffi::AVERROR(ffi::EINVAL) as i64,
         1 => SeekFrom::Current(offset),
         2 => SeekFrom::End(offset),
         _ => return ffi::AVERROR(ffi::EINVAL) as i64,
     };
     match stream.seek(pos) {
-        Ok(pos) => pos as i64,
+        Ok(pos) => position_to_i64(pos),
         Err(e) => map_io_error(e) as i64,
     }
+}
+
+// `Seek` reports positions as `u64`, but the callback returns `i64` with
+// negative values reserved for AVERROR codes; a position above `i64::MAX`
+// would wrap into (or alias) an error code.
+fn position_to_i64(pos: u64) -> i64 {
+    i64::try_from(pos).unwrap_or(ffi::AVERROR(libc::EOVERFLOW) as i64)
 }
 
 // Not a C callback: invoked from `StreamIo::drop` to flush the user stream

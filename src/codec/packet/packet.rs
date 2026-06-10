@@ -218,13 +218,22 @@ impl Packet {
         }
     }
 
+    /// Read a packet from the input format context.
+    ///
+    /// # Safety
+    /// this is unsafe because you can potentially "read" a packet twice like so:
+    /// ```rust,ignore
+    /// let mut packet = Packet::empty();
+    /// packet.read(&mut ictx)?;
+    /// packet.read(&mut ictx)?;
+    ///
+    /// ```
+    /// it is recommended to use the input packet read api's
     #[inline]
-    pub fn read(&mut self, format: &mut format::context::Input) -> Result<(), Error> {
-        unsafe {
-            match av_read_frame(format.as_mut_ptr(), self.as_mut_ptr()) {
-                0 => Ok(()),
-                e => Err(Error::from(e)),
-            }
+    pub unsafe fn read(&mut self, format: &mut format::context::Input) -> Result<(), Error> {
+        match av_read_frame(format.as_mut_ptr(), self.as_mut_ptr()) {
+            0 => Ok(()),
+            e => Err(Error::from(e)),
         }
     }
 

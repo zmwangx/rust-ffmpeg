@@ -25,6 +25,15 @@ impl Output {
             ctx: Context::wrap(ptr, destructor::Mode::Output),
         }
     }
+    pub unsafe fn wrap_with_custom_io(
+        ptr: *mut AVFormatContext,
+        custom_io: format::context::StreamIo,
+    ) -> Self {
+        Output {
+            ptr,
+            ctx: Context::wrap(ptr, destructor::Mode::OutputCustomIo(custom_io)),
+        }
+    }
 
     pub unsafe fn as_ptr(&self) -> *const AVFormatContext {
         self.ptr as *const _

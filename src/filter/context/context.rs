@@ -1,6 +1,5 @@
 use super::{Sink, Source};
 use ffi::*;
-use libc::c_void;
 use {format, option, ChannelLayout};
 
 pub struct Context {
@@ -58,14 +57,14 @@ impl Context {
     }
 }
 
-unsafe impl option::Target for Context {
-    fn as_ptr(&self) -> *const c_void {
+unsafe impl option::Target<AVFilterContext> for Context {
+    fn as_ptr(&self) -> *const AVFilterContext {
         self.ptr as *const _
     }
 
-    fn as_mut_ptr(&mut self) -> *mut c_void {
+    fn as_mut_ptr(&mut self) -> *mut AVFilterContext {
         self.ptr as *mut _
     }
 }
 
-impl option::Settable for Context {}
+impl option::Settable<AVFilterContext> for Context {}

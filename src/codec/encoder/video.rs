@@ -388,6 +388,30 @@ impl Video {
     pub fn color_range(&self) -> color::Range {
         unsafe { (*self.as_ptr()).color_range.into() }
     }
+
+    #[inline]
+    pub fn set_color_primaries(&mut self, value: color::Primaries) {
+        unsafe {
+            (*self.as_mut_ptr()).color_primaries = value.into();
+        }
+    }
+
+    #[inline]
+    pub fn color_primaries(&self) -> color::Primaries {
+        unsafe { color::Primaries::from((*self.as_ptr()).color_primaries) }
+    }
+
+    #[inline]
+    pub fn set_color_transfer_characteristic(&mut self, value: color::TransferCharacteristic) {
+        unsafe {
+            (*self.as_mut_ptr()).color_trc = value.into();
+        }
+    }
+
+    #[inline]
+    pub fn color_transfer_characteristic(&self) -> color::TransferCharacteristic {
+        unsafe { color::TransferCharacteristic::from((*self.as_ptr()).color_trc) }
+    }
 }
 
 impl Deref for Video {

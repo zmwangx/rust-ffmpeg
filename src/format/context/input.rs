@@ -34,6 +34,31 @@ impl Input {
         }
     }
 
+    pub unsafe fn wrap_with_interrupt(
+        ptr: *mut AVFormatContext,
+        guard: ::util::interrupt::InterruptGuard,
+    ) -> Self {
+        Input {
+            ptr,
+            ctx: Context::wrap_with_interrupt(ptr, destructor::Mode::Input, guard),
+        }
+    }
+
+    pub unsafe fn wrap_with_custom_io_and_interrupt(
+        ptr: *mut AVFormatContext,
+        custom_io: format::context::StreamIo,
+        guard: ::util::interrupt::InterruptGuard,
+    ) -> Self {
+        Input {
+            ptr,
+            ctx: Context::wrap_with_interrupt(
+                ptr,
+                destructor::Mode::InputCustomIo(custom_io),
+                guard,
+            ),
+        }
+    }
+
     pub unsafe fn as_ptr(&self) -> *const AVFormatContext {
         self.ptr as *const _
     }
@@ -143,6 +168,33 @@ impl Input {
                 s if s >= 0 => Ok(()),
                 e => Err(Error::from(e)),
             }
+        }
+    }
+
+    pub fn io_size(&self) -> Option<i64> {
+        unsafe {
+            let pb = (*self.as_ptr()).pb;
+            if pb.is_null() {
+                return None;
+            }
+            let sz = avio_size(pb);
+            if sz < 0 {
+                None
+            } else {
+                Some(sz)
+            }
+        }
+    }
+
+    pub fn clear_eof(&mut self) -> bool {
+        unsafe {
+            let pb = (*self.as_ptr()).pb;
+            if pb.is_null() {
+                return false;
+            }
+            (*pb).eof_reached = 0;
+            (*pb).error = 0;
+            true
         }
     }
 }

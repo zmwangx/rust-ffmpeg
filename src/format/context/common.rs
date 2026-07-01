@@ -25,6 +25,17 @@ impl Context {
         }
     }
 
+    pub unsafe fn wrap_with_interrupt(
+        ptr: *mut AVFormatContext,
+        mode: destructor::Mode,
+        guard: ::util::interrupt::InterruptGuard,
+    ) -> Self {
+        Context {
+            ptr,
+            dtor: Arc::new(Destructor::new_with_interrupt(ptr, mode, guard)),
+        }
+    }
+
     pub unsafe fn as_ptr(&self) -> *const AVFormatContext {
         self.ptr as *const _
     }

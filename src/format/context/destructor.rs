@@ -1,5 +1,6 @@
 use super::StreamIo;
 use ffi::*;
+use util::interrupt::InterruptGuard;
 
 #[derive(Debug)]
 pub enum Mode {
@@ -12,11 +13,32 @@ pub enum Mode {
 pub struct Destructor {
     ptr: *mut AVFormatContext,
     mode: Mode,
+    // Keep-alive for a boxed `AVIOInterruptCB` closure installed on the  context.
+    // Never read directly - its only job is to run `InterruptGuard::drop` at the
+    // right time (freeing the boxed closure), which the field's own drop does.
+    #[allow(dead_code)]
+    interrupt_guard: Option<InterruptGuard>,
 }
 
 impl Destructor {
     pub unsafe fn new(ptr: *mut AVFormatContext, mode: Mode) -> Self {
-        Destructor { ptr, mode }
+        Destructor {
+            ptr,
+            mode,
+            interrupt_guard: None,
+        }
+    }
+
+    pub unsafe fn new_with_interrupt(
+        ptr: *mut AVFormatContext,
+        mode: Mode,
+        guard: InterruptGuard,
+    ) -> Self {
+        Destructor {
+            ptr,
+            mode,
+            interrupt_guard: Some(guard),
+        }
     }
 }
 

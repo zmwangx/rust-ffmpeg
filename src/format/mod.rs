@@ -204,7 +204,7 @@ pub fn input_with_interrupt<P: AsRef<Path> + ?Sized, F>(
     closure: F,
 ) -> Result<context::Input, Error>
 where
-    F: FnMut() -> bool + 'static,
+    F: FnMut() -> bool + Send + 'static,
 {
     unsafe {
         let mut ps = avformat_alloc_context();
@@ -212,11 +212,12 @@ where
             return Err(Error::Other { errno: ENOMEM });
         }
         let path = from_path(path);
-        (*ps).interrupt_callback = interrupt::new(Box::new(closure)).interrupt;
+        let interrupt = interrupt::new(Box::new(closure));
+        (*ps).interrupt_callback = interrupt.interrupt;
 
         match avformat_open_input(&mut ps, path.as_ptr(), ptr::null_mut(), ptr::null_mut()) {
             0 => match avformat_find_stream_info(ps, ptr::null_mut()) {
-                r if r >= 0 => Ok(context::Input::wrap(ps)),
+                r if r >= 0 => Ok(context::Input::wrap_with_interrupt(ps, interrupt.guard)),
                 e => {
                     avformat_close_input(&mut ps);
                     Err(Error::from(e))
@@ -234,11 +235,15 @@ pub fn input_with_interrupt_and_dictionary<F>(
     options: Dictionary,
 ) -> Result<context::Input, Error>
 where
-    F: FnMut() -> bool + 'static,
+    F: FnMut() -> bool + Send + 'static,
 {
     unsafe {
         let mut ps = avformat_alloc_context();
-        (*ps).interrupt_callback = interrupt::new(Box::new(closure)).interrupt;
+        if ps.is_null() {
+            return Err(Error::Other { errno: ENOMEM });
+        }
+        let interrupt = interrupt::new(Box::new(closure));
+        (*ps).interrupt_callback = interrupt.interrupt;
         let path = from_path(path);
 
         let mut opts = options.disown();
@@ -247,7 +252,7 @@ where
 
         match res {
             0 => match avformat_find_stream_info(ps, ptr::null_mut()) {
-                r if r >= 0 => Ok(context::Input::wrap(ps)),
+                r if r >= 0 => Ok(context::Input::wrap_with_interrupt(ps, interrupt.guard)),
                 e => {
                     avformat_close_input(&raw mut ps);
                     Err(Error::from(e))
@@ -296,6 +301,61 @@ pub fn input_from_stream(
         match result {
             0 => match avformat_find_stream_info(ps, ptr::null_mut()) {
                 r if r >= 0 => Ok(context::Input::wrap_with_custom_io(ps, custom_io)),
+                e => {
+                    avformat_close_input(&mut ps);
+                    Err(Error::from(e))
+                }
+            },
+
+            e => Err(Error::from(e)),
+        }
+    }
+}
+
+pub fn input_from_stream_with_interrupt<F>(
+    mut custom_io: context::StreamIo,
+    filename: Option<&str>,
+    options: Option<Dictionary>,
+    closure: F,
+) -> Result<context::Input, Error>
+where
+    F: FnMut() -> bool + Send + 'static,
+{
+    if custom_io.is_writable() {
+        return Err(Error::Other { errno: EINVAL });
+    }
+
+    let filename = opt_cstring(filename)?;
+    let filename_ptr = filename.as_ref().map_or(ptr::null(), |f| f.as_ptr());
+
+    unsafe {
+        let mut ps = avformat_alloc_context();
+        if ps.is_null() {
+            return Err(Error::Other { errno: ENOMEM });
+        }
+        // Install the interrupt callback BEFORE open so a stalled probe/connect
+        // is cancellable, then attach the custom AVIO.
+        let interrupt = interrupt::new(Box::new(closure));
+        (*ps).interrupt_callback = interrupt.interrupt;
+        (*ps).pb = custom_io.as_mut_ptr();
+        (*ps).flags |= AVFMT_FLAG_CUSTOM_IO;
+
+        let result = if let Some(opts) = options {
+            let mut opts = opts.disown();
+            let res = avformat_open_input(&mut ps, filename_ptr, ptr::null_mut(), &mut opts);
+            Dictionary::own(opts);
+            res
+        } else {
+            avformat_open_input(&mut ps, filename_ptr, ptr::null_mut(), ptr::null_mut())
+        };
+
+        match result {
+            0 => match avformat_find_stream_info(ps, ptr::null_mut()) {
+                r if r >= 0 => Ok(context::Input::wrap_with_custom_io_and_interrupt(
+                    ps,
+                    custom_io,
+                    interrupt.guard,
+                )),
                 e => {
                     avformat_close_input(&mut ps);
                     Err(Error::from(e))

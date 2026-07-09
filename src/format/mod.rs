@@ -270,9 +270,54 @@ where
 /// format context. Fails with `EINVAL` if `custom_io` is a write context or
 /// `filename` contains an interior NUL byte.
 pub fn input_from_stream(
+    custom_io: context::StreamIo,
+    filename: Option<&str>,
+    options: Option<Dictionary>,
+) -> Result<context::Input, Error> {
+    input_from_stream_impl(custom_io, filename, options, None)
+}
+
+/// Like [`input_from_stream`], with an interrupt callback FFmpeg polls to
+/// cancel a stalled open or read. `closure` returns `true` to abort; a
+/// cancelled blocking read then surfaces as `Error::Exit`. To resume the same
+/// context afterward, re-arm the token and either seek (seekable streams) or
+/// call [`context::Input::clear_interrupt`] (non-seekable streams).
+///
+/// Fails with `EINVAL` if `custom_io` is a write context or `filename`
+/// contains an interior NUL byte.
+pub fn input_from_stream_with_interrupt<F>(
+    custom_io: context::StreamIo,
+    filename: Option<&str>,
+    options: Option<Dictionary>,
+    closure: F,
+) -> Result<context::Input, Error>
+where
+    F: FnMut() -> bool + Send + 'static,
+{
+    input_from_stream_impl(
+        custom_io,
+        filename,
+        options,
+        Some(interrupt::new(Box::new(closure))),
+    )
+}
+
+/// Shared body for [`input_from_stream`] / [`input_from_stream_with_interrupt`].
+///
+/// When `interrupt` is present it is installed on the format context BEFORE
+/// open (so a stalled probe/connect is cancellable) AND mirrored into the
+/// `StreamIo` opaque — both in one place, so the mirror is impossible to forget
+/// when adding another `_with_interrupt` variant. The mirror is required
+/// because FFmpeg's custom-AVIO read path (`fill_buffer` → `read_packet`) never
+/// polls `AVFormatContext.interrupt_callback` itself — unlike its URL
+/// protocols' `retry_transfer_wrapper` — so the `StreamIo` read/write/seek
+/// callbacks poll the mirrored copy at the top of each attempt (see
+/// `StreamIo::set_interrupt`).
+fn input_from_stream_impl(
     mut custom_io: context::StreamIo,
     filename: Option<&str>,
     options: Option<Dictionary>,
+    interrupt: Option<interrupt::Interrupt>,
 ) -> Result<context::Input, Error> {
     if custom_io.is_writable() {
         return Err(Error::Other { errno: EINVAL });
@@ -286,6 +331,10 @@ pub fn input_from_stream(
         if ps.is_null() {
             return Err(Error::Other { errno: ENOMEM });
         }
+        if let Some(ref it) = interrupt {
+            (*ps).interrupt_callback = it.interrupt;
+            custom_io.set_interrupt(it.interrupt);
+        }
         (*ps).pb = custom_io.as_mut_ptr();
         (*ps).flags |= AVFMT_FLAG_CUSTOM_IO;
 
@@ -300,62 +349,12 @@ pub fn input_from_stream(
 
         match result {
             0 => match avformat_find_stream_info(ps, ptr::null_mut()) {
-                r if r >= 0 => Ok(context::Input::wrap_with_custom_io(ps, custom_io)),
-                e => {
-                    avformat_close_input(&mut ps);
-                    Err(Error::from(e))
-                }
-            },
-
-            e => Err(Error::from(e)),
-        }
-    }
-}
-
-pub fn input_from_stream_with_interrupt<F>(
-    mut custom_io: context::StreamIo,
-    filename: Option<&str>,
-    options: Option<Dictionary>,
-    closure: F,
-) -> Result<context::Input, Error>
-where
-    F: FnMut() -> bool + Send + 'static,
-{
-    if custom_io.is_writable() {
-        return Err(Error::Other { errno: EINVAL });
-    }
-
-    let filename = opt_cstring(filename)?;
-    let filename_ptr = filename.as_ref().map_or(ptr::null(), |f| f.as_ptr());
-
-    unsafe {
-        let mut ps = avformat_alloc_context();
-        if ps.is_null() {
-            return Err(Error::Other { errno: ENOMEM });
-        }
-        // Install the interrupt callback BEFORE open so a stalled probe/connect
-        // is cancellable, then attach the custom AVIO.
-        let interrupt = interrupt::new(Box::new(closure));
-        (*ps).interrupt_callback = interrupt.interrupt;
-        (*ps).pb = custom_io.as_mut_ptr();
-        (*ps).flags |= AVFMT_FLAG_CUSTOM_IO;
-
-        let result = if let Some(opts) = options {
-            let mut opts = opts.disown();
-            let res = avformat_open_input(&mut ps, filename_ptr, ptr::null_mut(), &mut opts);
-            Dictionary::own(opts);
-            res
-        } else {
-            avformat_open_input(&mut ps, filename_ptr, ptr::null_mut(), ptr::null_mut())
-        };
-
-        match result {
-            0 => match avformat_find_stream_info(ps, ptr::null_mut()) {
-                r if r >= 0 => Ok(context::Input::wrap_with_custom_io_and_interrupt(
-                    ps,
-                    custom_io,
-                    interrupt.guard,
-                )),
+                r if r >= 0 => Ok(match interrupt {
+                    Some(it) => {
+                        context::Input::wrap_with_custom_io_and_interrupt(ps, custom_io, it.guard)
+                    }
+                    None => context::Input::wrap_with_custom_io(ps, custom_io),
+                }),
                 e => {
                     avformat_close_input(&mut ps);
                     Err(Error::from(e))

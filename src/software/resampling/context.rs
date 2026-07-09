@@ -149,7 +149,7 @@ impl Context {
 
     /// Get the remaining delay.
     pub fn delay(&self) -> Option<Delay> {
-        unsafe { Some(Delay::from(self)).filter(|d| d.output > 0) }
+        Some(Delay::from(self)).filter(|d| d.output > 0)
     }
 
     /// Run the resampler from the given input to the given output.

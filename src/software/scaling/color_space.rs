@@ -11,6 +11,7 @@ pub enum ColorSpace {
     ITU624,
     SMPTE170M,
     SMPTE240M,
+    BT2020,
 }
 
 impl From<c_int> for ColorSpace {
@@ -18,9 +19,10 @@ impl From<c_int> for ColorSpace {
         match value {
             SWS_CS_ITU709 => ColorSpace::ITU709,
             SWS_CS_FCC => ColorSpace::FCC,
+            // Default is same as ITU601
             SWS_CS_DEFAULT => ColorSpace::Default,
             SWS_CS_SMPTE240M => ColorSpace::SMPTE240M,
-
+            SWS_CS_BT2020 => ColorSpace::BT2020,
             _ => ColorSpace::Default,
         }
     }
@@ -36,6 +38,7 @@ impl From<ColorSpace> for c_int {
             ColorSpace::ITU624 => SWS_CS_ITU624,
             ColorSpace::SMPTE170M => SWS_CS_SMPTE170M,
             ColorSpace::SMPTE240M => SWS_CS_SMPTE240M,
+            ColorSpace::BT2020 => SWS_CS_BT2020,
         }
     }
 }

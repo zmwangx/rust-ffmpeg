@@ -1,6 +1,8 @@
 use std::ptr;
 
-use super::Flags;
+use crate::color;
+
+use super::{ColorSpace, Flags};
 use ffi::*;
 use libc::c_int;
 use util::format;
@@ -74,6 +76,54 @@ impl Context {
                 })
             } else {
                 Err(Error::InvalidData)
+            }
+        }
+    }
+
+    pub fn set_colorspace_details(
+        &mut self,
+        input_space: color::Space,
+        src_range: color::Range,
+        dst_range: color::Range,
+        brightness: i32,
+        contrast: i32,
+        saturation: i32,
+    ) -> Result<(), Error> {
+        unsafe {
+            let input_color_space_int = match input_space {
+                color::Space::BT709 => ColorSpace::ITU709,
+                color::Space::BT2020CL => ColorSpace::BT2020,
+                color::Space::BT2020NCL => ColorSpace::BT2020,
+                _ => ColorSpace::ITU601,
+            };
+            let coefficients: *const i32 = sws_getCoefficients(input_color_space_int.into());
+
+            // 0 means limited range (16-235), 1 means full range (0-255)
+            let src_range_value = match src_range {
+                color::Range::MPEG => 0,
+                color::Range::JPEG => 1,
+                color::Range::Unspecified => 1,
+            };
+            // 0 means limited range, 1 means full range
+            // For an RGB image, we want full range, for YUV, most of the time we want limited range
+            let dst_range_value = match dst_range {
+                color::Range::MPEG => 0,
+                color::Range::JPEG => 1,
+                color::Range::Unspecified => 1,
+            };
+
+            match sws_setColorspaceDetails(
+                self.as_mut_ptr(),
+                coefficients,
+                src_range_value,
+                coefficients,
+                dst_range_value,
+                brightness,
+                contrast,
+                saturation,
+            ) {
+                e if e < 0 => Err(Error::from(e)),
+                _ => Ok(()),
             }
         }
     }

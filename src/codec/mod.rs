@@ -20,6 +20,7 @@ pub mod capabilities;
 pub use self::capabilities::Capabilities;
 
 pub mod codec;
+pub use self::codec::Iter;
 
 pub mod parameters;
 pub use self::parameters::Parameters;
@@ -63,4 +64,18 @@ pub fn configuration() -> &'static str {
 
 pub fn license() -> &'static str {
     unsafe { from_utf8_unchecked(CStr::from_ptr(avcodec_license()).to_bytes()) }
+}
+
+pub fn list() -> Iter {
+    Iter::new()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn lists_codecs() {
+        assert!(list().any(|codec| codec.is_encoder() || codec.is_decoder()));
+    }
 }

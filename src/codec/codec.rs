@@ -1,3 +1,4 @@
+use std::ffi::c_void;
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
@@ -20,6 +21,40 @@ impl Codec {
 
     pub unsafe fn as_ptr(&self) -> *const AVCodec {
         self.ptr as *const _
+    }
+}
+
+pub struct Iter {
+    opaque: *mut c_void,
+}
+
+impl Iter {
+    pub fn new() -> Self {
+        Iter {
+            opaque: std::ptr::null_mut(),
+        }
+    }
+}
+
+impl Default for Iter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Iterator for Iter {
+    type Item = Codec;
+
+    fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+        unsafe {
+            let codec = av_codec_iterate(&mut self.opaque);
+
+            if codec.is_null() {
+                None
+            } else {
+                Some(Codec::wrap(codec))
+            }
+        }
     }
 }
 

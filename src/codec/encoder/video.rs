@@ -9,13 +9,25 @@ use super::{Comparison, Decision};
 #[cfg(not(feature = "ffmpeg_5_0"))]
 use super::{MotionEstimation, Prediction};
 use codec::{traits, Context};
-use {color, format, Dictionary, Error, Rational};
+use {color, format, hardware, Dictionary, Error, Rational};
 #[cfg(not(feature = "ffmpeg_5_0"))]
 use {frame, packet};
 
 pub struct Video(pub Super);
 
 impl Video {
+    /// Sets the hardware frame pool used as input by a hardware encoder.
+    ///
+    /// This must be called before opening the encoder.
+    pub fn set_hardware_frames(&mut self, frames: &hardware::Frames) -> Result<(), Error> {
+        let frames = frames.try_clone_raw()?;
+        unsafe {
+            av_buffer_unref(&mut (*self.as_mut_ptr()).hw_frames_ctx);
+            (*self.as_mut_ptr()).hw_frames_ctx = frames;
+        }
+        Ok(())
+    }
+
     #[inline]
     pub fn open(mut self) -> Result<Encoder, Error> {
         unsafe {

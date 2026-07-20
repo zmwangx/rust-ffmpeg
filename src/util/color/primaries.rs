@@ -69,6 +69,9 @@ impl From<AVColorPrimaries> for Primaries {
 
             #[cfg(feature = "ffmpeg_8_1")]
             AVCOL_PRI_EXT_BASE | AVCOL_PRI_EXT_NB => Primaries::Reserved0,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

@@ -176,6 +176,9 @@ impl From<AVFrameSideDataType> for Type {
             AV_FRAME_DATA_IAMF_RECON_GAIN_INFO_PARAM => Type::IAMF_RECON_GAIN_INFO_PARAM,
             #[cfg(feature = "ffmpeg_9_0")]
             AV_FRAME_DATA_RAW_COLOR_PARAMS => Type::RAW_COLOR_PARAMS,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

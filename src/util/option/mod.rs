@@ -64,6 +64,9 @@ impl From<AVOptionType> for Type {
 
             #[cfg(feature = "ffmpeg_7_1")]
             AV_OPT_TYPE_UINT => Type::UInt,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

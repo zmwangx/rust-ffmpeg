@@ -1448,6 +1448,9 @@ impl From<AVCodecID> for Id {
             AV_CODEC_ID_WEBP_ANIM => Id::WEBP_ANIM,
             #[cfg(feature = "ffmpeg_9_0")]
             AV_CODEC_ID_APPLE_APAC => Id::APPLE_APAC,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

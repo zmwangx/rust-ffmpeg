@@ -160,6 +160,9 @@ impl From<AVPacketSideDataType> for Type {
             AV_PKT_DATA_DYNAMIC_HDR_SMPTE_2094_APP5 => Type::DYNAMIC_HDR_SMPTE_2094_APP5,
             #[cfg(feature = "ffmpeg_9_0")]
             AV_PKT_DATA_HEVC_CONF => Type::HEVC_CONF,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

@@ -18,20 +18,36 @@ impl Audio {
 impl Audio {
     pub fn rates(&self) -> Option<RateIter> {
         unsafe {
-            if (*self.as_ptr()).supported_samplerates.is_null() {
+            #[cfg(feature = "ffmpeg_9_0")]
+            let ptr = super::supported_config::<i32>(
+                self.codec.as_ptr(),
+                AVCodecConfig::AV_CODEC_CONFIG_SAMPLE_RATE,
+            );
+            #[cfg(not(feature = "ffmpeg_9_0"))]
+            let ptr = (*self.codec.as_ptr()).supported_samplerates;
+
+            if ptr.is_null() {
                 None
             } else {
-                Some(RateIter::new((*self.codec.as_ptr()).supported_samplerates))
+                Some(RateIter::new(ptr))
             }
         }
     }
 
     pub fn formats(&self) -> Option<FormatIter> {
         unsafe {
-            if (*self.codec.as_ptr()).sample_fmts.is_null() {
+            #[cfg(feature = "ffmpeg_9_0")]
+            let ptr = super::supported_config::<AVSampleFormat>(
+                self.codec.as_ptr(),
+                AVCodecConfig::AV_CODEC_CONFIG_SAMPLE_FORMAT,
+            );
+            #[cfg(not(feature = "ffmpeg_9_0"))]
+            let ptr = (*self.codec.as_ptr()).sample_fmts;
+
+            if ptr.is_null() {
                 None
             } else {
-                Some(FormatIter::new((*self.codec.as_ptr()).sample_fmts))
+                Some(FormatIter::new(ptr))
             }
         }
     }
@@ -41,8 +57,14 @@ impl Audio {
             #[cfg(not(feature = "ffmpeg_7_0"))]
             let ptr = (*self.codec.as_ptr()).channel_layouts;
 
-            #[cfg(feature = "ffmpeg_7_0")]
+            #[cfg(all(feature = "ffmpeg_7_0", not(feature = "ffmpeg_9_0")))]
             let ptr = (*self.codec.as_ptr()).ch_layouts;
+
+            #[cfg(feature = "ffmpeg_9_0")]
+            let ptr = super::supported_config::<AVChannelLayout>(
+                self.codec.as_ptr(),
+                AVCodecConfig::AV_CODEC_CONFIG_CHANNEL_LAYOUT,
+            );
 
             if ptr.is_null() {
                 None

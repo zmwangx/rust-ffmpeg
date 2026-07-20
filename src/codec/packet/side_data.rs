@@ -76,6 +76,11 @@ pub enum Type {
 
     #[cfg(feature = "ffmpeg_8_1")]
     EXIF,
+
+    #[cfg(feature = "ffmpeg_9_0")]
+    DYNAMIC_HDR_SMPTE_2094_APP5,
+    #[cfg(feature = "ffmpeg_9_0")]
+    HEVC_CONF,
 }
 
 impl From<AVPacketSideDataType> for Type {
@@ -150,6 +155,11 @@ impl From<AVPacketSideDataType> for Type {
 
             #[cfg(feature = "ffmpeg_8_1")]
             AV_PKT_DATA_EXIF => Type::EXIF,
+
+            #[cfg(feature = "ffmpeg_9_0")]
+            AV_PKT_DATA_DYNAMIC_HDR_SMPTE_2094_APP5 => Type::DYNAMIC_HDR_SMPTE_2094_APP5,
+            #[cfg(feature = "ffmpeg_9_0")]
+            AV_PKT_DATA_HEVC_CONF => Type::HEVC_CONF,
         }
     }
 }
@@ -226,6 +236,11 @@ impl From<Type> for AVPacketSideDataType {
 
             #[cfg(feature = "ffmpeg_8_1")]
             Type::EXIF => AV_PKT_DATA_EXIF,
+
+            #[cfg(feature = "ffmpeg_9_0")]
+            Type::DYNAMIC_HDR_SMPTE_2094_APP5 => AV_PKT_DATA_DYNAMIC_HDR_SMPTE_2094_APP5,
+            #[cfg(feature = "ffmpeg_9_0")]
+            Type::HEVC_CONF => AV_PKT_DATA_HEVC_CONF,
         }
     }
 }

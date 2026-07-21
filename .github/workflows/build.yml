@@ -114,7 +114,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ffmpeg_version: ["6.1", "7.0", "7.1", "8.0", "8.1"]
+        ffmpeg_version: ["6.1", "7.0", "7.1", "8.0", "8.1", "9.0"]
     env:
       FFMPEG_DIR: /home/runner/work/rust-ffmpeg/rust-ffmpeg/ffmpeg-${{ matrix.ffmpeg_version }}-linux-clang-default
     steps:

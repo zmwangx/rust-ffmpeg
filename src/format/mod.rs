@@ -229,8 +229,8 @@ where
     }
 }
 
-pub fn input_with_interrupt_and_dictionary<F>(
-    path: &Path,
+pub fn input_with_interrupt_and_dictionary<P: AsRef<Path> + ?Sized, F>(
+    path: &P,
     closure: F,
     options: Dictionary,
 ) -> Result<context::Input, Error>
@@ -526,5 +526,21 @@ pub fn output_to_stream(
 
             e => Err(Error::from(e)),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn input_with_interrupt_and_dictionary_accepts_str_path() {
+        let result = input_with_interrupt_and_dictionary(
+            "/ffmpeg-next-input-does-not-exist",
+            || false,
+            Dictionary::new(),
+        );
+
+        assert!(result.is_err());
     }
 }

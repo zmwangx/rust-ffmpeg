@@ -73,6 +73,9 @@ impl From<AVColorSpace> for Space {
             AVCOL_SPC_YCGCO_RE => Space::YCGCO_RE,
             #[cfg(feature = "ffmpeg_7_1")]
             AVCOL_SPC_YCGCO_RO => Space::YCGCO_RO,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

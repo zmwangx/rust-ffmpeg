@@ -75,6 +75,17 @@ pub enum Type {
 
     #[cfg(feature = "ffmpeg_8_1")]
     EXIF,
+
+    #[cfg(feature = "ffmpeg_9_0")]
+    DYNAMIC_HDR_SMPTE_2094_APP5,
+    #[cfg(feature = "ffmpeg_9_0")]
+    IAMF_MIX_GAIN_PARAM,
+    #[cfg(feature = "ffmpeg_9_0")]
+    IAMF_DEMIXING_INFO_PARAM,
+    #[cfg(feature = "ffmpeg_9_0")]
+    IAMF_RECON_GAIN_INFO_PARAM,
+    #[cfg(feature = "ffmpeg_9_0")]
+    RAW_COLOR_PARAMS,
 }
 
 impl Type {
@@ -154,6 +165,20 @@ impl From<AVFrameSideDataType> for Type {
 
             #[cfg(feature = "ffmpeg_8_1")]
             AV_FRAME_DATA_EXIF => Type::EXIF,
+
+            #[cfg(feature = "ffmpeg_9_0")]
+            AV_FRAME_DATA_DYNAMIC_HDR_SMPTE_2094_APP5 => Type::DYNAMIC_HDR_SMPTE_2094_APP5,
+            #[cfg(feature = "ffmpeg_9_0")]
+            AV_FRAME_DATA_IAMF_MIX_GAIN_PARAM => Type::IAMF_MIX_GAIN_PARAM,
+            #[cfg(feature = "ffmpeg_9_0")]
+            AV_FRAME_DATA_IAMF_DEMIXING_INFO_PARAM => Type::IAMF_DEMIXING_INFO_PARAM,
+            #[cfg(feature = "ffmpeg_9_0")]
+            AV_FRAME_DATA_IAMF_RECON_GAIN_INFO_PARAM => Type::IAMF_RECON_GAIN_INFO_PARAM,
+            #[cfg(feature = "ffmpeg_9_0")]
+            AV_FRAME_DATA_RAW_COLOR_PARAMS => Type::RAW_COLOR_PARAMS,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }
@@ -226,6 +251,17 @@ impl From<Type> for AVFrameSideDataType {
 
             #[cfg(feature = "ffmpeg_8_1")]
             Type::EXIF => AV_FRAME_DATA_EXIF,
+
+            #[cfg(feature = "ffmpeg_9_0")]
+            Type::DYNAMIC_HDR_SMPTE_2094_APP5 => AV_FRAME_DATA_DYNAMIC_HDR_SMPTE_2094_APP5,
+            #[cfg(feature = "ffmpeg_9_0")]
+            Type::IAMF_MIX_GAIN_PARAM => AV_FRAME_DATA_IAMF_MIX_GAIN_PARAM,
+            #[cfg(feature = "ffmpeg_9_0")]
+            Type::IAMF_DEMIXING_INFO_PARAM => AV_FRAME_DATA_IAMF_DEMIXING_INFO_PARAM,
+            #[cfg(feature = "ffmpeg_9_0")]
+            Type::IAMF_RECON_GAIN_INFO_PARAM => AV_FRAME_DATA_IAMF_RECON_GAIN_INFO_PARAM,
+            #[cfg(feature = "ffmpeg_9_0")]
+            Type::RAW_COLOR_PARAMS => AV_FRAME_DATA_RAW_COLOR_PARAMS,
         }
     }
 }

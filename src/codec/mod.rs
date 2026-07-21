@@ -53,6 +53,21 @@ use std::str::from_utf8_unchecked;
 
 use ffi::*;
 
+/// Query a codec's supported configuration list via `avcodec_get_supported_config`.
+#[cfg(feature = "ffmpeg_9_0")]
+pub(crate) unsafe fn supported_config<T>(codec: *const AVCodec, config: AVCodecConfig) -> *const T {
+    let mut out: *const T = std::ptr::null();
+    avcodec_get_supported_config(
+        std::ptr::null(),
+        codec,
+        config,
+        0,
+        (&mut out as *mut *const T).cast(),
+        std::ptr::null_mut(),
+    );
+    out
+}
+
 pub fn version() -> u32 {
     unsafe { avcodec_version() }
 }

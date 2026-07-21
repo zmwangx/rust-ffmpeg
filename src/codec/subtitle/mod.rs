@@ -29,6 +29,9 @@ impl From<AVSubtitleType> for Type {
             SUBTITLE_BITMAP => Type::Bitmap,
             SUBTITLE_TEXT => Type::Text,
             SUBTITLE_ASS => Type::Ass,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

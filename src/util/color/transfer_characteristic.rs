@@ -66,6 +66,9 @@ impl From<AVColorTransferCharacteristic> for TransferCharacteristic {
 
             #[cfg(feature = "ffmpeg_8_1")]
             AVCOL_TRC_EXT_BASE | AVCOL_TRC_EXT_NB => TransferCharacteristic::Reserved0,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

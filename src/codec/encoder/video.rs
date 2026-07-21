@@ -11,7 +11,7 @@ use super::{MotionEstimation, Prediction};
 use crate::codec::{Context, traits};
 use crate::{Dictionary, Error, Rational, color, format};
 #[cfg(not(feature = "ffmpeg_5_0"))]
-use {frame, packet};
+use crate::{frame, packet};
 
 pub struct Video(pub Super);
 

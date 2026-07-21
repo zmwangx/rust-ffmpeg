@@ -2,9 +2,9 @@ use std::marker::PhantomData;
 use std::mem;
 use std::slice;
 
-use Error;
-use ffi::*;
-use format;
+use crate::Error;
+use crate::ffi::*;
+use crate::format;
 use libc::{c_int, size_t};
 
 pub struct Picture<'a> {

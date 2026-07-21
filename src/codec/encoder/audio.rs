@@ -10,7 +10,7 @@ use crate::codec::{Context, traits};
 use crate::util::format;
 use crate::{ChannelLayout, Dictionary, Error};
 #[cfg(not(feature = "ffmpeg_5_0"))]
-use {frame, packet};
+use crate::{frame, packet};
 
 pub struct Audio(pub Super);
 

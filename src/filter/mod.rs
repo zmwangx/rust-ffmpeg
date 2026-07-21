@@ -16,9 +16,9 @@ pub use self::graph::Graph;
 use std::ffi::{CStr, CString};
 use std::str::from_utf8_unchecked;
 
-use crate::ffi::*;
 #[cfg(not(feature = "ffmpeg_5_0"))]
-use Error;
+use crate::Error;
+use crate::ffi::*;
 
 #[cfg(not(feature = "ffmpeg_5_0"))]
 pub fn register_all() {

@@ -4,11 +4,11 @@ use std::ops::{Deref, DerefMut};
 
 use super::common::Context;
 use super::destructor;
+#[cfg(not(feature = "ffmpeg_5_0"))]
+use crate::Codec;
 use crate::ffi::*;
 use crate::util::range::Range;
 use crate::{Error, Packet, Stream, format};
-#[cfg(not(feature = "ffmpeg_5_0"))]
-use Codec;
 
 pub struct Input {
     ptr: *mut AVFormatContext,

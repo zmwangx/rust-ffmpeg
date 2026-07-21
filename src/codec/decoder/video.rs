@@ -1,19 +1,19 @@
 use std::ops::{Deref, DerefMut};
 
 #[cfg(not(feature = "ffmpeg_5_0"))]
-use ffi::*;
+use crate::ffi::*;
 use libc::c_int;
 
 use super::{Opened, slice};
 use crate::codec::Context;
 use crate::color;
+#[cfg(not(feature = "ffmpeg_5_0"))]
+use crate::frame;
 use crate::util::chroma;
 use crate::util::format;
+#[cfg(not(feature = "ffmpeg_5_0"))]
+use crate::{Error, packet};
 use crate::{FieldOrder, Rational};
-#[cfg(not(feature = "ffmpeg_5_0"))]
-use frame;
-#[cfg(not(feature = "ffmpeg_5_0"))]
-use {Error, packet};
 
 pub struct Video(pub Opened);
 

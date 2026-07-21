@@ -5,7 +5,7 @@ use std::str::from_utf8_unchecked;
 use super::{Flags, Type};
 use crate::ffi::*;
 #[cfg(not(feature = "ffmpeg_5_0"))]
-use {Picture, format};
+use crate::{Picture, format};
 
 pub enum Rect<'a> {
     None(*const AVSubtitleRect),

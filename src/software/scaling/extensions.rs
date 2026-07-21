@@ -1,8 +1,8 @@
 use super::{Context, Flags};
+#[cfg(not(feature = "ffmpeg_5_0"))]
+use crate::Picture;
 use crate::util::format;
 use crate::{Error, decoder, frame};
-#[cfg(not(feature = "ffmpeg_5_0"))]
-use Picture;
 
 #[cfg(not(feature = "ffmpeg_5_0"))]
 impl<'a> Picture<'a> {

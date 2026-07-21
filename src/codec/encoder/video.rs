@@ -16,14 +16,29 @@ use {frame, packet};
 pub struct Video(pub Super);
 
 impl Video {
-    /// Sets the hardware frame pool used as input by a hardware encoder.
+    /// Sets the hardware device used by a hardware encoder.
     ///
     /// This must be called before opening the encoder.
+    pub fn set_hardware_device(&mut self, device: &hardware::Device) -> Result<(), Error> {
+        let device = device.try_clone_raw()?;
+        unsafe {
+            av_buffer_unref(&mut (*self.as_mut_ptr()).hw_device_ctx);
+            (*self.as_mut_ptr()).hw_device_ctx = device;
+        }
+        Ok(())
+    }
+
+    /// Sets the hardware frame pool used as input by a hardware encoder.
+    ///
+    /// This also selects the pool's hardware pixel format on the encoder and
+    /// must be called before opening it.
     pub fn set_hardware_frames(&mut self, frames: &hardware::Frames) -> Result<(), Error> {
+        let format = frames.format();
         let frames = frames.try_clone_raw()?;
         unsafe {
             av_buffer_unref(&mut (*self.as_mut_ptr()).hw_frames_ctx);
             (*self.as_mut_ptr()).hw_frames_ctx = frames;
+            (*self.as_mut_ptr()).pix_fmt = format.into();
         }
         Ok(())
     }

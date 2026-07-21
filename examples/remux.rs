@@ -2,7 +2,7 @@ extern crate ffmpeg_next as ffmpeg;
 
 use std::env;
 
-use ffmpeg::{codec, encoder, format, log, media, Rational};
+use crate::ffmpeg::{Rational, codec, encoder, format, log, media};
 
 fn main() {
     let input_file = env::args().nth(1).expect("missing input file");

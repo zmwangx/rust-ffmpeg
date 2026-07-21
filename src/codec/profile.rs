@@ -1,5 +1,5 @@
 use super::Id;
-use ffi::*;
+use crate::ffi::*;
 use libc::c_int;
 
 #[allow(non_camel_case_types)]

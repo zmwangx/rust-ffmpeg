@@ -1,8 +1,8 @@
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
-use ffi::AVColorRange::*;
-use ffi::*;
+use crate::ffi::AVColorRange::*;
+use crate::ffi::*;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Range {
@@ -31,6 +31,9 @@ impl From<AVColorRange> for Range {
             AVCOL_RANGE_MPEG => Range::MPEG,
             AVCOL_RANGE_JPEG => Range::JPEG,
             AVCOL_RANGE_NB => Range::Unspecified,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

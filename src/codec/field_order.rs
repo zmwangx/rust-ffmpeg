@@ -1,5 +1,5 @@
-use ffi::AVFieldOrder::*;
-use ffi::*;
+use crate::ffi::AVFieldOrder::*;
+use crate::ffi::*;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum FieldOrder {
@@ -20,6 +20,9 @@ impl From<AVFieldOrder> for FieldOrder {
             AV_FIELD_BB => FieldOrder::BB,
             AV_FIELD_TB => FieldOrder::TB,
             AV_FIELD_BT => FieldOrder::BT,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

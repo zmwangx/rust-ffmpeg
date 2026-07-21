@@ -1,5 +1,5 @@
-use ffi::AVRounding::*;
-use ffi::*;
+use crate::ffi::AVRounding::*;
+use crate::ffi::*;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Rounding {
@@ -21,6 +21,9 @@ impl From<AVRounding> for Rounding {
             AV_ROUND_UP => Rounding::Up,
             AV_ROUND_NEAR_INF => Rounding::NearInfinity,
             AV_ROUND_PASS_MINMAX => Rounding::PassMinMax,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

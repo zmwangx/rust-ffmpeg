@@ -1,5 +1,5 @@
-use ffi::SwrFilterType::*;
-use ffi::*;
+use crate::ffi::SwrFilterType::*;
+use crate::ffi::*;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Filter {
@@ -14,6 +14,9 @@ impl From<SwrFilterType> for Filter {
             SWR_FILTER_TYPE_CUBIC => Filter::Cubic,
             SWR_FILTER_TYPE_BLACKMAN_NUTTALL => Filter::BlackmanNuttall,
             SWR_FILTER_TYPE_KAISER => Filter::Kaiser,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

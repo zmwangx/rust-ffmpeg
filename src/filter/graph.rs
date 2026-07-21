@@ -3,9 +3,9 @@ use std::ptr;
 use std::str::from_utf8_unchecked;
 
 use super::{Context, Filter};
-use ffi::*;
+use crate::Error;
+use crate::ffi::*;
 use libc::c_int;
-use Error;
 
 pub struct Graph {
     ptr: *mut AVFilterGraph,
@@ -150,7 +150,13 @@ impl<'a> Parser<'a> {
             if self.inputs.is_null() {
                 self.inputs = input;
             } else {
-                (*self.inputs).next = input;
+                let mut prev_input = self.inputs;
+                let mut next_input = (*prev_input).next;
+                while !next_input.is_null() {
+                    prev_input = next_input;
+                    next_input = (*next_input).next;
+                }
+                (*prev_input).next = input;
             }
         }
 
@@ -176,7 +182,13 @@ impl<'a> Parser<'a> {
             if self.outputs.is_null() {
                 self.outputs = output;
             } else {
-                (*self.outputs).next = output;
+                let mut prev_output = self.outputs;
+                let mut next_output = (*prev_output).next;
+                while !next_output.is_null() {
+                    prev_output = next_output;
+                    next_output = (*next_output).next;
+                }
+                (*prev_output).next = output;
             }
         }
 

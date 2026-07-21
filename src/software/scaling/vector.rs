@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 use std::slice;
 
-use ffi::*;
+use crate::ffi::*;
 use libc::{c_double, c_int};
 
 pub struct Vector<'a> {

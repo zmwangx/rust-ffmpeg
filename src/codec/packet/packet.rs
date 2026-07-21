@@ -3,9 +3,9 @@ use std::mem;
 use std::slice;
 
 use super::{Borrow, Flags, Mut, Ref, SideData};
-use ffi::*;
+use crate::ffi::*;
+use crate::{Error, Rational, format};
 use libc::c_int;
-use {format, Error, Rational};
 
 pub struct Packet(AVPacket);
 
@@ -347,9 +347,11 @@ impl<'a> Iterator for SideDataIter<'a> {
     }
 }
 
+impl<'a> ExactSizeIterator for SideDataIter<'a> {}
+
 #[cfg(test)]
 mod tests {
-    use super::Packet;
+    use super::*;
 
     #[test]
     fn empty_packet_without_side_data_is_still_empty_for_write_checks() {
@@ -362,11 +364,16 @@ mod tests {
     #[test]
     fn zero_sized_packet_with_side_data_is_not_treated_as_invalid_empty_packet() {
         let mut packet = Packet::empty();
-        packet.0.side_data_elems = 1;
+        let side_data = unsafe {
+            av_packet_new_side_data(
+                &mut packet.0,
+                AVPacketSideDataType::AV_PKT_DATA_NEW_EXTRADATA,
+                1,
+            )
+        };
 
+        assert!(!side_data.is_null());
         assert!(unsafe { packet.is_empty() });
         assert!(!packet.lacks_payload_and_side_data());
     }
 }
-
-impl<'a> ExactSizeIterator for SideDataIter<'a> {}

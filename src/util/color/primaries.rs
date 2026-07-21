@@ -1,8 +1,8 @@
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
-use ffi::AVColorPrimaries::*;
-use ffi::*;
+use crate::ffi::AVColorPrimaries::*;
+use crate::ffi::*;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Primaries {
@@ -69,6 +69,9 @@ impl From<AVColorPrimaries> for Primaries {
 
             #[cfg(feature = "ffmpeg_8_1")]
             AVCOL_PRI_EXT_BASE | AVCOL_PRI_EXT_NB => Primaries::Reserved0,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

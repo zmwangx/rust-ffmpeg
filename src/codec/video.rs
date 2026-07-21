@@ -1,8 +1,8 @@
 use std::ops::Deref;
 
 use super::codec::Codec;
-use ffi::*;
-use {format, Rational};
+use crate::ffi::*;
+use crate::{Rational, format};
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub struct Video {
@@ -18,20 +18,36 @@ impl Video {
 impl Video {
     pub fn rates(&self) -> Option<RateIter> {
         unsafe {
-            if (*self.codec.as_ptr()).supported_framerates.is_null() {
+            #[cfg(feature = "ffmpeg_9_0")]
+            let ptr = super::supported_config::<AVRational>(
+                self.codec.as_ptr(),
+                AVCodecConfig::AV_CODEC_CONFIG_FRAME_RATE,
+            );
+            #[cfg(not(feature = "ffmpeg_9_0"))]
+            let ptr = (*self.codec.as_ptr()).supported_framerates;
+
+            if ptr.is_null() {
                 None
             } else {
-                Some(RateIter::new((*self.codec.as_ptr()).supported_framerates))
+                Some(RateIter::new(ptr))
             }
         }
     }
 
     pub fn formats(&self) -> Option<FormatIter> {
         unsafe {
-            if (*self.codec.as_ptr()).pix_fmts.is_null() {
+            #[cfg(feature = "ffmpeg_9_0")]
+            let ptr = super::supported_config::<AVPixelFormat>(
+                self.codec.as_ptr(),
+                AVCodecConfig::AV_CODEC_CONFIG_PIX_FORMAT,
+            );
+            #[cfg(not(feature = "ffmpeg_9_0"))]
+            let ptr = (*self.codec.as_ptr()).pix_fmts;
+
+            if ptr.is_null() {
                 None
             } else {
-                Some(FormatIter::new((*self.codec.as_ptr()).pix_fmts))
+                Some(FormatIter::new(ptr))
             }
         }
     }

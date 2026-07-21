@@ -1,5 +1,5 @@
 use super::Vector;
-use ffi::*;
+use crate::ffi::*;
 
 pub struct Filter {
     ptr: *mut SwsFilter,

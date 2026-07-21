@@ -1,11 +1,11 @@
-use ffi;
+use crate::Error;
+use crate::ffi;
 use libc;
 use std::any::TypeId;
 use std::convert::TryFrom;
 use std::ffi::{c_int, c_void};
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::mem::ManuallyDrop;
-use Error;
 
 /// Default `AVIOContext` buffer size, matching libavformat's own default.
 const DEFAULT_BUFFER_SIZE: usize = 32768;
@@ -424,10 +424,10 @@ fn map_io_error(e: std::io::Error) -> i32 {
     // ...). On Windows it is a Win32 error code, not an errno, so it cannot
     // be used and we fall back to mapping the `ErrorKind`.
     #[cfg(unix)]
-    if let Some(errno) = e.raw_os_error() {
-        if errno > 0 {
-            return ffi::AVERROR(errno);
-        }
+    if let Some(errno) = e.raw_os_error()
+        && errno > 0
+    {
+        return ffi::AVERROR(errno);
     }
     // Errors returned from the read/write callbacks are sticky: there is no
     // retry layer above a custom AVIOContext (FFmpeg retries EINTR/EAGAIN

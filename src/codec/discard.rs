@@ -1,5 +1,5 @@
-use ffi::AVDiscard::*;
-use ffi::*;
+use crate::ffi::AVDiscard::*;
+use crate::ffi::*;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Discard {
@@ -22,6 +22,9 @@ impl From<AVDiscard> for Discard {
             AVDISCARD_NONINTRA => Discard::NonIntra,
             AVDISCARD_NONKEY => Discard::NonKey,
             AVDISCARD_ALL => Discard::All,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

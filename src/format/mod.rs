@@ -1,6 +1,6 @@
-pub use util::format::{pixel, Pixel};
-pub use util::format::{sample, Sample};
-use util::interrupt;
+pub use crate::util::format::{Pixel, pixel};
+pub use crate::util::format::{Sample, sample};
+use crate::util::interrupt;
 
 pub mod stream;
 
@@ -12,7 +12,7 @@ pub use self::context::Context;
 pub mod format;
 #[cfg(not(feature = "ffmpeg_5_0"))]
 pub use self::format::list;
-pub use self::format::{flag, Flags};
+pub use self::format::{Flags, flag};
 pub use self::format::{Input, Output};
 
 pub mod network;
@@ -22,8 +22,8 @@ use std::path::Path;
 use std::ptr;
 use std::str::from_utf8_unchecked;
 
-use ffi::*;
-use {Dictionary, Error, Format};
+use crate::ffi::*;
+use crate::{Dictionary, Error, Format};
 
 #[cfg(not(feature = "ffmpeg_5_0"))]
 pub fn register_all() {
@@ -229,8 +229,8 @@ where
     }
 }
 
-pub fn input_with_interrupt_and_dictionary<F>(
-    path: &Path,
+pub fn input_with_interrupt_and_dictionary<P: AsRef<Path> + ?Sized, F>(
+    path: &P,
     closure: F,
     options: Dictionary,
 ) -> Result<context::Input, Error>
@@ -526,5 +526,21 @@ pub fn output_to_stream(
 
             e => Err(Error::from(e)),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn input_with_interrupt_and_dictionary_accepts_str_path() {
+        let result = input_with_interrupt_and_dictionary(
+            "/ffmpeg-next-input-does-not-exist",
+            || false,
+            Dictionary::new(),
+        );
+
+        assert!(result.is_err());
     }
 }

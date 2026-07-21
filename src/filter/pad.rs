@@ -2,8 +2,8 @@ use std::ffi::CStr;
 use std::marker::PhantomData;
 use std::str::from_utf8_unchecked;
 
-use ffi::*;
-use media;
+use crate::ffi::*;
+use crate::media;
 
 pub struct Pad<'a> {
     ptr: *const AVFilterPad,

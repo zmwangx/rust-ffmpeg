@@ -1,7 +1,7 @@
 use super::{Sink, Source};
-use ffi::*;
+use crate::ffi::*;
+use crate::{ChannelLayout, format, option};
 use libc::c_void;
-use {format, option, ChannelLayout};
 
 pub struct Context {
     ptr: *mut AVFilterContext,

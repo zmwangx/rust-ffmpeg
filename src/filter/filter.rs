@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 use std::str::from_utf8_unchecked;
 
 use super::{Flags, Pad};
-use ffi::*;
+use crate::ffi::*;
 
 pub struct Filter {
     ptr: *mut AVFilter,

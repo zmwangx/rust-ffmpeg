@@ -1,8 +1,8 @@
 mod traits;
 pub use self::traits::{Gettable, Iterable, Settable, Target};
 
-use ffi::AVOptionType::*;
-use ffi::*;
+use crate::ffi::AVOptionType::*;
+use crate::ffi::*;
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub enum Type {
@@ -64,6 +64,9 @@ impl From<AVOptionType> for Type {
 
             #[cfg(feature = "ffmpeg_7_1")]
             AV_OPT_TYPE_UINT => Type::UInt,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

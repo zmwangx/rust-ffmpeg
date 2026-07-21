@@ -1,5 +1,5 @@
-use ffi::AVPictureType::*;
-use ffi::*;
+use crate::ffi::AVPictureType::*;
+use crate::ffi::*;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Type {
@@ -25,6 +25,9 @@ impl From<AVPictureType> for Type {
             AV_PICTURE_TYPE_SI => Type::SI,
             AV_PICTURE_TYPE_SP => Type::SP,
             AV_PICTURE_TYPE_BI => Type::BI,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

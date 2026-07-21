@@ -10,8 +10,8 @@ pub use self::rect_mut::{AssMut, BitmapMut, RectMut, TextMut};
 use std::marker::PhantomData;
 use std::mem;
 
-use ffi::AVSubtitleType::*;
-use ffi::*;
+use crate::ffi::AVSubtitleType::*;
+use crate::ffi::*;
 use libc::{c_uint, size_t};
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
@@ -29,6 +29,9 @@ impl From<AVSubtitleType> for Type {
             SUBTITLE_BITMAP => Type::Bitmap,
             SUBTITLE_TEXT => Type::Text,
             SUBTITLE_ASS => Type::Ass,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

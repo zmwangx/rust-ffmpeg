@@ -1,5 +1,5 @@
-use ffi::AVAudioServiceType::*;
-use ffi::*;
+use crate::ffi::AVAudioServiceType::*;
+use crate::ffi::*;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum AudioService {
@@ -27,6 +27,9 @@ impl From<AVAudioServiceType> for AudioService {
             AV_AUDIO_SERVICE_TYPE_VOICE_OVER => AudioService::VoiceOver,
             AV_AUDIO_SERVICE_TYPE_KARAOKE => AudioService::Karaoke,
             AV_AUDIO_SERVICE_TYPE_NB => AudioService::Main,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

@@ -5,8 +5,8 @@ use std::ptr;
 use std::str::from_utf8_unchecked;
 
 use super::Flags;
-use ffi::*;
-use {codec, media};
+use crate::ffi::*;
+use crate::{codec, media};
 
 pub struct Output {
     ptr: *mut AVOutputFormat,

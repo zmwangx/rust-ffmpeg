@@ -1,5 +1,5 @@
-use ffi::*;
-use sys::SwrEngine::*;
+use crate::ffi::*;
+use crate::sys::SwrEngine::*;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Engine {
@@ -13,6 +13,9 @@ impl From<SwrEngine> for Engine {
             SWR_ENGINE_SWR => Engine::Software,
             SWR_ENGINE_SOXR => Engine::SoundExchange,
             SWR_ENGINE_NB => Engine::Software,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

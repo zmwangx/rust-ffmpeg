@@ -2,12 +2,12 @@ use std::mem;
 use std::ops::Deref;
 
 use super::Chapter;
-use ffi::*;
-use format::context::common::Context;
-use {Dictionary, DictionaryMut, Rational};
+use crate::ffi::*;
+use crate::format::context::common::Context;
+use crate::{Dictionary, DictionaryMut, Rational};
 
 // WARNING: index refers to the offset in the chapters array (starting from 0)
-// it is not necessarly equal to the id (which may start at 1)
+// it is not necessarily equal to the id (which may start at 1)
 pub struct ChapterMut<'a> {
     context: &'a mut Context,
     index: usize,
@@ -17,16 +17,18 @@ pub struct ChapterMut<'a> {
 
 impl<'a> ChapterMut<'a> {
     pub unsafe fn wrap(context: &mut Context, index: usize) -> ChapterMut<'_> {
-        ChapterMut {
-            context: mem::transmute_copy(&context),
-            index,
+        unsafe {
+            ChapterMut {
+                context: mem::transmute_copy(&context),
+                index,
 
-            immutable: Chapter::wrap(mem::transmute_copy(&context), index),
+                immutable: Chapter::wrap(mem::transmute_copy(&context), index),
+            }
         }
     }
 
     pub unsafe fn as_mut_ptr(&mut self) -> *mut AVChapter {
-        *(*self.context.as_mut_ptr()).chapters.add(self.index)
+        unsafe { *(*self.context.as_mut_ptr()).chapters.add(self.index) }
     }
 }
 

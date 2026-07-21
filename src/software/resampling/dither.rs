@@ -1,5 +1,5 @@
-use ffi::SwrDitherType::*;
-use ffi::*;
+use crate::ffi::SwrDitherType::*;
+use crate::ffi::*;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Dither {
@@ -34,6 +34,9 @@ impl From<SwrDitherType> for Dither {
             SWR_DITHER_NS_LOW_SHIBATA => Dither::NoiseShapingLowShibata,
             SWR_DITHER_NS_HIGH_SHIBATA => Dither::NoiseShapingHighShibata,
             SWR_DITHER_NB => Dither::None,
+
+            #[cfg(feature = "non-exhaustive-enums")]
+            _ => unimplemented!(),
         }
     }
 }

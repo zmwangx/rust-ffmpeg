@@ -10,8 +10,8 @@ pub use self::rect_mut::{AssMut, BitmapMut, RectMut, TextMut};
 use std::marker::PhantomData;
 use std::mem;
 
-use ffi::AVSubtitleType::*;
-use ffi::*;
+use crate::ffi::AVSubtitleType::*;
+use crate::ffi::*;
 use libc::{c_uint, size_t};
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]

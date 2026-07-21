@@ -1,16 +1,16 @@
 use std::ops::{Deref, DerefMut};
 use std::ptr;
 
-use ffi::*;
+use crate::ffi::*;
 #[cfg(not(feature = "ffmpeg_5_0"))]
 use libc::c_int;
 
 use super::Encoder as Super;
-use codec::{traits, Context};
-use util::format;
+use crate::codec::{Context, traits};
+use crate::util::format;
+use crate::{ChannelLayout, Dictionary, Error};
 #[cfg(not(feature = "ffmpeg_5_0"))]
 use {frame, packet};
-use {ChannelLayout, Dictionary, Error};
 
 pub struct Audio(pub Super);
 

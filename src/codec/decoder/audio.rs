@@ -6,13 +6,13 @@ use ffi::*;
 use libc::c_int;
 
 use super::Opened;
-use codec::Context;
+use crate::codec::Context;
+use crate::util::format;
+use crate::{AudioService, ChannelLayout};
 #[cfg(not(feature = "ffmpeg_5_0"))]
 use frame;
-use util::format;
 #[cfg(not(feature = "ffmpeg_5_0"))]
-use {packet, Error};
-use {AudioService, ChannelLayout};
+use {Error, packet};
 
 pub struct Audio(pub Opened);
 

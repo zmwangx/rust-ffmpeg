@@ -3,8 +3,8 @@ extern crate ffmpeg_next as ffmpeg;
 use std::env;
 use std::path::Path;
 
-use ffmpeg::{codec, filter, format, frame, media};
-use ffmpeg::{rescale, Rescale};
+use crate::ffmpeg::{Rescale, rescale};
+use crate::ffmpeg::{codec, filter, format, frame, media};
 
 fn filter(
     spec: &str,

@@ -5,7 +5,7 @@ use std::ptr;
 use std::str::from_utf8_unchecked;
 
 use super::{Iter, Owned};
-use ffi::*;
+use crate::ffi::*;
 
 pub struct Ref<'a> {
     ptr: *const AVDictionary,

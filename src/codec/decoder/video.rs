@@ -4,16 +4,16 @@ use std::ops::{Deref, DerefMut};
 use ffi::*;
 use libc::c_int;
 
-use super::{slice, Opened};
-use codec::Context;
-use color;
+use super::{Opened, slice};
+use crate::codec::Context;
+use crate::color;
+use crate::util::chroma;
+use crate::util::format;
+use crate::{FieldOrder, Rational};
 #[cfg(not(feature = "ffmpeg_5_0"))]
 use frame;
-use util::chroma;
-use util::format;
 #[cfg(not(feature = "ffmpeg_5_0"))]
-use {packet, Error};
-use {FieldOrder, Rational};
+use {Error, packet};
 
 pub struct Video(pub Opened);
 

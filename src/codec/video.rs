@@ -1,8 +1,8 @@
 use std::ops::Deref;
 
 use super::codec::Codec;
-use ffi::*;
-use {format, Rational};
+use crate::ffi::*;
+use crate::{Rational, format};
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub struct Video {

@@ -1,8 +1,8 @@
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
-use ffi::AVColorTransferCharacteristic::*;
-use ffi::*;
+use crate::ffi::AVColorTransferCharacteristic::*;
+use crate::ffi::*;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum TransferCharacteristic {

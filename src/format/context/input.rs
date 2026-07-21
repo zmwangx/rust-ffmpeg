@@ -4,11 +4,11 @@ use std::ops::{Deref, DerefMut};
 
 use super::common::Context;
 use super::destructor;
-use ffi::*;
-use util::range::Range;
+use crate::ffi::*;
+use crate::util::range::Range;
+use crate::{Error, Packet, Stream, format};
 #[cfg(not(feature = "ffmpeg_5_0"))]
 use Codec;
-use {format, Error, Packet, Stream};
 
 pub struct Input {
     ptr: *mut AVFormatContext,
@@ -19,43 +19,51 @@ unsafe impl Send for Input {}
 
 impl Input {
     pub unsafe fn wrap(ptr: *mut AVFormatContext) -> Self {
-        Input {
-            ptr,
-            ctx: Context::wrap(ptr, destructor::Mode::Input),
+        unsafe {
+            Input {
+                ptr,
+                ctx: Context::wrap(ptr, destructor::Mode::Input),
+            }
         }
     }
     pub unsafe fn wrap_with_custom_io(
         ptr: *mut AVFormatContext,
         custom_io: format::context::StreamIo,
     ) -> Self {
-        Input {
-            ptr,
-            ctx: Context::wrap(ptr, destructor::Mode::InputCustomIo(custom_io)),
+        unsafe {
+            Input {
+                ptr,
+                ctx: Context::wrap(ptr, destructor::Mode::InputCustomIo(custom_io)),
+            }
         }
     }
 
     pub unsafe fn wrap_with_interrupt(
         ptr: *mut AVFormatContext,
-        guard: ::util::interrupt::InterruptGuard,
+        guard: crate::util::interrupt::InterruptGuard,
     ) -> Self {
-        Input {
-            ptr,
-            ctx: Context::wrap_with_interrupt(ptr, destructor::Mode::Input, guard),
+        unsafe {
+            Input {
+                ptr,
+                ctx: Context::wrap_with_interrupt(ptr, destructor::Mode::Input, guard),
+            }
         }
     }
 
     pub unsafe fn wrap_with_custom_io_and_interrupt(
         ptr: *mut AVFormatContext,
         custom_io: format::context::StreamIo,
-        guard: ::util::interrupt::InterruptGuard,
+        guard: crate::util::interrupt::InterruptGuard,
     ) -> Self {
-        Input {
-            ptr,
-            ctx: Context::wrap_with_interrupt(
+        unsafe {
+            Input {
                 ptr,
-                destructor::Mode::InputCustomIo(custom_io),
-                guard,
-            ),
+                ctx: Context::wrap_with_interrupt(
+                    ptr,
+                    destructor::Mode::InputCustomIo(custom_io),
+                    guard,
+                ),
+            }
         }
     }
 
@@ -195,11 +203,7 @@ impl Input {
                 return None;
             }
             let sz = avio_size(pb);
-            if sz < 0 {
-                None
-            } else {
-                Some(sz)
-            }
+            if sz < 0 { None } else { Some(sz) }
         }
     }
 
@@ -236,12 +240,14 @@ impl Input {
 /// # Safety
 /// `pb` must be null or a valid `AVIOContext` owned by the format context.
 unsafe fn unlatch_exit(pb: *mut AVIOContext) -> bool {
-    if pb.is_null() || (*pb).error != AVERROR_EXIT {
-        return false;
+    unsafe {
+        if pb.is_null() || (*pb).error != AVERROR_EXIT {
+            return false;
+        }
+        (*pb).error = 0;
+        (*pb).eof_reached = 0;
+        true
     }
-    (*pb).error = 0;
-    (*pb).eof_reached = 0;
-    true
 }
 
 impl Deref for Input {

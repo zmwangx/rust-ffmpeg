@@ -1,6 +1,6 @@
 use std::convert::TryFrom;
 
-use ffi::*;
+use crate::ffi::*;
 use libc::c_int;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]

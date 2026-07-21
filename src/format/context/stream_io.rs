@@ -1,11 +1,11 @@
-use ffi;
+use crate::Error;
+use crate::ffi;
 use libc;
 use std::any::TypeId;
 use std::convert::TryFrom;
 use std::ffi::{c_int, c_void};
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::mem::ManuallyDrop;
-use Error;
 
 /// Default `AVIOContext` buffer size, matching libavformat's own default.
 const DEFAULT_BUFFER_SIZE: usize = 32768;

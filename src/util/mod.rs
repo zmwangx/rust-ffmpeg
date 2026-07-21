@@ -22,7 +22,7 @@ pub mod channel_layout;
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
-use ffi::*;
+use crate::ffi::*;
 
 #[inline(always)]
 pub fn version() -> u32 {

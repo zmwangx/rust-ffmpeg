@@ -1,6 +1,6 @@
 use super::StreamIo;
-use ffi::*;
-use util::interrupt::InterruptGuard;
+use crate::ffi::*;
+use crate::util::interrupt::InterruptGuard;
 
 #[derive(Debug)]
 pub enum Mode {

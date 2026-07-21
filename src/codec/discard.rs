@@ -1,5 +1,5 @@
-use ffi::AVDiscard::*;
-use ffi::*;
+use crate::ffi::AVDiscard::*;
+use crate::ffi::*;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Discard {

@@ -4,9 +4,9 @@ use std::slice;
 use std::str::from_utf8_unchecked;
 
 use super::Frame;
-use ffi::AVFrameSideDataType::*;
-use ffi::*;
-use DictionaryRef;
+use crate::DictionaryRef;
+use crate::ffi::AVFrameSideDataType::*;
+use crate::ffi::*;
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Type {

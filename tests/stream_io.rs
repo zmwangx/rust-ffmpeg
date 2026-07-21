@@ -1,7 +1,7 @@
 extern crate ffmpeg_next;
 
 use ffmpeg_next::format::context::{Input, Output, StreamIo};
-use ffmpeg_next::{format, Error};
+use ffmpeg_next::{Error, format};
 use std::io::Cursor;
 
 fn assert_send<T: Send>() {}
@@ -203,8 +203,8 @@ fn interrupted_reads_are_retried() {
 #[test]
 fn armed_but_unfired_interrupt_retries_transient_interrupted() {
     use std::io::Read;
-    use std::sync::atomic::{AtomicBool, Ordering};
     use std::sync::Arc;
+    use std::sync::atomic::{AtomicBool, Ordering};
 
     // With an interrupt callback INSTALLED but its token unfired, a transient
     // `Interrupted` must still be retried, not aborted: the callbacks poll the
@@ -277,8 +277,8 @@ fn armed_interrupt_aborts_during_open() {
 #[test]
 fn cancel_is_honored_over_a_stream_that_keeps_returning_data() {
     use std::io::{Read, Seek, SeekFrom};
-    use std::sync::atomic::{AtomicBool, Ordering};
     use std::sync::Arc;
+    use std::sync::atomic::{AtomicBool, Ordering};
 
     // Direct test of the top-of-loop interrupt poll: a stream that ALWAYS
     // returns data and NEVER returns `Interrupted`. Pre-fix the only poll was
@@ -334,8 +334,8 @@ fn cancel_is_honored_over_a_stream_that_keeps_returning_data() {
 #[test]
 fn level_triggered_cancel_aborts_parked_read_and_seek_resumes() {
     use std::io::{Read, Seek, SeekFrom};
-    use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
     use std::sync::Arc;
+    use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 
     // Models a conforming network adapter parked in a blocking read when a
     // LEVEL-triggered cancel fires: every read at/past `gate` observes the
@@ -429,9 +429,9 @@ fn level_triggered_cancel_aborts_parked_read_and_seek_resumes() {
 
 #[test]
 fn url_lane_interrupt_abort_unlatches_on_seek() {
-    use ffmpeg_next::ffi::{avio_read, AVERROR_EXIT};
-    use std::sync::atomic::{AtomicBool, Ordering};
+    use ffmpeg_next::ffi::{AVERROR_EXIT, avio_read};
     use std::sync::Arc;
+    use std::sync::atomic::{AtomicBool, Ordering};
 
     // The URL/local-file twin of the custom-AVIO test above: FFmpeg's own
     // protocol layer (`retry_transfer_wrapper`) aborts with AVERROR_EXIT when
@@ -520,8 +520,8 @@ fn url_lane_interrupt_abort_unlatches_on_seek() {
 #[test]
 fn read_buffer_handed_to_the_stream_is_initialized_and_readable() {
     use std::io::{Read, Seek, SeekFrom};
-    use std::sync::atomic::{AtomicU64, Ordering};
     use std::sync::Arc;
+    use std::sync::atomic::{AtomicU64, Ordering};
 
     // FFmpeg hands the read callback buffers that may be freshly allocated
     // (probe buffers, internal reallocations) or hold stale bytes from
@@ -568,8 +568,8 @@ fn read_buffer_handed_to_the_stream_is_initialized_and_readable() {
 #[test]
 fn failed_refill_does_not_clobber_the_buffered_window() {
     use std::io::{Read, Seek, SeekFrom};
-    use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
     use std::sync::Arc;
+    use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 
     // Regression test for the abort-resume corruption: the whole file prefix
     // sits in ONE AVIOContext buffer window (a single partial read below the
@@ -714,8 +714,8 @@ fn custom_io_flag_is_set_on_both_contexts() {
 
 #[test]
 fn writable_stream_is_flushed_on_drop() {
-    use std::sync::atomic::{AtomicBool, Ordering};
     use std::sync::Arc;
+    use std::sync::atomic::{AtomicBool, Ordering};
 
     struct FlushTracker(Arc<AtomicBool>);
     impl std::io::Write for FlushTracker {

@@ -1,8 +1,9 @@
 extern crate ffmpeg_next as ffmpeg;
 
-use ffmpeg::{
-    format::{sample::Type, Sample},
-    frame, ChannelLayout,
+use crate::ffmpeg::{
+    ChannelLayout,
+    format::{Sample, sample::Type},
+    frame,
 };
 
 const SAMPLES: usize = 1024;

@@ -1,11 +1,11 @@
 use std::ops::{Deref, DerefMut};
 
-use ffi::*;
+use crate::ffi::*;
 use libc::c_int;
 
 use super::Opened;
-use codec::Context;
-use {packet, Error};
+use crate::codec::Context;
+use crate::{Error, packet};
 
 pub struct Subtitle(pub Opened);
 
@@ -13,7 +13,7 @@ impl Subtitle {
     pub fn decode<P: packet::Ref>(
         &mut self,
         packet: &P,
-        out: &mut ::Subtitle,
+        out: &mut crate::Subtitle,
     ) -> Result<bool, Error> {
         unsafe {
             let mut got: c_int = 0;

@@ -1,8 +1,8 @@
 use std::ops::Deref;
 
 use super::codec::Codec;
-use ffi::*;
-use {format, ChannelLayout};
+use crate::ffi::*;
+use crate::{ChannelLayout, format};
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub struct Audio {

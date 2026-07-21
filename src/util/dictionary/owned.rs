@@ -4,7 +4,7 @@ use std::ops::{Deref, DerefMut};
 use std::ptr;
 
 use super::mutable;
-use ffi::*;
+use crate::ffi::*;
 
 pub struct Owned<'a> {
     inner: mutable::Ref<'a>,
@@ -18,16 +18,20 @@ impl<'a> Default for Owned<'a> {
 
 impl<'a> Owned<'a> {
     pub unsafe fn own(ptr: *mut AVDictionary) -> Self {
-        Owned {
-            inner: mutable::Ref::wrap(ptr),
+        unsafe {
+            Owned {
+                inner: mutable::Ref::wrap(ptr),
+            }
         }
     }
 
     pub unsafe fn disown(mut self) -> *mut AVDictionary {
-        let result = self.inner.as_mut_ptr();
-        self.inner = mutable::Ref::wrap(ptr::null_mut());
+        unsafe {
+            let result = self.inner.as_mut_ptr();
+            self.inner = mutable::Ref::wrap(ptr::null_mut());
 
-        result
+            result
+        }
     }
 }
 

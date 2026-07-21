@@ -1,7 +1,7 @@
 use std::panic;
 use std::process;
 
-use ffi::*;
+use crate::ffi::*;
 use libc::{c_int, c_void};
 
 pub struct Interrupt {
@@ -39,7 +39,9 @@ where
 }
 
 unsafe fn drop_box<F>(opaque: *mut c_void) {
-    drop(Box::from_raw(opaque as *mut F));
+    unsafe {
+        drop(Box::from_raw(opaque as *mut F));
+    }
 }
 
 pub fn new<F>(opaque: Box<F>) -> Interrupt

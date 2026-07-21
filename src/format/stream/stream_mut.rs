@@ -2,9 +2,9 @@ use std::mem;
 use std::ops::Deref;
 
 use super::Stream;
-use ffi::*;
-use format::context::common::Context;
-use {codec, Dictionary, Rational};
+use crate::ffi::*;
+use crate::format::context::common::Context;
+use crate::{Dictionary, Rational, codec};
 
 pub struct StreamMut<'a> {
     context: &'a mut Context,
@@ -15,16 +15,18 @@ pub struct StreamMut<'a> {
 
 impl<'a> StreamMut<'a> {
     pub unsafe fn wrap(context: &mut Context, index: usize) -> StreamMut<'_> {
-        StreamMut {
-            context: mem::transmute_copy(&context),
-            index,
+        unsafe {
+            StreamMut {
+                context: mem::transmute_copy(&context),
+                index,
 
-            immutable: Stream::wrap(mem::transmute_copy(&context), index),
+                immutable: Stream::wrap(mem::transmute_copy(&context), index),
+            }
         }
     }
 
     pub unsafe fn as_mut_ptr(&mut self) -> *mut AVStream {
-        *(*self.context.as_mut_ptr()).streams.add(self.index)
+        unsafe { *(*self.context.as_mut_ptr()).streams.add(self.index) }
     }
 }
 

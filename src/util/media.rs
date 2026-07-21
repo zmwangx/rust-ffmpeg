@@ -1,5 +1,5 @@
-use ffi::AVMediaType::*;
-use ffi::*;
+use crate::ffi::AVMediaType::*;
+use crate::ffi::*;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Type {

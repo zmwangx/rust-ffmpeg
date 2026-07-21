@@ -14,7 +14,7 @@ use std::env;
 
 use ffmpeg::software::scaling::{context::Context as Scaler, flag::Flags as ScalerFlags};
 use ffmpeg::{
-    codec, decoder, encoder, format, frame, hardware, media, Dictionary, Packet, Rational,
+    Dictionary, Packet, Rational, codec, decoder, encoder, format, frame, hardware, media,
 };
 
 const INITIAL_POOL_SIZE: usize = 32;

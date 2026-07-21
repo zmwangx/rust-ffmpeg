@@ -17,7 +17,9 @@ pub enum Type {
     VideoToolbox,
     D3d11va,
     Drm,
+    #[cfg(feature = "ffmpeg_4_0")]
     OpenCl,
+    #[cfg(feature = "ffmpeg_4_0")]
     MediaCodec,
     #[cfg(feature = "ffmpeg_4_3")]
     Vulkan,
@@ -40,7 +42,9 @@ impl From<Type> for AVHWDeviceType {
             Type::VideoToolbox => AVHWDeviceType::AV_HWDEVICE_TYPE_VIDEOTOOLBOX,
             Type::D3d11va => AVHWDeviceType::AV_HWDEVICE_TYPE_D3D11VA,
             Type::Drm => AVHWDeviceType::AV_HWDEVICE_TYPE_DRM,
+            #[cfg(feature = "ffmpeg_4_0")]
             Type::OpenCl => AVHWDeviceType::AV_HWDEVICE_TYPE_OPENCL,
+            #[cfg(feature = "ffmpeg_4_0")]
             Type::MediaCodec => AVHWDeviceType::AV_HWDEVICE_TYPE_MEDIACODEC,
             #[cfg(feature = "ffmpeg_4_3")]
             Type::Vulkan => AVHWDeviceType::AV_HWDEVICE_TYPE_VULKAN,
@@ -67,7 +71,9 @@ impl TryFrom<AVHWDeviceType> for Type {
             AVHWDeviceType::AV_HWDEVICE_TYPE_VIDEOTOOLBOX => Ok(Type::VideoToolbox),
             AVHWDeviceType::AV_HWDEVICE_TYPE_D3D11VA => Ok(Type::D3d11va),
             AVHWDeviceType::AV_HWDEVICE_TYPE_DRM => Ok(Type::Drm),
+            #[cfg(feature = "ffmpeg_4_0")]
             AVHWDeviceType::AV_HWDEVICE_TYPE_OPENCL => Ok(Type::OpenCl),
+            #[cfg(feature = "ffmpeg_4_0")]
             AVHWDeviceType::AV_HWDEVICE_TYPE_MEDIACODEC => Ok(Type::MediaCodec),
             #[cfg(feature = "ffmpeg_4_3")]
             AVHWDeviceType::AV_HWDEVICE_TYPE_VULKAN => Ok(Type::Vulkan),

@@ -1,7 +1,7 @@
 use std::ptr;
 
 use super::{Format, Input, Output};
-use ffi::*;
+use crate::ffi::*;
 
 pub struct Iter {
     input: *mut AVInputFormat,

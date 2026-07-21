@@ -1,9 +1,9 @@
 use super::Disposition;
-use codec::{self, packet};
-use ffi::*;
-use format::context::common::Context;
+use crate::codec::{self, packet};
+use crate::ffi::*;
+use crate::format::context::common::Context;
+use crate::{DictionaryRef, Discard, Rational};
 use libc::c_int;
-use {DictionaryRef, Discard, Rational};
 
 #[derive(Debug)]
 pub struct Stream<'a> {
@@ -17,7 +17,7 @@ impl<'a> Stream<'a> {
     }
 
     pub unsafe fn as_ptr(&self) -> *const AVStream {
-        *(*self.context.as_ptr()).streams.add(self.index)
+        unsafe { *(*self.context.as_ptr()).streams.add(self.index) }
     }
 }
 

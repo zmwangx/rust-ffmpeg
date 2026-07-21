@@ -2,8 +2,8 @@ use std::any::Any;
 use std::sync::Arc;
 
 use super::{Context, Id};
-use ffi::*;
-use media;
+use crate::ffi::*;
+use crate::media;
 
 pub struct Parameters {
     ptr: *mut AVCodecParameters,

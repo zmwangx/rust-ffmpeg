@@ -2,6 +2,7 @@
 name    = "ffmpeg-next"
 version = "9.0.0"
 build   = "build.rs"
+edition = "2024"
 
 authors = ["meh. <meh@schizofreni.co>", "Zhiming Wang <i@zhimingwang.org>"]
 license = "WTFPL"

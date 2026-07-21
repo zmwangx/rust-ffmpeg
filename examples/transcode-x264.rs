@@ -21,8 +21,8 @@ use std::collections::HashMap;
 use std::env;
 use std::time::Instant;
 
-use ffmpeg::{
-    codec, decoder, encoder, format, frame, log, media, picture, Dictionary, Packet, Rational,
+use crate::ffmpeg::{
+    Dictionary, Packet, Rational, codec, decoder, encoder, format, frame, log, media, picture,
 };
 
 const DEFAULT_X264_OPTS: &str = "preset=medium";

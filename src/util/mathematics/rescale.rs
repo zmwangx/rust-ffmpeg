@@ -1,5 +1,5 @@
-use ffi::*;
-use {Rational, Rounding};
+use crate::ffi::*;
+use crate::{Rational, Rounding};
 
 pub const TIME_BASE: Rational = Rational(AV_TIME_BASE_Q.num, AV_TIME_BASE_Q.den);
 

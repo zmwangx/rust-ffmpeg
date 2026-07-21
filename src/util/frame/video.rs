@@ -3,13 +3,13 @@ use std::ops::{Deref, DerefMut};
 use std::slice;
 
 use super::Frame;
-use color;
-use ffi::*;
+use crate::Rational;
+use crate::color;
+use crate::ffi::*;
+use crate::picture;
+use crate::util::chroma;
+use crate::util::format;
 use libc::c_int;
-use picture;
-use util::chroma;
-use util::format;
-use Rational;
 
 #[derive(PartialEq, Eq)]
 pub struct Video(Frame);
@@ -17,16 +17,18 @@ pub struct Video(Frame);
 impl Video {
     #[inline(always)]
     pub unsafe fn wrap(ptr: *mut AVFrame) -> Self {
-        Video(Frame::wrap(ptr))
+        unsafe { Video(Frame::wrap(ptr)) }
     }
 
     #[inline]
     pub unsafe fn alloc(&mut self, format: format::Pixel, width: u32, height: u32) {
-        self.set_format(format);
-        self.set_width(width);
-        self.set_height(height);
+        unsafe {
+            self.set_format(format);
+            self.set_width(width);
+            self.set_height(height);
 
-        av_frame_get_buffer(self.as_mut_ptr(), 32);
+            av_frame_get_buffer(self.as_mut_ptr(), 32);
+        }
     }
 }
 

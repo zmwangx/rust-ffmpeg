@@ -2,9 +2,9 @@ use std::convert::TryFrom;
 use std::ffi::CString;
 use std::ptr;
 
-use ffi::*;
+use crate::ffi::*;
+use crate::{Error, format, frame};
 use libc::c_int;
-use {format, frame, Error};
 
 /// A hardware device backend supported by FFmpeg.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -415,8 +415,8 @@ impl Drop for Frames {
 #[cfg(test)]
 mod tests {
     use super::{Frames, Type};
-    use ffi::AVHWDeviceType;
-    use frame;
+    use crate::ffi::AVHWDeviceType;
+    use crate::frame;
     use std::convert::TryFrom;
 
     #[test]

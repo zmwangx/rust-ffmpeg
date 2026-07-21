@@ -1,5 +1,5 @@
 use super::Context;
-use ffi::*;
+use crate::ffi::*;
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub struct Delay {

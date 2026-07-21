@@ -2,8 +2,8 @@ use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
 use super::{Audio, Capabilities, Id, Profile, Video};
-use ffi::*;
-use {media, Error};
+use crate::ffi::*;
+use crate::{Error, media};
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub struct Codec {

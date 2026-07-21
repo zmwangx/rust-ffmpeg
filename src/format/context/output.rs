@@ -7,9 +7,9 @@ use libc;
 
 use super::common::Context;
 use super::destructor;
-use codec::traits;
-use ffi::*;
-use {codec, format, ChapterMut, Dictionary, Error, Rational, StreamMut};
+use crate::codec::traits;
+use crate::ffi::*;
+use crate::{ChapterMut, Dictionary, Error, Rational, StreamMut, codec, format};
 
 pub enum AvStreamInitStatus {
     /// the codec had not already been fully initialized
@@ -27,18 +27,22 @@ unsafe impl Send for Output {}
 
 impl Output {
     pub unsafe fn wrap(ptr: *mut AVFormatContext) -> Self {
-        Output {
-            ptr,
-            ctx: Context::wrap(ptr, destructor::Mode::Output),
+        unsafe {
+            Output {
+                ptr,
+                ctx: Context::wrap(ptr, destructor::Mode::Output),
+            }
         }
     }
     pub unsafe fn wrap_with_custom_io(
         ptr: *mut AVFormatContext,
         custom_io: format::context::StreamIo,
     ) -> Self {
-        Output {
-            ptr,
-            ctx: Context::wrap(ptr, destructor::Mode::OutputCustomIo(custom_io)),
+        unsafe {
+            Output {
+                ptr,
+                ctx: Context::wrap(ptr, destructor::Mode::OutputCustomIo(custom_io)),
+            }
         }
     }
 

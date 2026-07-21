@@ -21,7 +21,7 @@ mod extensions;
 use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
-use ffi::*;
+use crate::ffi::*;
 
 pub fn version() -> u32 {
     unsafe { swresample_version() }

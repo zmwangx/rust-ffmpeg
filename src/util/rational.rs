@@ -2,7 +2,7 @@ use std::cmp::Ordering;
 use std::fmt;
 use std::ops::{Add, Div, Mul, Sub};
 
-use ffi::*;
+use crate::ffi::*;
 use libc::c_int;
 
 #[derive(Copy, Clone)]

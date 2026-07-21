@@ -3,8 +3,8 @@ extern crate ffmpeg_next as ffmpeg;
 use std::env;
 use std::path::Path;
 
-use ffmpeg::{codec, filter, format, frame, media};
-use ffmpeg::{rescale, Rescale};
+use crate::ffmpeg::{Rescale, rescale};
+use crate::ffmpeg::{codec, filter, format, frame, media};
 
 fn filter(
     spec: &str,
@@ -37,17 +37,16 @@ fn filter(
 
     println!("{}", filter.dump());
 
-    if let Some(codec) = encoder.codec() {
-        if !codec
+    if let Some(codec) = encoder.codec()
+        && !codec
             .capabilities()
             .contains(ffmpeg::codec::capabilities::Capabilities::VARIABLE_FRAME_SIZE)
-        {
-            filter
-                .get("out")
-                .unwrap()
-                .sink()
-                .set_frame_size(encoder.frame_size());
-        }
+    {
+        filter
+            .get("out")
+            .unwrap()
+            .sink()
+            .set_frame_size(encoder.frame_size());
     }
 
     Ok(filter)

@@ -23,10 +23,10 @@ pub use self::opened::Opened;
 
 use std::ffi::CString;
 
-use codec::Context;
-use codec::Id;
-use ffi::*;
-use Codec;
+use crate::Codec;
+use crate::codec::Context;
+use crate::codec::Id;
+use crate::ffi::*;
 
 pub fn new() -> Decoder {
     Context::new().decoder()

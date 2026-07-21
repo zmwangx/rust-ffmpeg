@@ -1,6 +1,6 @@
 extern crate ffmpeg_next as ffmpeg;
 
-use ffmpeg::{ffi, filter, format, frame};
+use crate::ffmpeg::{ffi, filter, format, frame};
 
 fn build_graph(width: u32, height: u32, pix_fmt: format::Pixel) -> filter::Graph {
     let mut graph = filter::Graph::new();

@@ -1,4 +1,4 @@
-use ffi::*;
+use crate::ffi::*;
 
 pub trait Ref {
     fn as_ptr(&self) -> *const AVPacket;

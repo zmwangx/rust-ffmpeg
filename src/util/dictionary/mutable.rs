@@ -4,7 +4,7 @@ use std::marker::PhantomData;
 use std::ops::Deref;
 
 use super::immutable;
-use ffi::*;
+use crate::ffi::*;
 
 pub struct Ref<'a> {
     ptr: *mut AVDictionary,
@@ -15,10 +15,12 @@ pub struct Ref<'a> {
 
 impl<'a> Ref<'a> {
     pub unsafe fn wrap(ptr: *mut AVDictionary) -> Self {
-        Ref {
-            ptr,
-            imm: immutable::Ref::wrap(ptr),
-            _marker: PhantomData,
+        unsafe {
+            Ref {
+                ptr,
+                imm: immutable::Ref::wrap(ptr),
+                _marker: PhantomData,
+            }
         }
     }
 

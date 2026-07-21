@@ -4,11 +4,11 @@ use std::sync::Arc;
 
 use super::decoder::Decoder;
 use super::encoder::Encoder;
-use super::{threading, Compliance, Debug, Flags, Id, Parameters};
-use ffi::*;
+use super::{Compliance, Debug, Flags, Id, Parameters, threading};
+use crate::ffi::*;
+use crate::media;
+use crate::{Codec, Error, Rational};
 use libc::c_int;
-use media;
-use {Codec, Error, Rational};
 
 pub struct Context {
     ptr: *mut AVCodecContext,

@@ -1,6 +1,6 @@
-pub use util::format::{pixel, Pixel};
-pub use util::format::{sample, Sample};
-use util::interrupt;
+pub use crate::util::format::{Pixel, pixel};
+pub use crate::util::format::{Sample, sample};
+use crate::util::interrupt;
 
 pub mod stream;
 
@@ -12,7 +12,7 @@ pub use self::context::Context;
 pub mod format;
 #[cfg(not(feature = "ffmpeg_5_0"))]
 pub use self::format::list;
-pub use self::format::{flag, Flags};
+pub use self::format::{Flags, flag};
 pub use self::format::{Input, Output};
 
 pub mod network;
@@ -22,8 +22,8 @@ use std::path::Path;
 use std::ptr;
 use std::str::from_utf8_unchecked;
 
-use ffi::*;
-use {Dictionary, Error, Format};
+use crate::ffi::*;
+use crate::{Dictionary, Error, Format};
 
 #[cfg(not(feature = "ffmpeg_5_0"))]
 pub fn register_all() {

@@ -4,9 +4,9 @@ use std::ptr;
 use std::sync::Arc;
 
 use super::destructor::{self, Destructor};
-use ffi::*;
+use crate::ffi::*;
+use crate::{Chapter, ChapterMut, DictionaryRef, Stream, StreamMut, media};
 use libc::{c_int, c_uint};
-use {media, Chapter, ChapterMut, DictionaryRef, Stream, StreamMut};
 
 pub struct Context {
     ptr: *mut AVFormatContext,
@@ -19,20 +19,24 @@ unsafe impl Send for Context {}
 
 impl Context {
     pub unsafe fn wrap(ptr: *mut AVFormatContext, mode: destructor::Mode) -> Self {
-        Context {
-            ptr,
-            dtor: Arc::new(Destructor::new(ptr, mode)),
+        unsafe {
+            Context {
+                ptr,
+                dtor: Arc::new(Destructor::new(ptr, mode)),
+            }
         }
     }
 
     pub unsafe fn wrap_with_interrupt(
         ptr: *mut AVFormatContext,
         mode: destructor::Mode,
-        guard: ::util::interrupt::InterruptGuard,
+        guard: crate::util::interrupt::InterruptGuard,
     ) -> Self {
-        Context {
-            ptr,
-            dtor: Arc::new(Destructor::new_with_interrupt(ptr, mode, guard)),
+        unsafe {
+            Context {
+                ptr,
+                dtor: Arc::new(Destructor::new_with_interrupt(ptr, mode, guard)),
+            }
         }
     }
 

@@ -1,5 +1,5 @@
-use ffi::*;
-use util::format;
+use crate::ffi::*;
+use crate::util::format;
 
 pub fn input(format: format::Pixel) -> bool {
     unsafe { sws_isSupportedInput(format.into()) != 0 }

@@ -37,17 +37,16 @@ fn filter(
 
     println!("{}", filter.dump());
 
-    if let Some(codec) = encoder.codec() {
-        if !codec
+    if let Some(codec) = encoder.codec()
+        && !codec
             .capabilities()
             .contains(ffmpeg::codec::capabilities::Capabilities::VARIABLE_FRAME_SIZE)
-        {
-            filter
-                .get("out")
-                .unwrap()
-                .sink()
-                .set_frame_size(encoder.frame_size());
-        }
+    {
+        filter
+            .get("out")
+            .unwrap()
+            .sink()
+            .set_frame_size(encoder.frame_size());
     }
 
     Ok(filter)

@@ -368,14 +368,27 @@ fn input_from_stream_impl(
 
 pub fn output<P: AsRef<Path> + ?Sized>(path: &P) -> Result<context::Output, Error> {
     unsafe {
-        let mut ps = ptr::null_mut();
-        let path = from_path(path);
+        let mut ofmt_ctx: *mut AVFormatContext = ptr::null_mut();
+        let path: CString = from_path(path);
 
-        match avformat_alloc_output_context2(&mut ps, ptr::null_mut(), ptr::null(), path.as_ptr()) {
-            0 => match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
-                0 => Ok(context::Output::wrap(ps)),
-                e => Err(Error::from(e)),
-            },
+        match avformat_alloc_output_context2(
+            &mut ofmt_ctx,
+            ptr::null_mut(),
+            ptr::null(),
+            path.as_ptr(),
+        ) {
+            0 => {
+                let ofmt: &AVFormatContext = &*ofmt_ctx;
+                let format: &AVOutputFormat = &*ofmt.oformat;
+
+                if (format.flags & AVFMT_NOFILE) == 0 {
+                    match avio_open(&mut (*ofmt_ctx).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
+                        0 => return Ok(context::Output::wrap(ofmt_ctx)),
+                        e => return Err(Error::from(e)),
+                    }
+                }
+                Ok(context::Output::wrap(ofmt_ctx))
+            }
 
             e => Err(Error::from(e)),
         }
@@ -387,26 +400,37 @@ pub fn output_with<P: AsRef<Path> + ?Sized>(
     options: Dictionary,
 ) -> Result<context::Output, Error> {
     unsafe {
-        let mut ps = ptr::null_mut();
+        let mut ofmt_ctx = ptr::null_mut();
         let path = from_path(path);
         let mut opts = options.disown();
 
-        match avformat_alloc_output_context2(&mut ps, ptr::null_mut(), ptr::null(), path.as_ptr()) {
+        match avformat_alloc_output_context2(
+            &mut ofmt_ctx,
+            ptr::null_mut(),
+            ptr::null(),
+            path.as_ptr(),
+        ) {
             0 => {
-                let res = avio_open2(
-                    &mut (*ps).pb,
-                    path.as_ptr(),
-                    AVIO_FLAG_WRITE,
-                    ptr::null(),
-                    &mut opts,
-                );
+                let ofmt = &*ofmt_ctx;
+                let format = &*ofmt.oformat;
 
-                Dictionary::own(opts);
+                if (format.flags & AVFMT_NOFILE) == 0 {
+                    let res = avio_open2(
+                        &mut (*ofmt_ctx).pb,
+                        path.as_ptr(),
+                        AVIO_FLAG_WRITE,
+                        ptr::null(),
+                        &mut opts,
+                    );
 
-                match res {
-                    0 => Ok(context::Output::wrap(ps)),
-                    e => Err(Error::from(e)),
+                    Dictionary::own(opts);
+
+                    match res {
+                        0 => return Ok(context::Output::wrap(ofmt_ctx)),
+                        e => return Err(Error::from(e)),
+                    }
                 }
+                Ok(context::Output::wrap(ofmt_ctx))
             }
 
             e => Err(Error::from(e)),
@@ -419,20 +443,28 @@ pub fn output_as<P: AsRef<Path> + ?Sized>(
     format: &str,
 ) -> Result<context::Output, Error> {
     unsafe {
-        let mut ps = ptr::null_mut();
+        let mut ofmt_ctx: *mut AVFormatContext = ptr::null_mut();
         let path = from_path(path);
         let format = CString::new(format).unwrap();
 
         match avformat_alloc_output_context2(
-            &mut ps,
+            &mut ofmt_ctx,
             ptr::null_mut(),
             format.as_ptr(),
             path.as_ptr(),
         ) {
-            0 => match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
-                0 => Ok(context::Output::wrap(ps)),
-                e => Err(Error::from(e)),
-            },
+            0 => {
+                let ofmt = &*ofmt_ctx;
+                let format = &*ofmt.oformat;
+
+                if (format.flags & AVFMT_NOFILE) == 0 {
+                    match avio_open(&mut (*ofmt_ctx).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
+                        0 => return Ok(context::Output::wrap(ofmt_ctx)),
+                        e => return Err(Error::from(e)),
+                    }
+                }
+                Ok(context::Output::wrap(ofmt_ctx))
+            }
 
             e => Err(Error::from(e)),
         }
@@ -445,32 +477,34 @@ pub fn output_as_with<P: AsRef<Path> + ?Sized>(
     options: Dictionary,
 ) -> Result<context::Output, Error> {
     unsafe {
-        let mut ps = ptr::null_mut();
+        let mut ofmt_ctx = ptr::null_mut();
         let path = from_path(path);
         let format = CString::new(format).unwrap();
         let mut opts = options.disown();
 
         match avformat_alloc_output_context2(
-            &mut ps,
+            &mut ofmt_ctx,
             ptr::null_mut(),
             format.as_ptr(),
             path.as_ptr(),
         ) {
             0 => {
-                let res = avio_open2(
-                    &mut (*ps).pb,
-                    path.as_ptr(),
-                    AVIO_FLAG_WRITE,
-                    ptr::null(),
-                    &mut opts,
-                );
+                let ofmt = &*ofmt_ctx;
+                let format = &*ofmt.oformat;
 
-                Dictionary::own(opts);
-
-                match res {
-                    0 => Ok(context::Output::wrap(ps)),
-                    e => Err(Error::from(e)),
+                if (format.flags & AVFMT_NOFILE) == 0 {
+                    match avio_open2(
+                        &mut (*ofmt_ctx).pb,
+                        path.as_ptr(),
+                        AVIO_FLAG_WRITE,
+                        ptr::null(),
+                        &mut opts,
+                    ) {
+                        0 => return Ok(context::Output::wrap(ofmt_ctx)),
+                        e => return Err(Error::from(e)),
+                    }
                 }
+                Ok(context::Output::wrap(ofmt_ctx))
             }
 
             e => Err(Error::from(e)),

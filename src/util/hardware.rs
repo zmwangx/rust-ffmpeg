@@ -1,9 +1,10 @@
 use std::convert::TryFrom;
 use std::ffi::CString;
-use std::ptr;
+use std::mem::ManuallyDrop;
+use std::ptr::{self, NonNull};
 
 use crate::ffi::*;
-use crate::{Error, format, frame};
+use crate::{DictionaryRef, Error, format, frame};
 use libc::c_int;
 
 /// A hardware device backend supported by FFmpeg.
@@ -88,24 +89,28 @@ impl TryFrom<AVHWDeviceType> for Type {
     }
 }
 
-fn clone_buffer(ptr: *mut AVBufferRef) -> Result<*mut AVBufferRef, Error> {
+fn clone_buffer(ptr: *mut AVBufferRef) -> Result<NonNull<AVBufferRef>, Error> {
     if ptr.is_null() {
         return Err(Error::InvalidData);
     }
 
     let ptr = unsafe { av_buffer_ref(ptr) };
-    if ptr.is_null() {
-        Err(Error::Other {
-            errno: libc::ENOMEM,
-        })
+    NonNull::new(ptr).ok_or(Error::Other {
+        errno: libc::ENOMEM,
+    })
+}
+
+fn created_buffer(result: c_int, ptr: *mut AVBufferRef) -> Result<NonNull<AVBufferRef>, Error> {
+    if result < 0 {
+        Err(Error::from(result))
     } else {
-        Ok(ptr)
+        NonNull::new(ptr).ok_or(Error::InvalidData)
     }
 }
 
 /// A reference-counted FFmpeg hardware device context.
 pub struct Device {
-    ptr: *mut AVBufferRef,
+    ptr: NonNull<AVBufferRef>,
 }
 
 impl Device {
@@ -117,11 +122,9 @@ impl Device {
     /// `AVHWDeviceContext`. This method consumes that reference.
     #[inline]
     pub unsafe fn from_raw(ptr: *mut AVBufferRef) -> Result<Self, Error> {
-        if ptr.is_null() {
-            Err(Error::InvalidData)
-        } else {
-            Ok(Device { ptr })
-        }
+        NonNull::new(ptr)
+            .map(|ptr| Device { ptr })
+            .ok_or(Error::InvalidData)
     }
 
     /// Wraps an existing hardware device context by taking a new reference.
@@ -135,12 +138,56 @@ impl Device {
         clone_buffer(ptr).map(|ptr| Device { ptr })
     }
 
+    /// Returns the underlying FFmpeg buffer reference without transferring
+    /// ownership.
+    ///
+    /// The pointer is valid only while this wrapper remains alive. Callers
+    /// must not unreference it unless they first create their own reference.
+    #[inline(always)]
+    pub unsafe fn as_ptr(&self) -> *mut AVBufferRef {
+        self.ptr.as_ptr()
+    }
+
+    /// Transfers ownership of the underlying FFmpeg buffer reference.
+    ///
+    /// The caller becomes responsible for eventually releasing the returned
+    /// reference with `av_buffer_unref()` or transferring it to FFmpeg.
+    #[inline]
+    pub fn into_raw(self) -> *mut AVBufferRef {
+        ManuallyDrop::new(self).ptr.as_ptr()
+    }
+
+    /// Creates another owned reference to this device context.
+    #[inline]
+    pub fn try_clone(&self) -> Result<Self, Error> {
+        clone_buffer(self.ptr.as_ptr()).map(|ptr| Device { ptr })
+    }
+
     /// Creates a hardware device context.
     ///
     /// `device` is backend-specific. For example, VAAPI commonly uses
     /// `/dev/dri/renderD128`; pass `None` to let FFmpeg choose its default.
     #[inline]
     pub fn create(kind: Type, device: Option<&str>) -> Result<Self, Error> {
+        Self::create_inner(kind, device, ptr::null_mut())
+    }
+
+    /// Creates a hardware device context with backend-specific options.
+    #[inline]
+    pub fn create_with_options(
+        kind: Type,
+        device: Option<&str>,
+        options: &DictionaryRef<'_>,
+    ) -> Result<Self, Error> {
+        let options = unsafe { options.as_ptr() as *mut AVDictionary };
+        Self::create_inner(kind, device, options)
+    }
+
+    fn create_inner(
+        kind: Type,
+        device: Option<&str>,
+        options: *mut AVDictionary,
+    ) -> Result<Self, Error> {
         let device = device
             .map(CString::new)
             .transpose()
@@ -151,15 +198,45 @@ impl Device {
                 &mut ptr,
                 kind.into(),
                 device.as_ref().map_or(ptr::null(), |value| value.as_ptr()),
-                ptr::null_mut(),
+                options,
                 0,
             )
         };
 
-        match result {
-            e if e < 0 => Err(Error::from(e)),
-            _ => Ok(Device { ptr }),
-        }
+        created_buffer(result, ptr).map(|ptr| Device { ptr })
+    }
+
+    /// Creates or retrieves a device of `kind` derived from this device.
+    #[inline]
+    pub fn derive(&self, kind: Type) -> Result<Self, Error> {
+        let mut ptr = ptr::null_mut();
+        let result =
+            unsafe { av_hwdevice_ctx_create_derived(&mut ptr, kind.into(), self.ptr.as_ptr(), 0) };
+
+        created_buffer(result, ptr).map(|ptr| Device { ptr })
+    }
+
+    /// Creates or retrieves a derived device with backend-specific options.
+    #[cfg(feature = "ffmpeg_4_4")]
+    #[inline]
+    pub fn derive_with_options(
+        &self,
+        kind: Type,
+        options: &DictionaryRef<'_>,
+    ) -> Result<Self, Error> {
+        let mut ptr = ptr::null_mut();
+        let options = unsafe { options.as_ptr() as *mut AVDictionary };
+        let result = unsafe {
+            av_hwdevice_ctx_create_derived_opts(
+                &mut ptr,
+                kind.into(),
+                self.ptr.as_ptr(),
+                options,
+                0,
+            )
+        };
+
+        created_buffer(result, ptr).map(|ptr| Device { ptr })
     }
 
     /// Creates a hardware frame pool backed by this device.
@@ -197,14 +274,9 @@ impl Device {
         )
     }
 
-    #[inline(always)]
-    pub(crate) fn as_ptr(&self) -> *mut AVBufferRef {
-        self.ptr
-    }
-
     #[inline]
     pub fn kind(&self) -> Result<Type, Error> {
-        let context = unsafe { (*self.ptr).data.cast::<AVHWDeviceContext>() };
+        let context = unsafe { (*self.ptr.as_ptr()).data.cast::<AVHWDeviceContext>() };
         if context.is_null() {
             Err(Error::InvalidData)
         } else {
@@ -214,19 +286,20 @@ impl Device {
 
     #[inline]
     pub(crate) fn try_clone_raw(&self) -> Result<*mut AVBufferRef, Error> {
-        clone_buffer(self.ptr)
+        self.try_clone().map(Device::into_raw)
     }
 }
 
 impl Drop for Device {
     fn drop(&mut self) {
-        unsafe { av_buffer_unref(&mut self.ptr) };
+        let mut ptr = self.ptr.as_ptr();
+        unsafe { av_buffer_unref(&mut ptr) };
     }
 }
 
 /// A reference-counted pool of hardware frames tied to a [`Device`].
 pub struct Frames {
-    ptr: *mut AVBufferRef,
+    ptr: NonNull<AVBufferRef>,
 }
 
 impl Frames {
@@ -238,11 +311,9 @@ impl Frames {
     /// `AVHWFramesContext`. This method consumes that reference.
     #[inline]
     pub unsafe fn from_raw(ptr: *mut AVBufferRef) -> Result<Self, Error> {
-        if ptr.is_null() {
-            Err(Error::InvalidData)
-        } else {
-            Ok(Frames { ptr })
-        }
+        NonNull::new(ptr)
+            .map(|ptr| Frames { ptr })
+            .ok_or(Error::InvalidData)
     }
 
     /// Wraps an existing hardware frames context by taking a new reference.
@@ -254,6 +325,31 @@ impl Frames {
     #[inline]
     pub unsafe fn wrap(ptr: *mut AVBufferRef) -> Result<Self, Error> {
         clone_buffer(ptr).map(|ptr| Frames { ptr })
+    }
+
+    /// Returns the underlying FFmpeg buffer reference without transferring
+    /// ownership.
+    ///
+    /// The pointer is valid only while this wrapper remains alive. Callers
+    /// must not unreference it unless they first create their own reference.
+    #[inline(always)]
+    pub unsafe fn as_ptr(&self) -> *mut AVBufferRef {
+        self.ptr.as_ptr()
+    }
+
+    /// Transfers ownership of the underlying FFmpeg buffer reference.
+    ///
+    /// The caller becomes responsible for eventually releasing the returned
+    /// reference with `av_buffer_unref()` or transferring it to FFmpeg.
+    #[inline]
+    pub fn into_raw(self) -> *mut AVBufferRef {
+        ManuallyDrop::new(self).ptr.as_ptr()
+    }
+
+    /// Creates another owned reference to this hardware frame pool.
+    #[inline]
+    pub fn try_clone(&self) -> Result<Self, Error> {
+        clone_buffer(self.ptr.as_ptr()).map(|ptr| Frames { ptr })
     }
 
     /// Gets the hardware frames context attached to a decoded frame.
@@ -283,7 +379,7 @@ impl Frames {
         let height = c_int::try_from(height).map_err(|_| Error::InvalidData)?;
         let initial_pool_size =
             c_int::try_from(initial_pool_size).map_err(|_| Error::InvalidData)?;
-        let mut ptr = unsafe { av_hwframe_ctx_alloc(device.as_ptr()) };
+        let mut ptr = unsafe { av_hwframe_ctx_alloc(device.ptr.as_ptr()) };
         if ptr.is_null() {
             return Err(Error::Other {
                 errno: libc::ENOMEM,
@@ -309,7 +405,9 @@ impl Frames {
                 unsafe { av_buffer_unref(&mut ptr) };
                 Err(Error::from(e))
             }
-            _ => Ok(Frames { ptr }),
+            _ => NonNull::new(ptr)
+                .map(|ptr| Frames { ptr })
+                .ok_or(Error::InvalidData),
         }
     }
 
@@ -317,7 +415,7 @@ impl Frames {
     #[inline]
     pub fn allocate_video(&self) -> Result<frame::Video, Error> {
         let mut frame = frame::Video::empty();
-        let result = unsafe { av_hwframe_get_buffer(self.ptr, frame.as_mut_ptr(), 0) };
+        let result = unsafe { av_hwframe_get_buffer(self.ptr.as_ptr(), frame.as_mut_ptr(), 0) };
         match result {
             e if e < 0 => Err(Error::from(e)),
             _ => Ok(frame),
@@ -325,6 +423,10 @@ impl Frames {
     }
 
     /// Uploads a software frame into a frame allocated from this pool.
+    ///
+    /// The source format must be compatible with [`Frames::software_format`],
+    /// and its allocated dimensions must match this pool. FFmpeg validates the
+    /// backend-specific transfer constraints.
     #[inline]
     pub fn upload(&self, source: &frame::Video) -> Result<frame::Video, Error> {
         let mut destination = self.allocate_video()?;
@@ -342,9 +444,17 @@ impl Frames {
         }
     }
 
-    /// Downloads a hardware frame into software memory.
+    /// Downloads a hardware frame from this pool into software memory.
+    ///
+    /// `source` must carry an `AVHWFramesContext` referring to this pool. The
+    /// destination uses this pool's software format and the source frame's
+    /// display dimensions.
     #[inline]
     pub fn download(&self, source: &frame::Video) -> Result<frame::Video, Error> {
+        if !self.contains(source) {
+            return Err(Error::InvalidData);
+        }
+
         let mut destination = frame::Video::empty();
         destination.set_format(self.software_format());
         destination.set_width(source.width());
@@ -364,60 +474,74 @@ impl Frames {
         }
     }
 
+    /// Returns whether `frame` was allocated from this hardware frame pool.
     #[inline]
-    fn context(&self) -> &AVHWFramesContext {
-        unsafe { &*(*self.ptr).data.cast::<AVHWFramesContext>() }
+    pub fn contains(&self, frame: &frame::Video) -> bool {
+        let frame_context = unsafe { (*frame.as_ptr()).hw_frames_ctx };
+        if frame_context.is_null() {
+            return false;
+        }
+
+        unsafe { (*frame_context).data == (*self.ptr.as_ptr()).data }
+    }
+
+    #[inline]
+    fn context_ptr(&self) -> *const AVHWFramesContext {
+        unsafe { (*self.ptr.as_ptr()).data.cast::<AVHWFramesContext>() }
     }
 
     #[inline]
     pub fn format(&self) -> format::Pixel {
-        self.context().format.into()
+        unsafe { (*self.context_ptr()).format.into() }
     }
 
     #[inline]
     pub fn software_format(&self) -> format::Pixel {
-        self.context().sw_format.into()
+        unsafe { (*self.context_ptr()).sw_format.into() }
     }
 
     #[inline]
     pub fn width(&self) -> u32 {
-        self.context().width as u32
+        unsafe { (*self.context_ptr()).width as u32 }
     }
 
     #[inline]
     pub fn height(&self) -> u32 {
-        self.context().height as u32
+        unsafe { (*self.context_ptr()).height as u32 }
     }
 
     #[inline]
     pub fn initial_pool_size(&self) -> usize {
-        self.context().initial_pool_size as usize
+        unsafe { (*self.context_ptr()).initial_pool_size as usize }
     }
 
     /// Gets the device backing this hardware frame pool.
     #[inline]
     pub fn device(&self) -> Result<Device, Error> {
-        clone_buffer(self.context().device_ref).map(|ptr| Device { ptr })
+        let device = unsafe { (*self.context_ptr()).device_ref };
+        clone_buffer(device).map(|ptr| Device { ptr })
     }
 
     #[inline]
     pub(crate) fn try_clone_raw(&self) -> Result<*mut AVBufferRef, Error> {
-        clone_buffer(self.ptr)
+        self.try_clone().map(Frames::into_raw)
     }
 }
 
 impl Drop for Frames {
     fn drop(&mut self) {
-        unsafe { av_buffer_unref(&mut self.ptr) };
+        let mut ptr = self.ptr.as_ptr();
+        unsafe { av_buffer_unref(&mut ptr) };
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Frames, Type};
-    use crate::ffi::AVHWDeviceType;
+    use super::{Device, Frames, Type};
+    use crate::ffi::{AVBufferRef, AVHWDeviceType};
     use crate::frame;
     use std::convert::TryFrom;
+    use std::ptr;
 
     #[test]
     fn software_frame_has_no_hardware_frames_context() {
@@ -428,9 +552,43 @@ mod tests {
 
     #[test]
     fn safe_device_type_roundtrips_through_ffi() {
-        let kind = Type::Vaapi;
-        let raw: AVHWDeviceType = kind.into();
+        let kinds = [
+            Type::Vdpau,
+            Type::Cuda,
+            Type::Vaapi,
+            Type::Dxva2,
+            Type::Qsv,
+            Type::VideoToolbox,
+            Type::D3d11va,
+            Type::Drm,
+            #[cfg(feature = "ffmpeg_4_0")]
+            Type::OpenCl,
+            #[cfg(feature = "ffmpeg_4_0")]
+            Type::MediaCodec,
+            #[cfg(feature = "ffmpeg_4_3")]
+            Type::Vulkan,
+            #[cfg(feature = "ffmpeg_7_0")]
+            Type::D3d12va,
+            #[cfg(feature = "ffmpeg_8_1")]
+            Type::Amf,
+            #[cfg(feature = "ffmpeg_8_0")]
+            Type::OhCodec,
+        ];
 
-        assert_eq!(Type::try_from(raw).unwrap(), kind);
+        for kind in kinds {
+            let raw: AVHWDeviceType = kind.into();
+
+            assert_eq!(Type::try_from(raw).unwrap(), kind);
+        }
+    }
+
+    #[test]
+    fn raw_constructors_reject_null_references() {
+        let ptr = ptr::null_mut::<AVBufferRef>();
+
+        assert!(unsafe { Device::from_raw(ptr) }.is_err());
+        assert!(unsafe { Device::wrap(ptr) }.is_err());
+        assert!(unsafe { Frames::from_raw(ptr) }.is_err());
+        assert!(unsafe { Frames::wrap(ptr) }.is_err());
     }
 }

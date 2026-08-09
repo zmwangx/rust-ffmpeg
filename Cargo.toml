@@ -116,5 +116,4 @@ optional = true
 
 [dependencies.ffmpeg-sys-next]
 version = "9.0.0"
-git = "https://github.com/zmwangx/rust-ffmpeg-sys" # Temporary until release
 default-features = false

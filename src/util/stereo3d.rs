@@ -110,6 +110,7 @@ impl Type {
 }
 
 /// Which views the frame actually contains — the safe twin of `AVStereo3DView`.
+#[cfg(feature = "ffmpeg_4_0")]
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum View {
     /// Two packed views.
@@ -123,6 +124,7 @@ pub enum View {
     Unspecified,
 }
 
+#[cfg(feature = "ffmpeg_4_0")]
 impl From<AVStereo3DView> for View {
     #[inline(always)]
     fn from(value: AVStereo3DView) -> View {
@@ -140,6 +142,7 @@ impl From<AVStereo3DView> for View {
     }
 }
 
+#[cfg(feature = "ffmpeg_4_0")]
 impl From<View> for AVStereo3DView {
     #[inline(always)]
     fn from(value: View) -> AVStereo3DView {
@@ -154,6 +157,7 @@ impl From<View> for AVStereo3DView {
     }
 }
 
+#[cfg(feature = "ffmpeg_4_0")]
 impl View {
     /// The safe twin of a raw `AVStereo3DView` discriminant; `None` for a value
     /// this build's libavutil does not define. See [`Type::from_raw`].
@@ -251,8 +255,9 @@ impl<'a> Stereo3D<'a> {
     /// # Safety
     ///
     /// `ptr` must point at a live, correctly aligned `AVStereo3D` that outlives
-    /// `'a` and whose enum-typed fields — `type_`, `view` and (on FFmpeg 7.1+)
-    /// `primary_eye` — each hold a discriminant their enum defines; see
+    /// `'a` and whose enum-typed fields — `type_`, (on FFmpeg 4.0+) `view` and
+    /// (on FFmpeg 7.1+) `primary_eye` — each hold a discriminant their enum
+    /// defines; see
     /// [`Type::from_raw`]. A pointer libavutil produced satisfies all of it.
     pub unsafe fn wrap(ptr: *const AVStereo3D) -> Self {
         Stereo3D {
@@ -289,8 +294,11 @@ impl<'a> Stereo3D<'a> {
         // behaviour being screened for.
         let type_ = unsafe { (&raw const (*ptr).type_).cast::<i32>().read() };
         Type::from_raw(type_)?;
-        let view = unsafe { (&raw const (*ptr).view).cast::<i32>().read() };
-        View::from_raw(view)?;
+        #[cfg(feature = "ffmpeg_4_0")]
+        {
+            let view = unsafe { (&raw const (*ptr).view).cast::<i32>().read() };
+            View::from_raw(view)?;
+        }
         #[cfg(feature = "ffmpeg_7_1")]
         {
             let primary_eye = unsafe { (&raw const (*ptr).primary_eye).cast::<i32>().read() };
@@ -317,6 +325,7 @@ impl<'a> Stereo3D<'a> {
     }
 
     /// Which views the frame contains.
+    #[cfg(feature = "ffmpeg_4_0")]
     pub fn view(&self) -> View {
         unsafe { View::from((*self.as_ptr()).view) }
     }

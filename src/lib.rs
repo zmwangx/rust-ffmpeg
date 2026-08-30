@@ -29,6 +29,8 @@ pub use crate::util::media;
 pub use crate::util::option;
 pub use crate::util::picture;
 pub use crate::util::rational::{self, Rational};
+pub use crate::util::spherical::{self, SphericalMapping};
+pub use crate::util::stereo3d::{self, Stereo3D};
 pub use crate::util::time;
 
 #[cfg(feature = "format")]

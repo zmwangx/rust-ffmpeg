@@ -3,6 +3,7 @@ use std::mem;
 
 use crate::ffi::AVStereo3DType::*;
 use crate::ffi::*;
+#[cfg(feature = "ffmpeg_7_1")]
 use crate::util::rational::Rational;
 
 /// How two views are packed within one video surface — the safe twin of

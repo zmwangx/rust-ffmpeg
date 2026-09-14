@@ -168,6 +168,43 @@ impl Context {
             }
         }
     }
+
+    pub fn extradata(&self) -> Option<&[u8]> {
+        unsafe {
+            if (*self.as_ptr()).extradata.is_null() || (*self.as_ptr()).extradata_size == 0 {
+                None
+            } else {
+                Some(std::slice::from_raw_parts(
+                    (*self.as_ptr()).extradata,
+                    (*self.as_ptr()).extradata_size as usize,
+                ))
+            }
+        }
+    }
+
+    pub fn set_extradata<V: AsRef<[u8]>>(&mut self, data: Option<V>) {
+        let (data, size) = if let Some(data) = data {
+            let data = data.as_ref();
+            let size = data.len();
+
+            unsafe {
+                let buf = av_malloc(size + AV_INPUT_BUFFER_PADDING_SIZE as usize) as *mut u8;
+
+                ptr::copy_nonoverlapping(data.as_ptr(), buf, size);
+                ptr::write_bytes(buf.add(size), 0, AV_INPUT_BUFFER_PADDING_SIZE as usize);
+
+                (buf, size as c_int)
+            }
+        } else {
+            (ptr::null_mut(), 0)
+        };
+
+        unsafe {
+            av_freep(&mut (*self.as_mut_ptr()).extradata as *mut _ as *mut libc::c_void);
+            (*self.as_mut_ptr()).extradata = data;
+            (*self.as_mut_ptr()).extradata_size = size;
+        }
+    }
 }
 
 impl Default for Context {

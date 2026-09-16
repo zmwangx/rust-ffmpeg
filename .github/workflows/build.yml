@@ -15,17 +15,13 @@ jobs:
                          "6.0", "6.1", "7.0", "7.1", "8.0", "8.1", "9.0"]
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - name: Install dependencies
         run: |
           apt update
           apt install -y --no-install-recommends clang curl pkg-config ca-certificates
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          components: rustfmt, clippy
+          curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --component rustfmt,clippy
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
       - name: Build
         run: |
           cargo build --examples
@@ -43,16 +39,10 @@ jobs:
     name: macOS - FFmpeg latest - build, test and lint
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - name: Install dependencies
         run: |
           brew install ffmpeg pkg-config
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          components: rustfmt, clippy
       - name: Build
         run: |
           cargo build --examples
@@ -78,7 +68,7 @@ jobs:
     env:
       FFMPEG_DOWNLOAD_URL: ${{ matrix.ffmpeg_download_url }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - name: Install dependencies
         run: |
           $VCINSTALLDIR = $(& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath)
@@ -89,12 +79,6 @@ jobs:
           mv ffmpeg-*/* ffmpeg/
           Add-Content $env:GITHUB_ENV "FFMPEG_DIR=${pwd}\ffmpeg`n"
           Add-Content $env:GITHUB_PATH "${pwd}\ffmpeg\bin`n"
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          components: rustfmt, clippy
       - name: Build
         run: |
           cargo build --examples

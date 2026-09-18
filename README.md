@@ -1,6 +1,7 @@
 [![crates.io](https://img.shields.io/crates/v/ffmpeg-next.svg)](https://crates.io/crates/ffmpeg-next)
 [![docs.rs](https://docs.rs/ffmpeg-next/badge.svg)](https://docs.rs/ffmpeg-next/)
 [![build](https://github.com/zmwangx/rust-ffmpeg/workflows/build/badge.svg)](https://github.com/zmwangx/rust-ffmpeg/actions)
+[![inspect.software](https://raw.githubusercontent.com/inspect-software/badges/main/v1/z/zmwangx/rust-ffmpeg.svg)](https://inspect.software/software/zmwangx/rust-ffmpeg)
 
 This is a fork of the abandoned [ffmpeg](https://crates.io/crates/ffmpeg) crate by [meh.](https://github.com/meh/rust-ffmpeg).
 

@@ -16,6 +16,7 @@ pub struct Context {
 // SAFETY: the context owns its `AVFormatContext`; the keep-alive refcount
 // (`Arc`) is atomic.
 unsafe impl Send for Context {}
+unsafe impl Sync for Context {}
 
 impl Context {
     pub unsafe fn wrap(ptr: *mut AVFormatContext, mode: destructor::Mode) -> Self {

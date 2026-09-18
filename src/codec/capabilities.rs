@@ -6,6 +6,7 @@ bitflags! {
     pub struct Capabilities: c_uint {
         const DRAW_HORIZ_BAND     = AV_CODEC_CAP_DRAW_HORIZ_BAND;
         const DR1                 = AV_CODEC_CAP_DR1;
+        const HARDWARE            = AV_CODEC_CAP_HARDWARE;
         #[cfg(not(feature = "ffmpeg_6_0"))]
         const TRUNCATED           = AV_CODEC_CAP_TRUNCATED;
         const DELAY               = AV_CODEC_CAP_DELAY;

@@ -109,7 +109,10 @@ impl<'a> Vector<'a> {
 
     #[cfg(not(feature = "ffmpeg_5_0"))]
     pub fn shift(&mut self, value: usize) {
-        assert!(value <= c_int::MAX as usize, "shift value exceeds c_int range");
+        assert!(
+            value <= c_int::MAX as usize,
+            "shift value exceeds c_int range"
+        );
         unsafe {
             sws_shiftVec(self.as_mut_ptr(), value as c_int);
         }

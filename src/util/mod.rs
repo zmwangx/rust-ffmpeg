@@ -13,6 +13,8 @@ pub mod option;
 pub mod picture;
 pub mod range;
 pub mod rational;
+pub mod spherical;
+pub mod stereo3d;
 pub mod time;
 
 #[cfg_attr(feature = "ffmpeg_7_0", path = "channel_layout.rs")]

@@ -164,7 +164,7 @@ impl Buffer {
                 size: 0,
             };
 
-            av_samples_alloc_array_and_samples(
+            let ret = av_samples_alloc_array_and_samples(
                 &mut buf.buffer,
                 &mut buf.size,
                 i32::from(channels),
@@ -172,6 +172,10 @@ impl Buffer {
                 format.into(),
                 !align as c_int,
             );
+
+            if ret < 0 {
+                panic!("av_samples_alloc_array_and_samples failed (error code: {ret})");
+            }
 
             buf
         }
@@ -220,7 +224,9 @@ impl Drop for Buffer {
     #[inline]
     fn drop(&mut self) {
         unsafe {
-            av_freep(self.buffer as *mut c_void);
+            if !self.buffer.is_null() {
+                av_freep(self.buffer as *mut c_void);
+            }
         }
     }
 }

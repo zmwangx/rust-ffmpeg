@@ -31,6 +31,7 @@ impl<'a> Vector<'a> {
 
 impl<'a> Vector<'a> {
     pub fn new(length: usize) -> Self {
+        assert!(length > 0, "Vector length must be greater than 0");
         unsafe {
             Vector {
                 ptr: sws_allocVec(length as c_int),
@@ -52,6 +53,7 @@ impl<'a> Vector<'a> {
 
     #[cfg(not(feature = "ffmpeg_5_0"))]
     pub fn value(value: f64, length: usize) -> Self {
+        assert!(length > 0, "Vector length must be greater than 0");
         unsafe {
             Vector {
                 ptr: sws_getConstVec(value as c_double, length as c_int),
@@ -107,6 +109,7 @@ impl<'a> Vector<'a> {
 
     #[cfg(not(feature = "ffmpeg_5_0"))]
     pub fn shift(&mut self, value: usize) {
+        assert!(value <= c_int::MAX as usize, "shift value exceeds c_int range");
         unsafe {
             sws_shiftVec(self.as_mut_ptr(), value as c_int);
         }

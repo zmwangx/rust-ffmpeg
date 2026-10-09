@@ -333,9 +333,20 @@ impl Video {
         }
     }
 
+    /// Duration of the frame in `pts` units, `0` if unknown.
+    ///
+    /// `AVFrame.duration` only exists from FFmpeg 6.0; before that this reads
+    /// its predecessor, `pkt_duration`.
     #[inline]
     pub fn duration(&self) -> i64 {
-        unsafe { (*self.as_ptr()).duration }
+        #[cfg(feature = "ffmpeg_6_0")]
+        unsafe {
+            (*self.as_ptr()).duration
+        }
+        #[cfg(not(feature = "ffmpeg_6_0"))]
+        unsafe {
+            (*self.as_ptr()).pkt_duration
+        }
     }
 
     #[inline]

@@ -27,10 +27,10 @@ jobs:
           cargo build --examples
       - name: Test
         run: |
-          cargo test --examples
+          cargo test --tests --examples
       - name: Lint
         run: |
-          cargo clippy --examples -- -D warnings
+          cargo clippy --tests --examples -- -D warnings
       - name: Check format
         run: |
           cargo fmt -- --check
@@ -48,10 +48,10 @@ jobs:
           cargo build --examples
       - name: Test
         run: |
-          cargo test --examples
+          cargo test --tests --examples
       - name: Lint
         run: |
-          cargo clippy --examples -- -D warnings
+          cargo clippy --tests --examples -- -D warnings
       - name: Check format
         run: |
           cargo fmt -- --check
@@ -84,10 +84,10 @@ jobs:
           cargo build --examples
       - name: Test
         run: |
-          cargo test --examples
+          cargo test --tests --examples
       - name: Lint
         run: |
-          cargo clippy --examples -- -D warnings
+          cargo clippy --tests --examples -- -D warnings
       - name: Check format
         run: |
           cargo fmt -- --check

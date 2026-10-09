@@ -299,7 +299,7 @@ impl<'a> SideData<'a> {
     }
 
     #[inline]
-    pub fn data(&self) -> &[u8] {
+    pub fn data(&self) -> &'a [u8] {
         #[allow(clippy::unnecessary_cast)]
         unsafe {
             slice::from_raw_parts((*self.as_ptr()).data, (*self.as_ptr()).size as usize)

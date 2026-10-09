@@ -180,6 +180,7 @@ impl Frame {
         }
     }
 
+    /// Attach a new `size`-byte side-data buffer of type `kind`, zero-filled.
     #[inline]
     pub fn new_side_data(&mut self, kind: side_data::Type, size: usize) -> Option<SideData<'_>> {
         unsafe {
@@ -188,6 +189,11 @@ impl Frame {
             if ptr.is_null() {
                 None
             } else {
+                // `av_frame_new_side_data` hands back uninitialised memory, and
+                // `SideData::data` exposes it as `&[u8]`; reading uninitialised
+                // bytes through a reference is undefined behaviour.
+                #[allow(clippy::unnecessary_cast)]
+                (*ptr).data.write_bytes(0, (*ptr).size as usize);
                 Some(SideData::wrap(ptr))
             }
         }

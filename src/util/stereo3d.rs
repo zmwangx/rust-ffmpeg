@@ -1,4 +1,4 @@
-use std::marker::PhantomData;
+use std::fmt;
 use std::mem;
 
 use crate::ffi::AVStereo3DType::*;
@@ -74,12 +74,13 @@ impl Type {
     /// The safe twin of a raw `AVStereo3DType` discriminant; `None` for a
     /// value this build's libavutil does not define.
     ///
-    /// `AVStereo3DType` is a `#[repr(i32)]` enum, so a value holding any other
-    /// discriminant does not exist as far as the language is concerned:
-    /// producing one — by casting bytes onto the struct that contains it — is
-    /// undefined behaviour on the spot, before any accessor reads it. Every
-    /// path from untrusted bytes to a [`Stereo3D`] goes through here and its
-    /// two siblings.
+    /// The bindings model `AVStereo3DType` as a Rust enum over a 4-byte C enum
+    /// (bindgen picks `i32` or `u32` for its repr, depending on the target),
+    /// so a value holding any other discriminant does not exist as far as the
+    /// language is concerned: producing one — by casting bytes onto the
+    /// struct that contains it — is undefined behaviour on the spot, before
+    /// any accessor reads it. Every path from untrusted bytes to a
+    /// [`Stereo3D`] goes through here and its two siblings.
     pub fn from_raw(raw: i32) -> Option<Type> {
         // Bound as `const`s so they can be used as match patterns.
         const TWO_D: i32 = AV_STEREO3D_2D as i32;
@@ -245,24 +246,29 @@ impl PrimaryEye {
 /// Every field is exposed: beyond the packing type and the flags, a stereo
 /// renderer needs the view, the primary eye, the baseline and the two
 /// adjustment rationals to decide what to show.
+#[derive(Clone, Copy)]
 pub struct Stereo3D<'a> {
-    ptr: *const AVStereo3D,
-
-    _marker: PhantomData<&'a AVStereo3D>,
+    stereo: &'a AVStereo3D,
 }
 
 impl<'a> Stereo3D<'a> {
     /// # Safety
     ///
     /// `ptr` must point at a live, correctly aligned `AVStereo3D` that outlives
-    /// `'a` and whose enum-typed fields — `type_`, (on FFmpeg 4.0+) `view` and
-    /// (on FFmpeg 7.1+) `primary_eye` — each hold a discriminant their enum
-    /// defines; see
-    /// [`Type::from_raw`]. A pointer libavutil produced satisfies all of it.
+    /// `'a`, is not written to during `'a`, and whose enum-typed fields —
+    /// `type_`, (on FFmpeg 4.0+) `view` and (on FFmpeg 7.1+) `primary_eye` —
+    /// each hold a discriminant this build's enum defines; see
+    /// [`Type::from_raw`].
+    ///
+    /// A pointer libavutil produced meets the last condition only when the
+    /// runtime libavutil is not newer than the headers these bindings were
+    /// generated from: a newer, still ABI-compatible release can write a
+    /// discriminant this build has no variant for.
+    /// [`from_side_data`](Self::from_side_data) screens for that and is the
+    /// safe way in.
     pub unsafe fn wrap(ptr: *const AVStereo3D) -> Self {
         Stereo3D {
-            ptr,
-            _marker: PhantomData,
+            stereo: unsafe { &*ptr },
         }
     }
 
@@ -272,13 +278,16 @@ impl<'a> Stereo3D<'a> {
     ///
     /// * it is shorter than the struct;
     /// * it is not aligned for the struct;
-    /// * one of the enum-typed fields (`type_`, `view`, `primary_eye`) holds a
-    ///   value its enum does not define, which is screened from the raw `i32`s
-    ///   here because the cast itself would already be undefined behaviour.
+    /// * one of the enum-typed fields this build knows (`type_`, `view` on
+    ///   FFmpeg 4.0+, `primary_eye` on FFmpeg 7.1+) holds a value its enum does
+    ///   not define, which is screened from the raw `i32`s here because the
+    ///   cast itself would already be undefined behaviour.
     ///
-    /// libavutil allocates the payload with `av_stereo3d_alloc_size` and writes
-    /// only defined values into it, so a genuine side-data buffer always
-    /// passes.
+    /// libavutil allocates the payload itself (`av_stereo3d_alloc`,
+    /// `av_stereo3d_create_side_data`), so a genuine side-data buffer is long
+    /// enough and aligned. Its discriminants are ones this build defines unless
+    /// the runtime libavutil is newer than these bindings and used a value
+    /// they lack, in which case `None` is the only sound answer.
     pub fn from_side_data(data: &'a [u8]) -> Option<Self> {
         if data.len() < mem::size_of::<AVStereo3D>() {
             return None;
@@ -311,46 +320,67 @@ impl<'a> Stereo3D<'a> {
     }
 
     pub fn as_ptr(&self) -> *const AVStereo3D {
-        self.ptr
+        self.stereo
     }
 
     /// How the views are packed.
     pub fn kind(&self) -> Type {
-        unsafe { Type::from((*self.as_ptr()).type_) }
+        Type::from(self.stereo.type_)
     }
 
     /// `AV_STEREO3D_FLAG_INVERT`: the right/bottom half holds the LEFT view.
     pub fn inverted(&self) -> bool {
-        unsafe { (*self.as_ptr()).flags & AV_STEREO3D_FLAG_INVERT != 0 }
+        self.stereo.flags & AV_STEREO3D_FLAG_INVERT != 0
     }
 
     /// Which views the frame contains.
     #[cfg(feature = "ffmpeg_4_0")]
     pub fn view(&self) -> View {
-        unsafe { View::from((*self.as_ptr()).view) }
+        View::from(self.stereo.view)
     }
 
     /// Which eye is primary when rendering in 2D.
     #[cfg(feature = "ffmpeg_7_1")]
     pub fn primary_eye(&self) -> PrimaryEye {
-        unsafe { PrimaryEye::from((*self.as_ptr()).primary_eye) }
+        PrimaryEye::from(self.stereo.primary_eye)
     }
 
     /// Distance between the lens centres, micrometres. `0` = unset.
     #[cfg(feature = "ffmpeg_7_1")]
     pub fn baseline(&self) -> u32 {
-        unsafe { (*self.as_ptr()).baseline }
+        self.stereo.baseline
     }
 
     /// Relative shift of the two images, -1.0..1.0. Zero = unset.
     #[cfg(feature = "ffmpeg_7_1")]
     pub fn horizontal_disparity_adjustment(&self) -> Rational {
-        unsafe { Rational::from((*self.as_ptr()).horizontal_disparity_adjustment) }
+        Rational::from(self.stereo.horizontal_disparity_adjustment)
     }
 
     /// Horizontal field of view, degrees. Zero = unset.
     #[cfg(feature = "ffmpeg_7_1")]
     pub fn horizontal_field_of_view(&self) -> Rational {
-        unsafe { Rational::from((*self.as_ptr()).horizontal_field_of_view) }
+        Rational::from(self.stereo.horizontal_field_of_view)
+    }
+}
+
+impl fmt::Debug for Stereo3D<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut s = f.debug_struct("Stereo3D");
+        s.field("kind", &self.kind());
+        s.field("inverted", &self.inverted());
+        #[cfg(feature = "ffmpeg_4_0")]
+        s.field("view", &self.view());
+        #[cfg(feature = "ffmpeg_7_1")]
+        {
+            s.field("primary_eye", &self.primary_eye());
+            s.field("baseline", &self.baseline());
+            s.field(
+                "horizontal_disparity_adjustment",
+                &self.horizontal_disparity_adjustment(),
+            );
+            s.field("horizontal_field_of_view", &self.horizontal_field_of_view());
+        }
+        s.finish()
     }
 }

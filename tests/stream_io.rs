@@ -53,6 +53,7 @@ fn custom_capacity_roundtrip() {
 
 #[test]
 fn direction_mismatch_is_rejected() {
+    ffmpeg_next::init().unwrap();
     // A write context must not be usable for demuxing.
     let w = StreamIo::from_write(Vec::new()).unwrap();
     assert_einval(format::input_from_stream(w, None, None));
@@ -64,6 +65,7 @@ fn direction_mismatch_is_rejected() {
 
 #[test]
 fn nofile_muxers_are_rejected() {
+    ffmpeg_next::init().unwrap();
     // image2 (AVFMT_NOFILE) opens one file per frame through its own I/O;
     // `AVFormatContext.pb` is documented to stay NULL for such muxers, so a
     // caller-provided stream would silently never receive the output.
@@ -139,6 +141,7 @@ fn unrepresentable_positions_are_eoverflow() {
 
 #[test]
 fn interior_nul_names_error_instead_of_panicking() {
+    ffmpeg_next::init().unwrap();
     let r = StreamIo::from_read(Cursor::new(vec![0u8])).unwrap();
     assert_einval(format::input_from_stream(r, Some("bad\0name.mp4"), None));
 
@@ -169,6 +172,7 @@ fn tiny_wav(data_len: usize) -> Vec<u8> {
 
 #[test]
 fn interrupted_reads_are_retried() {
+    ffmpeg_next::init().unwrap();
     use std::io::Read;
 
     // Yields `ErrorKind::Interrupted` twice before every successful read.
@@ -202,6 +206,7 @@ fn interrupted_reads_are_retried() {
 
 #[test]
 fn armed_but_unfired_interrupt_retries_transient_interrupted() {
+    ffmpeg_next::init().unwrap();
     use std::io::Read;
     use std::sync::Arc;
     use std::sync::atomic::{AtomicBool, Ordering};
@@ -245,6 +250,7 @@ fn armed_but_unfired_interrupt_retries_transient_interrupted() {
 
 #[test]
 fn armed_interrupt_aborts_during_open() {
+    ffmpeg_next::init().unwrap();
     use std::io::Read;
 
     // The interrupt callback must be installed (and mirrored into the StreamIo
@@ -276,6 +282,7 @@ fn armed_interrupt_aborts_during_open() {
 
 #[test]
 fn cancel_is_honored_over_a_stream_that_keeps_returning_data() {
+    ffmpeg_next::init().unwrap();
     use std::io::{Read, Seek, SeekFrom};
     use std::sync::Arc;
     use std::sync::atomic::{AtomicBool, Ordering};
@@ -333,6 +340,7 @@ fn cancel_is_honored_over_a_stream_that_keeps_returning_data() {
 
 #[test]
 fn level_triggered_cancel_aborts_parked_read_and_seek_resumes() {
+    ffmpeg_next::init().unwrap();
     use std::io::{Read, Seek, SeekFrom};
     use std::sync::Arc;
     use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
@@ -429,6 +437,7 @@ fn level_triggered_cancel_aborts_parked_read_and_seek_resumes() {
 
 #[test]
 fn url_lane_interrupt_abort_unlatches_on_seek() {
+    ffmpeg_next::init().unwrap();
     use ffmpeg_next::ffi::{AVERROR_EXIT, avio_read};
     use std::sync::Arc;
     use std::sync::atomic::{AtomicBool, Ordering};
@@ -519,6 +528,7 @@ fn url_lane_interrupt_abort_unlatches_on_seek() {
 
 #[test]
 fn read_buffer_handed_to_the_stream_is_initialized_and_readable() {
+    ffmpeg_next::init().unwrap();
     use std::io::{Read, Seek, SeekFrom};
     use std::sync::Arc;
     use std::sync::atomic::{AtomicU64, Ordering};
@@ -567,6 +577,7 @@ fn read_buffer_handed_to_the_stream_is_initialized_and_readable() {
 
 #[test]
 fn failed_refill_does_not_clobber_the_buffered_window() {
+    ffmpeg_next::init().unwrap();
     use std::io::{Read, Seek, SeekFrom};
     use std::sync::Arc;
     use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
@@ -658,6 +669,7 @@ fn failed_refill_does_not_clobber_the_buffered_window() {
 
 #[test]
 fn nonblocking_and_timed_out_streams_poison_the_context() {
+    ffmpeg_next::init().unwrap();
     use std::io::Read;
 
     struct Failing(std::io::ErrorKind);
@@ -690,6 +702,7 @@ fn nonblocking_and_timed_out_streams_poison_the_context() {
 
 #[test]
 fn custom_io_flag_is_set_on_both_contexts() {
+    ffmpeg_next::init().unwrap();
     use ffmpeg_next::ffi::AVFMT_FLAG_CUSTOM_IO;
 
     let input = format::input_from_stream(

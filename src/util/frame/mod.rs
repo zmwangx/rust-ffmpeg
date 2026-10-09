@@ -15,6 +15,7 @@ pub use self::decode_error::DecodeError;
 
 use crate::ffi::*;
 use crate::{Dictionary, DictionaryRef};
+use libc::c_int;
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub struct Packet {
@@ -150,6 +151,13 @@ impl Frame {
     #[inline]
     pub fn quality(&self) -> usize {
         unsafe { (*self.as_ptr()).quality as usize }
+    }
+
+    #[inline]
+    pub fn set_quality(&mut self, value: usize) {
+        unsafe {
+            (*self.as_mut_ptr()).quality = value as c_int;
+        }
     }
 
     #[inline]

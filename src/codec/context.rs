@@ -186,12 +186,22 @@ impl Context {
         let (data, size) = if let Some(data) = data {
             let data = data.as_ref();
             let size = data.len();
+            let padding = AV_INPUT_BUFFER_PADDING_SIZE as usize;
+            // libavcodec sizes copies as `extradata_size + padding` in `int`.
+            assert!(
+                size <= c_int::MAX as usize - padding,
+                "extradata length exceeds c_int range"
+            );
 
             unsafe {
-                let buf = av_malloc(size + AV_INPUT_BUFFER_PADDING_SIZE as usize) as *mut u8;
+                let buf = av_malloc(size + padding) as *mut u8;
+
+                if buf.is_null() {
+                    panic!("out of memory");
+                }
 
                 ptr::copy_nonoverlapping(data.as_ptr(), buf, size);
-                ptr::write_bytes(buf.add(size), 0, AV_INPUT_BUFFER_PADDING_SIZE as usize);
+                ptr::write_bytes(buf.add(size), 0, padding);
 
                 (buf, size as c_int)
             }

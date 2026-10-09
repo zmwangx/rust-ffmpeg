@@ -348,13 +348,6 @@ impl Video {
             (*self.as_ptr()).pkt_duration
         }
     }
-
-    #[inline]
-    pub fn set_quality(&mut self, value: i32) {
-        unsafe {
-            (*self.as_mut_ptr()).quality = value as c_int;
-        }
-    }
 }
 
 impl Deref for Video {

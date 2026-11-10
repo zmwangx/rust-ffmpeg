@@ -21,7 +21,7 @@ impl<'a> Source<'a> {
 
     pub fn add(&mut self, frame: &Frame) -> Result<(), Error> {
         unsafe {
-            match av_buffersrc_add_frame(self.ctx.as_mut_ptr(), frame.as_ptr() as *mut _) {
+            match av_buffersrc_write_frame(self.ctx.as_mut_ptr(), frame.as_ptr()) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
             }

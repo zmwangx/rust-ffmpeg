@@ -78,6 +78,17 @@ impl ChannelLayout {
     define_layout!(_22POINT2, 24, AV_CH_LAYOUT_22POINT2);
     define_layout!(_7POINT1_TOP_BACK, 8, AV_CH_LAYOUT_5POINT1POINT2_BACK);
 
+    #[cfg(feature = "ffmpeg_9_1")]
+    define_layout!(_5POINT1POINT4, 10, AV_CH_LAYOUT_5POINT1POINT4);
+    #[cfg(feature = "ffmpeg_9_1")]
+    define_layout!(_5POINT1POINT6, 12, AV_CH_LAYOUT_5POINT1POINT6);
+    #[cfg(feature = "ffmpeg_9_1")]
+    define_layout!(_7POINT1POINT4, 12, AV_CH_LAYOUT_7POINT1POINT4);
+    #[cfg(feature = "ffmpeg_9_1")]
+    define_layout!(_7POINT1POINT6, 14, AV_CH_LAYOUT_7POINT1POINT6);
+    #[cfg(feature = "ffmpeg_9_1")]
+    define_layout!(_9POINT1POINT4, 14, AV_CH_LAYOUT_9POINT1POINT4);
+
     #[inline]
     pub fn channels(&self) -> i32 {
         self.0.nb_channels

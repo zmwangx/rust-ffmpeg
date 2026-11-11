@@ -721,6 +721,21 @@ pub enum Id {
     WEBP_ANIM,
     #[cfg(feature = "ffmpeg_9_0")]
     APPLE_APAC,
+
+    #[cfg(feature = "ffmpeg_9_1")]
+    ASTC,
+    #[cfg(feature = "ffmpeg_9_1")]
+    RW2,
+    #[cfg(feature = "ffmpeg_9_1")]
+    IMM6,
+    #[cfg(feature = "ffmpeg_9_1")]
+    PCM_DVDA,
+    #[cfg(feature = "ffmpeg_9_1")]
+    ADPCM_RHETOREX,
+    #[cfg(feature = "ffmpeg_9_1")]
+    ADPCM_IMA_CITRIX,
+    #[cfg(feature = "ffmpeg_9_1")]
+    ITUT_T35,
 }
 
 impl Id {
@@ -1449,6 +1464,21 @@ impl From<AVCodecID> for Id {
             #[cfg(feature = "ffmpeg_9_0")]
             AV_CODEC_ID_APPLE_APAC => Id::APPLE_APAC,
 
+            #[cfg(feature = "ffmpeg_9_1")]
+            AV_CODEC_ID_ASTC => Id::ASTC,
+            #[cfg(feature = "ffmpeg_9_1")]
+            AV_CODEC_ID_RW2 => Id::RW2,
+            #[cfg(feature = "ffmpeg_9_1")]
+            AV_CODEC_ID_IMM6 => Id::IMM6,
+            #[cfg(feature = "ffmpeg_9_1")]
+            AV_CODEC_ID_PCM_DVDA => Id::PCM_DVDA,
+            #[cfg(feature = "ffmpeg_9_1")]
+            AV_CODEC_ID_ADPCM_RHETOREX => Id::ADPCM_RHETOREX,
+            #[cfg(feature = "ffmpeg_9_1")]
+            AV_CODEC_ID_ADPCM_IMA_CITRIX => Id::ADPCM_IMA_CITRIX,
+            #[cfg(feature = "ffmpeg_9_1")]
+            AV_CODEC_ID_ITUT_T35 => Id::ITUT_T35,
+
             #[cfg(feature = "non-exhaustive-enums")]
             _ => unimplemented!(),
         }
@@ -2170,6 +2200,21 @@ impl From<Id> for AVCodecID {
             Id::WEBP_ANIM => AV_CODEC_ID_WEBP_ANIM,
             #[cfg(feature = "ffmpeg_9_0")]
             Id::APPLE_APAC => AV_CODEC_ID_APPLE_APAC,
+
+            #[cfg(feature = "ffmpeg_9_1")]
+            Id::ASTC => AV_CODEC_ID_ASTC,
+            #[cfg(feature = "ffmpeg_9_1")]
+            Id::RW2 => AV_CODEC_ID_RW2,
+            #[cfg(feature = "ffmpeg_9_1")]
+            Id::IMM6 => AV_CODEC_ID_IMM6,
+            #[cfg(feature = "ffmpeg_9_1")]
+            Id::PCM_DVDA => AV_CODEC_ID_PCM_DVDA,
+            #[cfg(feature = "ffmpeg_9_1")]
+            Id::ADPCM_RHETOREX => AV_CODEC_ID_ADPCM_RHETOREX,
+            #[cfg(feature = "ffmpeg_9_1")]
+            Id::ADPCM_IMA_CITRIX => AV_CODEC_ID_ADPCM_IMA_CITRIX,
+            #[cfg(feature = "ffmpeg_9_1")]
+            Id::ITUT_T35 => AV_CODEC_ID_ITUT_T35,
         }
     }
 }

@@ -516,6 +516,15 @@ pub enum Pixel {
     #[cfg(feature = "ffmpeg_8_0")]
     GBRP12MSBLE,
 
+    #[cfg(feature = "ffmpeg_9_1")]
+    CUARRAY,
+    #[cfg(feature = "ffmpeg_9_1")]
+    XYZP12,
+    #[cfg(feature = "ffmpeg_9_1")]
+    XYZP12BE,
+    #[cfg(feature = "ffmpeg_9_1")]
+    XYZP12LE,
+
     #[cfg(feature = "rpi")]
     SAND128,
     #[cfg(feature = "rpi")]
@@ -1007,6 +1016,13 @@ impl From<AVPixelFormat> for Pixel {
             AV_PIX_FMT_GBRP12MSBBE => Pixel::GBRP12MSBBE,
             #[cfg(feature = "ffmpeg_8_0")]
             AV_PIX_FMT_GBRP12MSBLE => Pixel::GBRP12MSBLE,
+
+            #[cfg(feature = "ffmpeg_9_1")]
+            AV_PIX_FMT_CUARRAY => Pixel::CUARRAY,
+            #[cfg(feature = "ffmpeg_9_1")]
+            AV_PIX_FMT_XYZP12BE => Pixel::XYZP12BE,
+            #[cfg(feature = "ffmpeg_9_1")]
+            AV_PIX_FMT_XYZP12LE => Pixel::XYZP12LE,
 
             #[cfg(feature = "rpi")]
             AV_PIX_FMT_SAND128 => Pixel::SAND128,
@@ -1536,6 +1552,15 @@ impl From<Pixel> for AVPixelFormat {
             Pixel::GBRP12MSBBE => AV_PIX_FMT_GBRP12MSBBE,
             #[cfg(feature = "ffmpeg_8_0")]
             Pixel::GBRP12MSBLE => AV_PIX_FMT_GBRP12MSBLE,
+
+            #[cfg(feature = "ffmpeg_9_1")]
+            Pixel::CUARRAY => AV_PIX_FMT_CUARRAY,
+            #[cfg(feature = "ffmpeg_9_1")]
+            Pixel::XYZP12 => AV_PIX_FMT_XYZP12,
+            #[cfg(feature = "ffmpeg_9_1")]
+            Pixel::XYZP12BE => AV_PIX_FMT_XYZP12BE,
+            #[cfg(feature = "ffmpeg_9_1")]
+            Pixel::XYZP12LE => AV_PIX_FMT_XYZP12LE,
 
             #[cfg(feature = "rpi")]
             Pixel::SAND128 => AV_PIX_FMT_SAND128,

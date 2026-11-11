@@ -18,6 +18,10 @@ pub enum Sample {
     I64(Type),
     F32(Type),
     F64(Type),
+
+    /// DSD bitstream, 8 one-bit samples per byte. Packed only.
+    #[cfg(feature = "ffmpeg_9_1")]
+    DSD,
 }
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
@@ -85,6 +89,9 @@ impl From<AVSampleFormat> for Sample {
             AV_SAMPLE_FMT_FLTP => Sample::F32(Type::Planar),
             AV_SAMPLE_FMT_DBLP => Sample::F64(Type::Planar),
 
+            #[cfg(feature = "ffmpeg_9_1")]
+            AV_SAMPLE_FMT_DSD => Sample::DSD,
+
             AV_SAMPLE_FMT_NB => Sample::None,
 
             #[cfg(feature = "non-exhaustive-enums")]
@@ -123,6 +130,9 @@ impl From<Sample> for AVSampleFormat {
             Sample::I64(Type::Planar) => AV_SAMPLE_FMT_S64P,
             Sample::F32(Type::Planar) => AV_SAMPLE_FMT_FLTP,
             Sample::F64(Type::Planar) => AV_SAMPLE_FMT_DBLP,
+
+            #[cfg(feature = "ffmpeg_9_1")]
+            Sample::DSD => AV_SAMPLE_FMT_DSD,
         }
     }
 }

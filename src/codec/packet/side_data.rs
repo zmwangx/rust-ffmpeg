@@ -81,6 +81,9 @@ pub enum Type {
     DYNAMIC_HDR_SMPTE_2094_APP5,
     #[cfg(feature = "ffmpeg_9_0")]
     HEVC_CONF,
+
+    #[cfg(feature = "ffmpeg_9_1")]
+    GAIN_MAP_PARAMS,
 }
 
 impl From<AVPacketSideDataType> for Type {
@@ -160,6 +163,9 @@ impl From<AVPacketSideDataType> for Type {
             AV_PKT_DATA_DYNAMIC_HDR_SMPTE_2094_APP5 => Type::DYNAMIC_HDR_SMPTE_2094_APP5,
             #[cfg(feature = "ffmpeg_9_0")]
             AV_PKT_DATA_HEVC_CONF => Type::HEVC_CONF,
+
+            #[cfg(feature = "ffmpeg_9_1")]
+            AV_PKT_DATA_GAIN_MAP_PARAMS => Type::GAIN_MAP_PARAMS,
 
             #[cfg(feature = "non-exhaustive-enums")]
             _ => unimplemented!(),
@@ -244,6 +250,9 @@ impl From<Type> for AVPacketSideDataType {
             Type::DYNAMIC_HDR_SMPTE_2094_APP5 => AV_PKT_DATA_DYNAMIC_HDR_SMPTE_2094_APP5,
             #[cfg(feature = "ffmpeg_9_0")]
             Type::HEVC_CONF => AV_PKT_DATA_HEVC_CONF,
+
+            #[cfg(feature = "ffmpeg_9_1")]
+            Type::GAIN_MAP_PARAMS => AV_PKT_DATA_GAIN_MAP_PARAMS,
         }
     }
 }

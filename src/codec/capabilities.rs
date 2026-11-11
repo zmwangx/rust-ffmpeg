@@ -28,5 +28,7 @@ bitflags! {
         const INTRA_ONLY          = AV_CODEC_CAP_INTRA_ONLY;
         #[cfg(not(feature = "ffmpeg_6_0"))]
         const LOSSLESS            = AV_CODEC_CAP_LOSSLESS;
+        #[cfg(feature = "ffmpeg_9_1")]
+        const ENCODER_RECONF      = AV_CODEC_CAP_ENCODER_RECONF;
     }
 }

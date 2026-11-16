@@ -113,11 +113,7 @@ impl PartialEq for Rational {
         let a = self.reduce();
         let b = other.reduce();
 
-        if a.0 == b.0 && a.1 == b.1 {
-            return true;
-        }
-
-        false
+        a.0 == b.0 && a.1 == b.1
     }
 }
 
